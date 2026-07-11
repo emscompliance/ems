@@ -2947,18 +2947,11 @@ function renderCustomerTable() {
   }).join('');
 }
 
-// Bir soru için durum değiştirildiğinde, aynı soru (aynı qid) tüm müşterilerde/portalda
-// otomatik olarak aynı duruma senkronize edilir. /
-// When a question's status changes, the same question (same qid) is automatically
-// synced to the same status across all customers/portal.
 function changeCustomerStatus(qid, sel) {
   if (!roleGuard()) return;
-  const newStatus = sel.value;
-  customersList.forEach(c => {
-    if (!customerStatuses[c.key]) customerStatuses[c.key] = {};
-    customerStatuses[c.key][qid] = newStatus;
-  });
-  sel.className = 'status-sel ' + newStatus;
+  if (!customerStatuses[currentCustomerKey]) customerStatuses[currentCustomerKey] = {};
+  customerStatuses[currentCustomerKey][qid] = sel.value;
+  sel.className = 'status-sel ' + sel.value;
   save();
   renderCustomerKPIs();
   renderCustomerCategories();
@@ -3000,6 +2993,109 @@ function getAuditCounts(a) {
   return { cat6: +a.cat6 || 0, cat5: +a.cat5 || 0, major: +a.major || 0, minor: +a.minor || 0 };
 }
 
+// ═══════ MÜŞTERİYE ÖZEL BULGU GRAFİĞİ (443 soruluk uyumluluk panosundan tamamen bağımsız) ═══════
+// CUSTOMER-SPECIFIC FINDINGS CHART (fully independent from the 443-question compliance dashboard)
+function openCustomerFindingsChart(customerKey) {
+  const c = customersList.find(x => x.key === customerKey);
+  const audits = customerAudits.filter(a => a.customerKey === customerKey);
+  const cName = c ? c.name : customerKey;
+  const cColor = c ? c.color : '#64748b';
+  const cInit = c ? c.init : '??';
+
+  // Kategori toplamları (CAT6 / CAT5 / Major / Minor) — sadece bu müşterinin denetimlerinden /
+  // Category totals — from this customer's audits only
+  let cat6 = 0, cat5 = 0, major = 0, minor = 0;
+  let open = 0, inProgress = 0, closed = 0;
+  audits.forEach(a => {
+    const cnt = getAuditCounts(a);
+    cat6 += cnt.cat6; cat5 += cnt.cat5; major += cnt.major; minor += cnt.minor;
+    if (Array.isArray(a.findings) && a.findings.length > 0) {
+      open += a.findings.filter(f => f.status === 'open').length;
+      inProgress += a.findings.filter(f => f.status === 'in_progress').length;
+      closed += a.findings.filter(f => f.status === 'closed').length;
+    } else {
+      // Bireysel bulgu kaydı yoksa, denetimin genel CAP durumu tüm bulgu sayısına uygulanır /
+      // If there are no individual finding records, the audit's overall CAP status is applied to its total count
+      const total = cnt.cat6 + cnt.cat5 + cnt.major + cnt.minor;
+      if (a.capStatus === 'closed') closed += total;
+      else if (a.capStatus === 'in_progress') inProgress += total;
+      else open += total;
+    }
+  });
+
+  const totalFindings = cat6 + cat5 + major + minor;
+  const totalStatus = open + inProgress + closed || 1;
+  const compliancePct = Math.round(closed / totalStatus * 100);
+
+  document.getElementById('cf-chart-title').innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;"><span style="width:26px;height:26px;border-radius:50%;background:${cColor};color:#fff;font-size:11px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;">${cInit}</span>${cName} — Bulgu Grafiği / Findings Chart</span>`;
+
+  // KPI satırı / KPI row
+  document.getElementById('cf-kpi-row').innerHTML = `
+    <div class="customer-kpi" style="color:var(--primary); cursor:default;"><div class="customer-kpi-label">DENETİM / AUDITS</div><div class="customer-kpi-val">${audits.length}</div></div>
+    <div class="customer-kpi" style="color:var(--gold); cursor:default;"><div class="customer-kpi-label">TOPLAM BULGU / TOTAL</div><div class="customer-kpi-val">${totalFindings}</div></div>
+    <div class="customer-kpi" style="color:var(--success); cursor:default;"><div class="customer-kpi-label">KAPATILDI / CLOSED</div><div class="customer-kpi-val">${closed} <span class="kpi-val-pct">(%${Math.round(closed/totalStatus*100)})</span></div></div>
+    <div class="customer-kpi" style="color:var(--warning); cursor:default;"><div class="customer-kpi-label">DEVAM EDİYOR / IN PROGRESS</div><div class="customer-kpi-val">${inProgress} <span class="kpi-val-pct">(%${Math.round(inProgress/totalStatus*100)})</span></div></div>
+    <div class="customer-kpi" style="color:var(--danger); cursor:default;"><div class="customer-kpi-label">AÇIK / OPEN</div><div class="customer-kpi-val">${open} <span class="kpi-val-pct">(%${Math.round(open/totalStatus*100)})</span></div></div>
+    <div class="customer-kpi" style="color:var(--rose, #E11D74); cursor:default;"><div class="customer-kpi-label">UYUM ORANI / COMPLIANCE RATE</div><div class="customer-kpi-val">%${compliancePct}</div></div>
+  `;
+
+  // Durum donut grafiği (SVG) / Status donut chart (SVG)
+  const R = 60, CIRC = 2 * Math.PI * R;
+  const closedLen = CIRC * (closed / totalStatus);
+  const progLen = CIRC * (inProgress / totalStatus);
+  const openLen = CIRC - closedLen - progLen;
+  document.getElementById('cf-donut').innerHTML = `
+    <svg viewBox="0 0 160 160" style="width:200px;height:200px;">
+      <circle cx="80" cy="80" r="${R}" fill="none" stroke="#eef1f4" stroke-width="20"/>
+      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--success)" stroke-width="20"
+        stroke-dasharray="${closedLen} ${CIRC-closedLen}" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--warning)" stroke-width="20"
+        stroke-dasharray="${progLen} ${CIRC-progLen}" stroke-dashoffset="${-closedLen}" transform="rotate(-90 80 80)"/>
+      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--danger)" stroke-width="20"
+        stroke-dasharray="${openLen} ${CIRC-openLen}" stroke-dashoffset="${-(closedLen+progLen)}" transform="rotate(-90 80 80)"/>
+      <text x="80" y="72" text-anchor="middle" font-size="24" font-weight="900" fill="#1e1e24">${totalFindings}</text>
+      <text x="80" y="88" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">BULGU / FINDINGS</text>
+      <text x="80" y="104" text-anchor="middle" font-size="13" font-weight="900" fill="var(--success)">%${compliancePct} Uyum</text>
+    </svg>
+    <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:700;">
+      <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--success);"></span>Kapatıldı / Closed — ${closed}</div>
+      <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--warning);"></span>Devam Ediyor / In Progress — ${inProgress}</div>
+      <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--danger);"></span>Açık / Open — ${open}</div>
+    </div>
+  `;
+
+  // Kategori çubuk grafiği / Category bar chart
+  const maxCat = Math.max(cat6, cat5, major, minor, 1);
+  const bars = [
+    { label: 'CAT 6', val: cat6, color: 'var(--danger)' },
+    { label: 'CAT 5', val: cat5, color: '#E07B2A' },
+    { label: 'Major', val: major, color: 'var(--warning)' },
+    { label: 'Minor', val: minor, color: 'var(--muted)' }
+  ];
+  document.getElementById('cf-bars').innerHTML = bars.map(b => `
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+      <div style="width:56px; font-size:12px; font-weight:800; color:#1e1e24;">${b.label}</div>
+      <div style="flex:1; background:#eef1f4; border-radius:6px; height:18px; overflow:hidden;">
+        <div style="width:${(b.val/maxCat*100)}%; background:${b.color}; height:100%; border-radius:6px;"></div>
+      </div>
+      <div style="width:32px; text-align:right; font-size:12px; font-weight:800; color:#1e1e24;">${b.val}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('cf-audit-list').innerHTML = audits.length ? audits.map(a => {
+    const dateStr = a.date ? new Date(a.date).toLocaleDateString('tr-TR') : '-';
+    return `<div style="display:flex; justify-content:space-between; padding:8px 12px; border-bottom:1px solid #eef1f4; font-size:12px;">
+      <span>${dateStr}</span><span style="color:#64748b;">${(a.note||'').replace(/</g,'&lt;')}</span>
+      <span class="status-sel ${capStatusClass[a.capStatus] || 'critical'}" style="pointer-events:none; padding:2px 10px; border-radius:20px; font-size:11px;">${capStatusLabel[a.capStatus] || a.capStatus}</span>
+    </div>`;
+  }).join('') : `<div style="padding:16px; text-align:center; color:#94a3b8;">Bu müşteri için denetim kaydı yok / No audit records for this customer</div>`;
+
+  document.getElementById('customer-findings-chart-modal').classList.add('open');
+}
+function closeCustomerFindingsChart() { document.getElementById('customer-findings-chart-modal').classList.remove('open'); }
+function closeCustomerFindingsChartBg(e) { if (e.target === document.getElementById('customer-findings-chart-modal')) closeCustomerFindingsChart(); }
+function goHomeFromCustomerFindingsChart() { closeCustomerFindingsChart(); goHome(); }
+
 function renderCustomerAudits() {
   const kpiRow = document.getElementById('audits-kpi-row');
   const tbody = document.getElementById('tbody-customer-audits');
@@ -3039,7 +3135,7 @@ function renderCustomerAudits() {
     const counts = getAuditCounts(a);
     const hasFindings = Array.isArray(a.findings) && a.findings.length > 0;
     return `<tr>
-      <td><div style="display:flex; align-items:center; gap:8px;"><span style="width:26px;height:26px;border-radius:50%;background:${cColor};color:#fff;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${cInit}</span><strong>${cName}</strong></div></td>
+      <td><div onclick="openCustomerFindingsChart('${a.customerKey}')" title="${cName} bulgu grafi\u011fini a\u00e7 / Open ${cName} findings chart" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><span style="width:26px;height:26px;border-radius:50%;background:${cColor};color:#fff;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${cInit}</span><strong>${cName}</strong></div></td>
       <td style="white-space:nowrap;">${dateStr}</td>
       <td style="text-align:center; font-weight:800; color:var(--danger);">${counts.cat6}</td>
       <td style="text-align:center; font-weight:800; color:#E07B2A;">${counts.cat5}</td>
@@ -3776,5 +3872,36 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<!-- Müşteriye Özel Bulgu Grafiği Modalı — 443 soruluk uyumluluk panosundan bağımsızdır /
+     Customer-specific Findings Chart Modal — independent from the 443-question compliance dashboard -->
+<div id="customer-findings-chart-modal" class="modal-overlay" onclick="closeCustomerFindingsChartBg(event)">
+  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(760px, 96vw);">
+    <div class="modal-header">
+      <div class="modal-title" id="cf-chart-title">Bulgu Grafiği / Findings Chart</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="goHomeFromCustomerFindingsChart()" title="Anasayfa / Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeCustomerFindingsChart()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="padding:20px; overflow-y:auto; max-height:76vh;">
+      <div id="cf-kpi-row" class="customer-kpi-row" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:22px;"></div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:32px; align-items:center; justify-content:center; padding:16px; background:#fafbfc; border-radius:12px; margin-bottom:20px;">
+        <div id="cf-donut" style="display:flex; align-items:center; gap:20px;"></div>
+      </div>
+
+      <div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:10px; letter-spacing:.03em;">KATEGORİ DAĞILIMI / CATEGORY BREAKDOWN</div>
+      <div id="cf-bars" style="margin-bottom:20px;"></div>
+
+      <div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; letter-spacing:.03em;">DENETİM KAYITLARI / AUDIT RECORDS</div>
+      <div id="cf-audit-list" style="border:1px solid #eef1f4; border-radius:10px; overflow:hidden;"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

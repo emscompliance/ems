@@ -420,12 +420,15 @@ td { padding: 12px 11px; font-size: 14px; border-bottom: 1.5px solid var(--borde
 td:nth-child(2), td:nth-child(3) { min-width: 160px; max-width: 300px; white-space: normal; line-height: 1.4; }
 /* Açılan modal genişliğine göre "Tüm Kriterler & Evraklar" tablosunun sütunlarını orantılı dağıt /
    Distribute the "All Criteria & Documents" table's columns proportionally to the open modal's width */
-#modal-table-wrap table th:nth-child(1), #modal-table-wrap table td:nth-child(1) { width: 3.5%; min-width: 38px; }
-#modal-table-wrap table th:nth-child(2), #modal-table-wrap table td:nth-child(2) { width: 11%; min-width: 105px; }
-#modal-table-wrap table th:nth-child(3), #modal-table-wrap table td:nth-child(3) { width: 28%; min-width: 210px; max-width: none; }
-#modal-table-wrap table th:nth-child(4), #modal-table-wrap table td:nth-child(4) { width: 23%; min-width: 170px; max-width: none; }
-#modal-table-wrap table th:nth-child(5), #modal-table-wrap table td:nth-child(5) { width: 12.5%; min-width: 110px; }
-#modal-table-wrap table th:nth-child(6), #modal-table-wrap table td:nth-child(6) { width: 22%; min-width: 200px; }
+#modal-table-wrap table { table-layout: fixed; min-width: 860px; }
+#modal-table-wrap table th { white-space: normal; line-height: 1.3; padding: 10px 6px; vertical-align: bottom; word-break: break-word; }
+#modal-table-wrap table td { padding: 10px 6px; }
+#modal-table-wrap table th:nth-child(1), #modal-table-wrap table td:nth-child(1) { width: 4%; min-width: 32px; }
+#modal-table-wrap table th:nth-child(2), #modal-table-wrap table td:nth-child(2) { width: 10%; min-width: 90px; }
+#modal-table-wrap table th:nth-child(3), #modal-table-wrap table td:nth-child(3) { width: 27%; min-width: 190px; max-width: none; }
+#modal-table-wrap table th:nth-child(4), #modal-table-wrap table td:nth-child(4) { width: 22%; min-width: 150px; max-width: none; }
+#modal-table-wrap table th:nth-child(5), #modal-table-wrap table td:nth-child(5) { width: 15%; min-width: 120px; }
+#modal-table-wrap table th:nth-child(6), #modal-table-wrap table td:nth-child(6) { width: 22%; min-width: 170px; }
 tr:hover td { background: #fafbfd; }
 tr.hidden-row { display: none !important; }
 
@@ -729,7 +732,7 @@ tr.hidden-row { display: none !important; }
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:var(--primary); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
           </div>
-          <div class="kpi-label">Toplam Kriter &amp; Evrak / Total Criteria &amp; Docs</div><div class="kpi-val" id="kpi-total" style="color:var(--primary);">0</div>
+          <div class="kpi-label">Toplam Kritikler / Total Criticals</div><div class="kpi-val" id="kpi-total" style="color:var(--primary);">0</div>
           <div class="kpi-growth-badge" id="kpi-total-growth" style="display:none;"></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-total-bar" style="background:var(--primary); width:100%;"></div></div>
         </div>
@@ -792,6 +795,7 @@ tr.hidden-row { display: none !important; }
       </div>
     </div>
     <div class="modal-body">
+      <div id="modal-desc-text" style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;"></div>
       <div id="modal-inline-form-container"></div>
       <div class="customer-kpi-row" id="modal-kpi-row" style="margin-bottom:14px;"></div>
 
@@ -835,7 +839,7 @@ tr.hidden-row { display: none !important; }
       </div>
     </div>
     <div class="modal-body">
-      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Her marka aynı 247 denetim kriterini kullanır; ancak her müşterinin kendi bağımsız denetim sonucu ve uyumluluk panosu vardır. Bir müşteri seçerek o markaya özel kriter listesi ve güncel dashboard'u görüntüleyin. / Every brand shares the same 247 audit criteria, but each customer has its own independent audit results and compliance dashboard. Select a customer to view its dedicated criteria list and live dashboard.</div>
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Her marka aynı 443 denetim kriterini kullanır; ancak her müşterinin kendi bağımsız denetim sonucu ve uyumluluk panosu vardır. Bir müşteri seçerek o markaya özel kriter listesi ve güncel dashboard'u görüntüleyin. / Every brand shares the same 443 audit criteria, but each customer has its own independent audit results and compliance dashboard. Select a customer to view its dedicated criteria list and live dashboard.</div>
       <div class="customer-grid" id="customer-grid"></div>
     </div>
   </div>
@@ -868,6 +872,7 @@ tr.hidden-row { display: none !important; }
       </div>
     </div>
     <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Bu müşteriye ait 443 denetim kriterinin tamamı ve güncel uyumluluk durumu burada listelenir. Kategori kartlarına veya arama kutusuna kullanarak belirli bir modüle odaklanabilirsiniz. / All 443 audit criteria and their current compliance status for this customer are listed here. Use the category cards or the search box to focus on a specific module.</div>
       <div class="customer-kpi-row" id="customer-kpi-row"></div>
       <div class="customer-cat-row" id="customer-cat-row"></div>
 
@@ -976,6 +981,7 @@ tr.hidden-row { display: none !important; }
       </div>
     </div>
     <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Seçilen denetim kaydına ait tüm münferit bulgular, kategori/önem derecesi ve düzeltici faaliyetlerle birlikte burada listelenir. Her bulgunun durumunu aşağıdaki menüden güncelleyebilirsiniz. / All individual findings for the selected audit record are listed here, along with their category/severity and corrective actions. Update each finding's status using the dropdown below.</div>
       <div class="customer-kpi-row" id="findings-kpi-row" style="margin-bottom:14px;"></div>
 
       <div class="search-wrap" style="margin-bottom:14px;">
@@ -1514,7 +1520,7 @@ const customersList = [
   { key: "hm",         name: "H&M",              init: "HM", color: "#E50010" },
   { key: "next",       name: "Next",                init: "NX", color: "#111111" },
   { key: "primark",    name: "Primark",             init: "PK", color: "#00AEEF" },
-  { key: "tedco",      name: "Tesco",               init: "TS", color: "#0D9488" },
+  { key: "tesco",      name: "Tesco",               init: "TS", color: "#0D9488" },
   { key: "woolmart",   name: "Woolmart",            init: "WM", color: "#8B5CF6" },
   { key: "lcwaikiki",  name: "LC Waikiki",          init: "LC", color: "#E4032E" },
   { key: "mavi",       name: "Mavi",                init: "MV", color: "#003DA5" },
@@ -2210,13 +2216,12 @@ function goHome() {
   closeCustomerDashboard();
   closeCustomerAudits();
   closeAuditFindings();
+  closeCustomerFindingsChart();
   const searchBar = document.getElementById('global-search');
   if (searchBar) searchBar.value = '';
   
   document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
-  const homeBtn = document.getElementById('m-nav-home');
-  if (homeBtn) homeBtn.classList.add('active');
-  
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -2282,15 +2287,18 @@ function openDetailModal(type, value, catFilter, statusFilter) {
 
   let htmlForm = '';
   let titleText = '';
+  let descText = '';
 
   if (type === 'status') {
     titleText = "Tüm Kriterler & Evraklar / All Criteria & Documents";
+    descText = "Tüm modüllerdeki 443 denetim kriteri ve sertifikalar burada tek listede birleştirilir. Belirli bir modüle veya duruma odaklanmak için yukarıdaki kartları ya da kategori filtresini kullanın. / All 443 audit criteria across every module, plus certificates, are combined here in a single list. Use the cards above or the category filter to focus on a specific module or status.";
   } else if (type === 'statusq') {
-    if (value === 'compliant') titleText = "Tamamlanan Sorular & Kriterler ✅ / Completed Questions & Criteria ✅";
-    else if (value === 'minor') titleText = "Devam Eden Sorular & Kriterler ⏳ / In-Progress Questions & Criteria ⏳";
-    else if (value === 'critical') titleText = "Yapılmayan Sorular & Kriterler ❌ / Not-Done Questions & Criteria ❌";
+    if (value === 'compliant') { titleText = "Tamamlanan Sorular & Kriterler ✅ / Completed Questions & Criteria ✅"; descText = "Durumu \"Tamamlandı\" olarak işaretlenmiş tüm sorular ve kriterler burada listelenir. / All questions and criteria marked as \"Completed\" are listed here."; }
+    else if (value === 'minor') { titleText = "Devam Eden Sorular & Kriterler ⏳ / In-Progress Questions & Criteria ⏳"; descText = "Üzerinde çalışılan ancak henüz tamamlanmamış sorular ve kriterler burada listelenir. / Questions and criteria that are being worked on but not yet completed are listed here."; }
+    else if (value === 'critical') { titleText = "Yapılmayan Sorular & Kriterler ❌ / Not-Done Questions & Criteria ❌"; descText = "Henüz ele alınmamış, aksiyon bekleyen sorular ve kriterler burada listelenir. / Questions and criteria that have not yet been addressed and are awaiting action are listed here."; }
   } else if (type === 'group') {
     titleText = "CSR & Sürdürülebilirlik / CSR & Sustainability";
+    descText = "Sürdürülebilirlik ve Kurum Bilgileri & CSR modüllerine ait tüm kriterler burada birleştirilmiş şekilde görüntülenir. / All criteria from the Sustainability and Legal & CSR modules are displayed here combined.";
   } else if (type === 'category') {
     const names = {
       sustain: "1. Sürdürülebilirlik & Enerji / Sustainability & Energy",
@@ -2300,11 +2308,19 @@ function openDetailModal(type, value, catFilter, statusFilter) {
       cd: "5. Sivil Savunma & Yangın / Civil Defence & Fire",
       cert: "🏅 Sertifika Portalı / Certificate Portal"
     };
+    const descriptions = {
+      sustain: "Enerji, su ve kaynak verimliliği ile sürdürülebilirlik performansını izleyen kriterler burada listelenir. Bir kriterin durumunu güncellemek için aşağıdaki menüyü kullanın. / Criteria tracking energy, water, resource efficiency, and overall sustainability performance are listed here. Use the dropdown on each row to update its status.",
+      csr: "Kurumsal sosyal sorumluluk, işçi hakları ve yasal uyum ile ilgili kriterler burada listelenir. Bir kriterin durumunu güncellemek için aşağıdaki menüyü kullanın. / Criteria related to corporate social responsibility, worker rights, and legal compliance are listed here. Use the dropdown on each row to update its status.",
+      hse: "İş sağlığı, güvenliği ve çalışan refahına yönelik kriterler burada listelenir. Bir kriterin durumunu güncellemek için aşağıdaki menüyü kullanın. / Criteria covering occupational health, safety, and worker wellbeing are listed here. Use the dropdown on each row to update its status.",
+      env: "Kimyasal yönetimi, atık ve çevresel etki ile ilgili kriterler burada listelenir. Bir kriterin durumunu güncellemek için aşağıdaki menüyü kullanın. / Criteria covering chemical management, waste, and environmental impact are listed here. Use the dropdown on each row to update its status.",
+      cd: "Yangın güvenliği ve sivil savunma hazırlığına yönelik kriterler burada listelenir. Bir kriterin durumunu güncellemek için aşağıdaki menüyü kullanın. / Criteria covering fire safety and civil defence preparedness are listed here. Use the dropdown on each row to update its status.",
+      cert: "Şirketimizin sahip olduğu ve süreci devam eden tüm marka & sistem sertifikaları burada listelenir. Bir kartın durumunu güncellemek için aşağıdaki menüyü kullanın. / All brand & system certificates the company holds or is pursuing are listed here. Use the dropdown on each card to update its status."
+    };
     titleText = names[value] || "Modül Detayları / Module Details";
+    descText = descriptions[value] || '';
 
     if (value === 'cert') {
       htmlForm = `
-        <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Şirketimizin sahip olduğu ve süreci devam eden tüm marka &amp; sistem sertifikaları burada listelenir. Bir kartın durumunu güncellemek için aşağıdaki menüyü kullanın. / All brand &amp; system certificates the company holds or is pursuing are listed here. Use the dropdown on each card to update its status.</div>
         <div class="editor-only-el" style="background:#fafbfd; padding:12px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:14px; font-size:12px;">
           <strong style="display:block; margin-bottom:8px; color:var(--text);">Yeni Sertifika Ekle / Add Certificate</strong>
           <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:8px;">
@@ -2370,6 +2386,8 @@ function openDetailModal(type, value, catFilter, statusFilter) {
   }
 
   if (title) title.innerText = titleText;
+  const descEl = document.getElementById('modal-desc-text');
+  if (descEl) descEl.innerHTML = descText;
 
   let combined = [];
   const catNames = {
@@ -3035,6 +3053,7 @@ function openCustomerAudits() {
   closeGlobalModalDirect();
   closeCustomerPicker();
   closeCustomerDashboard();
+  closeCustomerFindingsChart();
   const sel = document.getElementById('au-customer');
   sel.innerHTML = customersList.map(c => `<option value="${c.key}">${c.name}</option>`).join('');
   const dateInput = document.getElementById('au-date');
@@ -3982,6 +4001,7 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
     <div style="padding:20px; overflow-y:auto; max-height:76vh;">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">Bu müşteriye ait gerçekleştirilen marka denetimlerindeki bulgular (CAT6/CAT5/Major/Minor) ve kapanma durumu burada özetlenir. Bu görünüm, 443 soruluk genel uyumluluk kontrol listesinden bağımsızdır. / The findings (CAT6/CAT5/Major/Minor) from this customer's brand audits and their closure status are summarized here. This view is independent of the 443-question general compliance checklist.</div>
       <div id="cf-kpi-row" class="customer-kpi-row" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:22px;"></div>
 
       <div style="display:flex; flex-wrap:wrap; gap:32px; align-items:center; justify-content:center; padding:16px; background:#fafbfc; border-radius:12px; margin-bottom:20px;">

@@ -2947,11 +2947,18 @@ function renderCustomerTable() {
   }).join('');
 }
 
+// Bir soru için durum değiştirildiğinde, aynı soru (aynı qid) tüm müşterilerde/portalda
+// otomatik olarak aynı duruma senkronize edilir. /
+// When a question's status changes, the same question (same qid) is automatically
+// synced to the same status across all customers/portal.
 function changeCustomerStatus(qid, sel) {
   if (!roleGuard()) return;
-  if (!customerStatuses[currentCustomerKey]) customerStatuses[currentCustomerKey] = {};
-  customerStatuses[currentCustomerKey][qid] = sel.value;
-  sel.className = 'status-sel ' + sel.value;
+  const newStatus = sel.value;
+  customersList.forEach(c => {
+    if (!customerStatuses[c.key]) customerStatuses[c.key] = {};
+    customerStatuses[c.key][qid] = newStatus;
+  });
+  sel.className = 'status-sel ' + newStatus;
   save();
   renderCustomerKPIs();
   renderCustomerCategories();

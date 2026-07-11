@@ -847,6 +847,12 @@ tr.hidden-row { display: none !important; }
     <div class="modal-header">
       <div class="modal-title" id="customer-dash-title">Müşteri Panosu / Customer Dashboard</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="stepAnyCustomerDashboard(-1)" title="Önceki Müşteri / Previous Customer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="stepAnyCustomerDashboard(1)" title="Sonraki Müşteri / Next Customer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
         <button class="modal-close" onclick="backToCustomerPicker()" title="Müşteriler / Customers">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
@@ -952,6 +958,12 @@ tr.hidden-row { display: none !important; }
     <div class="modal-header">
       <div class="modal-title" id="audit-findings-title">🔍 Denetim Bulguları / Audit Findings</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="stepAuditFindings(-1)" title="Önceki Denetim / Previous Audit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="stepAuditFindings(1)" title="Sonraki Denetim / Next Audit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
         <button class="modal-close" onclick="backToCustomerAuditsFromFindings()" title="Müşteri Denetimleri / Customer Audits">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         </button>
@@ -1680,10 +1692,11 @@ const vsAuditFindings = [
 
 const defaultCustomerAudits = [
   { id: 1, customerKey: "next", date: "2026-06-21", note: "NEXT Marka Denetimi / NEXT Brand Audit — Ems Eroglu Knitting, Kantara", cat6: 7, cat5: 13, major: 16, minor: 5, capStatus: "in_progress", findings: nextAuditFindings },
-  { id: 2, customerKey: "inditex", date: "2026-07-06", note: "Inditex Marka Denetimi / Inditex Brand Audit — Genel uyum kontrol listesi taraması", cat6: 0, cat5: 0, major: 0, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(brandAuditFindingsTemplate)) },
-  { id: 3, customerKey: "hm", date: "2026-07-06", note: "H&M Marka Denetimi / H&M Brand Audit — Genel uyum kontrol listesi taraması", cat6: 0, cat5: 0, major: 0, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(brandAuditFindingsTemplate)) },
   { id: 4, customerKey: "primark", date: "2026-07-06", note: "Primark Marka Denetimi / Primark Brand Audit — Genel uyum kontrol listesi taraması", cat6: 0, cat5: 0, major: 0, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(brandAuditFindingsTemplate)) },
-  { id: 5, customerKey: "vs", date: "2026-06-21", note: "LRQA-EG-IPS-357916 — Victoria's Secret (International Intimates Inc.) Marka Denetimi / Brand Audit — Initial, Semi-Announced — Değerlendiren / Assessor: Mohamed Morad", cat6: 13, cat5: 0, major: 14, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(vsAuditFindings)) }
+  { id: 5, customerKey: "vs", date: "2026-06-21", note: "LRQA-EG-IPS-357916 — Victoria's Secret (International Intimates Inc.) Marka Denetimi / Brand Audit — Initial, Semi-Announced — Değerlendiren / Assessor: Mohamed Morad", cat6: 13, cat5: 0, major: 14, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(vsAuditFindings)) },
+  { id: 6, customerKey: "lcwaikiki", date: "2026-07-11", note: "LC Waikiki Marka Denetimi / LC Waikiki Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 4, minor: 3, capStatus: "closed" },
+  { id: 7, customerKey: "koton", date: "2026-07-11", note: "Koton Marka Denetimi / Koton Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 5, minor: 2, capStatus: "closed" },
+  { id: 8, customerKey: "mavi", date: "2026-07-11", note: "Mavi Marka Denetimi / Mavi Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 3, minor: 4, capStatus: "closed" }
 ];
 let currentCustomerKey = '';
 
@@ -1844,16 +1857,31 @@ function postProcessData() {
     nextAuditRecord.findings = JSON.parse(JSON.stringify(nextAuditFindings));
   }
 
-  // Yeni eklenen marka denetim kayıtlarını (Inditex, H&M, Primark) mevcut kayıtlı verilere senkronize et /
-  // Sync newly added brand audit records (Inditex, H&M, Primark) into any already-saved data
+  // Inditex ve H&M denetim kayıtları Müşteri Denetimleri listesinden kaldırıldı (müşteri listesinde kalmaya devam ediyor) /
+  // Inditex and H&M audit records were removed from Customer Audits (they remain in the Customers list)
+  customerAudits = customerAudits.filter(a => a.customerKey !== "inditex" && a.customerKey !== "hm");
+
+  // Yeni eklenen marka denetim kayıtlarını (Primark) mevcut kayıtlı verilere senkronize et /
+  // Sync newly added brand audit records (Primark) into any already-saved data
   const newBrandAudits = [
-    { id: 2, customerKey: "inditex", date: "2026-07-06", note: "Inditex Marka Denetimi / Inditex Brand Audit — Genel uyum kontrol listesi taraması" },
-    { id: 3, customerKey: "hm", date: "2026-07-06", note: "H&M Marka Denetimi / H&M Brand Audit — Genel uyum kontrol listesi taraması" },
     { id: 4, customerKey: "primark", date: "2026-07-06", note: "Primark Marka Denetimi / Primark Brand Audit — Genel uyum kontrol listesi taraması" }
   ];
   newBrandAudits.forEach(nb => {
     if (!customerAudits.some(a => a.customerKey === nb.customerKey && a.note === nb.note)) {
       customerAudits.push({ id: (customerAudits.length > 0 ? Math.max(...customerAudits.map(a => a.id)) + 1 : 1), customerKey: nb.customerKey, date: nb.date, note: nb.note, cat6: 0, cat5: 0, major: 0, minor: 0, capStatus: "open", findings: JSON.parse(JSON.stringify(brandAuditFindingsTemplate)) });
+    }
+  });
+
+  // LC Waikiki, Koton ve Mavi denetim kayıtlarını %100 uyumlulukla (tüm bulgular kapatıldı) senkronize et /
+  // Sync LC Waikiki, Koton, and Mavi audit records with 100% compliance (all findings closed)
+  const fullyCompliantBrandAudits = [
+    { customerKey: "lcwaikiki", date: "2026-07-11", note: "LC Waikiki Marka Denetimi / LC Waikiki Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 4, minor: 3 },
+    { customerKey: "koton", date: "2026-07-11", note: "Koton Marka Denetimi / Koton Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 5, minor: 2 },
+    { customerKey: "mavi", date: "2026-07-11", note: "Mavi Marka Denetimi / Mavi Brand Audit — Tüm bulgular kapatıldı / All findings closed", cat6: 0, cat5: 0, major: 3, minor: 4 }
+  ];
+  fullyCompliantBrandAudits.forEach(nb => {
+    if (!customerAudits.some(a => a.customerKey === nb.customerKey)) {
+      customerAudits.push({ id: (customerAudits.length > 0 ? Math.max(...customerAudits.map(a => a.id)) + 1 : 1), customerKey: nb.customerKey, date: nb.date, note: nb.note, cat6: nb.cat6, cat5: nb.cat5, major: nb.major, minor: nb.minor, capStatus: "closed" });
     }
   });
 
@@ -2835,11 +2863,36 @@ function calcCustomerStats(key) {
 function openCustomerPicker() {
   const grid = document.getElementById('customer-grid');
   grid.innerHTML = customersList.map(c => {
-    const s = calcCustomerStats(c.key);
-    return `<div class="customer-card" onclick="openCustomerDashboard('${c.key}')">
+    // Denetim/bulgu kaydı olan müşteriler (kritik bulguları var) bulgu grafiğine,
+    // olmayanlar 443 soruluk genel uyumluluk panosuna yönlendirilir /
+    // Customers with audit/finding records (critical findings) go to the findings chart,
+    // customers without any go to the general 443-question compliance dashboard
+    const audits = customerAudits.filter(a => a.customerKey === c.key);
+    const hasAudit = audits.length > 0;
+    let subtitle;
+    if (hasAudit) {
+      let totalF = 0, closedF = 0;
+      audits.forEach(a => {
+        const cnt = getAuditCounts(a);
+        const t = cnt.cat6 + cnt.cat5 + cnt.major + cnt.minor;
+        totalF += t;
+        if (Array.isArray(a.findings) && a.findings.length > 0) {
+          closedF += a.findings.filter(f => f.status === 'closed').length;
+        } else if (a.capStatus === 'closed') {
+          closedF += t;
+        }
+      });
+      const pct = totalF ? Math.round(closedF / totalF * 100) : 0;
+      subtitle = `🕵️ %${pct} Kapatıldı / Closed (${closedF}/${totalF} Bulgu / Findings)`;
+    } else {
+      const s = calcCustomerStats(c.key);
+      subtitle = `%${s.pct} Tamamlandı / Completed (${s.comp}/${s.total})`;
+    }
+    const clickFn = hasAudit ? `openCustomerFindingsChart('${c.key}')` : `openCustomerDashboard('${c.key}')`;
+    return `<div class="customer-card" onclick="${clickFn}">
       <div class="customer-card-logo" style="background:${c.color};">${c.init}</div>
       <div class="customer-card-name">${c.name}</div>
-      <div class="customer-card-pct">%${s.pct} Tamamlandı / Completed (${s.comp}/${s.total})</div>
+      <div class="customer-card-pct">${subtitle}</div>
     </div>`;
   }).join('');
   document.getElementById('customer-picker-modal').classList.add('open');
@@ -2866,6 +2919,25 @@ function closeCustomerDashboard() { document.getElementById('customer-dashboard-
 function closeCustomerDashboardBg(e) { if (e.target === document.getElementById('customer-dashboard-modal')) closeCustomerDashboard(); }
 function backToCustomerPicker() { closeCustomerDashboard(); openCustomerPicker(); }
 function goHomeFromCustomer() { closeCustomerDashboard(); goHome(); }
+
+// Hem "Uyumluluk Panosu" hem de "Bulgu Grafiği" arasında, hangi tür açıksa doğru panoya geçerek
+// tüm 14 müşteri arasında ileri/geri gezinmeyi sağlar /
+// Steps forward/backward across all 14 customers, opening whichever dashboard type (compliance
+// dashboard or findings chart) is correct for each customer
+function stepAnyCustomerDashboard(direction) {
+  const idx = customersList.findIndex(x => x.key === currentCustomerKey);
+  if (idx === -1) return;
+  const nextIdx = (idx + direction + customersList.length) % customersList.length;
+  const nextKey = customersList[nextIdx].key;
+  const hasAudit = customerAudits.some(a => a.customerKey === nextKey);
+  closeCustomerDashboard();
+  closeCustomerFindingsChart();
+  if (hasAudit) {
+    openCustomerFindingsChart(nextKey);
+  } else {
+    openCustomerDashboard(nextKey);
+  }
+}
 
 function renderCustomerKPIs() {
   const s = calcCustomerStats(currentCustomerKey);
@@ -2996,6 +3068,8 @@ function getAuditCounts(a) {
 // ═══════ MÜŞTERİYE ÖZEL BULGU GRAFİĞİ (443 soruluk uyumluluk panosundan tamamen bağımsız) ═══════
 // CUSTOMER-SPECIFIC FINDINGS CHART (fully independent from the 443-question compliance dashboard)
 function openCustomerFindingsChart(customerKey) {
+  closeCustomerPicker();
+  currentCustomerKey = customerKey;
   const c = customersList.find(x => x.key === customerKey);
   const audits = customerAudits.filter(a => a.customerKey === customerKey);
   const cName = c ? c.name : customerKey;
@@ -3221,6 +3295,16 @@ function openAuditFindings(auditId) {
   if (searchEl) searchEl.value = '';
   renderAuditFindingsTable();
   document.getElementById('audit-findings-modal').classList.add('open');
+}
+
+// Denetim bulguları penceresinde bir önceki/sonraki denetim kaydına geçer (ileri/geri gezinme) /
+// Steps to the previous/next audit record while the findings modal stays open (forward/back navigation)
+function stepAuditFindings(direction) {
+  const sorted = [...customerAudits].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const idx = sorted.findIndex(a => a.id === currentFindingsAuditId);
+  if (idx === -1 || sorted.length === 0) return;
+  const nextIdx = (idx + direction + sorted.length) % sorted.length;
+  openAuditFindings(sorted[nextIdx].id);
 }
 function closeAuditFindings() { document.getElementById('audit-findings-modal').classList.remove('open'); }
 function closeAuditFindingsBg(e) { if (e.target === document.getElementById('audit-findings-modal')) closeAuditFindings(); }
@@ -3880,6 +3964,15 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-header">
       <div class="modal-title" id="cf-chart-title">Bulgu Grafiği / Findings Chart</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="stepAnyCustomerDashboard(-1)" title="Önceki Müşteri / Previous Customer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="stepAnyCustomerDashboard(1)" title="Sonraki Müşteri / Next Customer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeCustomerFindingsChart(); openCustomerPicker();" title="Müşteriler / Customers">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
         <button class="modal-close" onclick="goHomeFromCustomerFindingsChart()" title="Anasayfa / Home">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>

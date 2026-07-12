@@ -581,6 +581,8 @@ tr.hidden-row { display: none !important; }
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<!-- PDF sertifikalarının ilk sayfasını küçük bir görsele dönüştürmek için / To render the first page of a PDF certificate into a thumbnail image -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -687,6 +689,7 @@ tr.hidden-row { display: none !important; }
         Geri Yükle / Restore Data
       </button>
       <input type="file" id="restore-file-input" accept=".json" style="display:none;" onchange="importBackup(event)">
+      <input type="file" id="cert-photo-file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleCertPhotoFileChange(event)">
       <div class="side-backup-info admin-only-el" id="side-backup-info" style="display:none;"></div>
     </nav>
     <div class="side-nav-footer">
@@ -816,7 +819,7 @@ tr.hidden-row { display: none !important; }
               <th>Modül / Katman / Module / Layer</th>
               <th>Kriter &amp; Evrak Başlığı / Standart / Criteria &amp; Document Title / Standard</th>
               <th>Detaylar &amp; Notlar / Details &amp; Notes</th>
-              <th>İlgili Müşteriler / Related Customers</th>
+              <th id="th-related-col">İlgili Müşteriler / Related Customers</th>
               <th>İşlem / Durum / Action / Status</th>
             </tr>
           </thead>
@@ -1037,6 +1040,10 @@ tr.hidden-row { display: none !important; }
 <div class="mobile-nav-backdrop" id="mobile-nav-backdrop" onclick="closeMobileSidebar()"></div>
 
 <script>
+// PDF sertifikalarını render edebilmek için pdf.js worker yolu / pdf.js worker path so PDF certificates can be rendered
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 // ─── DATA (Questions: 247 Unique Items Categorized and Sequentially Numbered) ───
 const defaultAuditQuestions = [
   { id: 1, category: "csr", text: "İşletme ruhsatı ile yasal faaliyet için gerekli tüm diğer belgeler mevcut ve geçerli mi? / Are the business license and all other documents required for legal operation available and valid?", scope: "Yasal Ruhsat ve İzinler / Legal Licenses and Permits", status: "compliant" },
@@ -2388,6 +2395,12 @@ function openDetailModal(type, value, catFilter, statusFilter) {
   if (title) title.innerText = titleText;
   const descEl = document.getElementById('modal-desc-text');
   if (descEl) descEl.innerHTML = descText;
+  const relatedColHeader = document.getElementById('th-related-col');
+  if (relatedColHeader) {
+    relatedColHeader.innerText = (type === 'category' && value === 'cert')
+      ? 'Fotoğraflar / Photos'
+      : 'İlgili Müşteriler / Related Customers';
+  }
 
   let combined = [];
   const catNames = {
@@ -2525,6 +2538,28 @@ function openDetailModal(type, value, catFilter, statusFilter) {
         } else {
           relatedCustomersHtml = '<span style="color:var(--success); font-size:11px; font-weight:700;">✅ Tümü Tamamlandı / All Completed</span>';
         }
+      } else if (item.type === 'c') {
+        // Sertifika fotoğrafı: küçük önizleme (tıklayınca büyük görünüm açılır) veya yükleme butonu /
+        // Certificate photo: small preview (click to open full view) or an upload button
+        const certObj = certificatesData.find(c => c.id === item.id);
+        if (certObj && certObj.photo) {
+          relatedCustomersHtml = `
+            <div style="display:flex; align-items:center; gap:6px;">
+              <img src="${certObj.photo}" onclick="openCertPhotoLightbox(${item.id})" title="Büyütmek için tıklayın / Click to enlarge" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12);">
+              <button class="editor-only-el" onclick="triggerCertPhotoUpload(${item.id})" title="Değiştir / Replace" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="editor-only-el" onclick="deleteCertPhoto(${item.id})" title="Sil / Delete (yanlış yüklemeleri kaldırır / removes wrong uploads)" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--danger);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>`;
+        } else {
+          relatedCustomersHtml = `
+            <button class="editor-only-el" onclick="triggerCertPhotoUpload(${item.id})" title="Sertifika fotoğrafı veya PDF yükle / Upload certificate photo or PDF" style="display:flex; align-items:center; gap:5px; background:#fafbfd; border:1.5px dashed var(--border-h); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:700;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              Yükle / Upload
+            </button>`;
+        }
       }
 
       tbodyHtml += `<tr>
@@ -2605,6 +2640,141 @@ function saveCertModal() {
   calcMetrics(); 
   openDetailModal('category', 'cert');
 }
+
+// ═══════ SERTİFİKA FOTOĞRAFI — YÜKLEME (RESİM/PDF), SİLME & OTOMATİK BOYUTLU BÜYÜTME ═══════
+// CERTIFICATE PHOTO — UPLOAD (IMAGE/PDF), DELETE & AUTO-SIZED LIGHTBOX
+let _certPhotoUploadTargetId = null;
+
+function triggerCertPhotoUpload(certId) {
+  if (!roleGuard()) return;
+  _certPhotoUploadTargetId = certId;
+  const input = document.getElementById('cert-photo-file-input');
+  if (input) { input.value = ''; input.click(); }
+}
+
+// Bir <img> öğesinden JPEG data URL üretir; büyük görselleri depolama alanını (Firestore/localStorage)
+// şişirmemek için makul bir boyuta küçültür. / Produces a JPEG data URL from an <img> element; downscales
+// large images to a reasonable size so storage (Firestore/localStorage) isn't bloated.
+function _downscaleImageToDataUrl(img, maxDim) {
+  let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  if (w > maxDim || h > maxDim) {
+    const scale = maxDim / Math.max(w, h);
+    w = Math.round(w * scale); h = Math.round(h * scale);
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL('image/jpeg', 0.85);
+}
+
+function _saveCertPhoto(certId, dataUrl) {
+  const cert = certificatesData.find(c => c.id === certId);
+  if (cert) {
+    cert.photo = dataUrl;
+    save();
+    openDetailModal('category', 'cert');
+  }
+  _certPhotoUploadTargetId = null;
+}
+
+function handleCertPhotoFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  const certId = _certPhotoUploadTargetId;
+  if (!file || certId === null) return;
+
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  const isImage = file.type.startsWith('image/');
+  if (!isPdf && !isImage) {
+    alert('Lütfen bir resim dosyası ya da PDF seçin. / Please select an image file or a PDF.');
+    return;
+  }
+
+  if (isImage) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() { _saveCertPhoto(certId, _downscaleImageToDataUrl(img, 900)); };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  // PDF: ilk sayfa render edilip küçük bir görsele (JPEG) dönüştürülür — hem depolama alanı korunur
+  // hem de aynı fotoğraf/lightbox altyapısı PDF'ler için de çalışır. /
+  // PDF: the first page is rendered into a small JPEG thumbnail — this keeps storage small
+  // and lets the same photo/lightbox pipeline work for PDFs too.
+  if (typeof pdfjsLib === 'undefined') {
+    alert('PDF önizleme bileşeni yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin. / The PDF preview component failed to load. Please check your connection and try again.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const typedArray = new Uint8Array(e.target.result);
+    pdfjsLib.getDocument({ data: typedArray }).promise
+      .then(pdf => pdf.getPage(1))
+      .then(page => {
+        const baseViewport = page.getViewport({ scale: 1 });
+        const targetScale = Math.min(3, 1400 / Math.max(baseViewport.width, baseViewport.height));
+        const viewport = page.getViewport({ scale: Math.max(targetScale, 0.5) });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        return page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise.then(() => canvas);
+      })
+      .then(canvas => {
+        const img = new Image();
+        img.onload = function() { _saveCertPhoto(certId, _downscaleImageToDataUrl(img, 1100)); };
+        img.src = canvas.toDataURL('image/jpeg', 0.9);
+      })
+      .catch(err => {
+        console.error('PDF render hatası / PDF render error:', err);
+        alert('PDF işlenemedi. Dosyanın bozuk olmadığından emin olun. / The PDF could not be processed. Please make sure the file is not corrupted.');
+      });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// Yanlış yüklenen bir sertifika fotoğrafını kaldırır / Removes a wrongly uploaded certificate photo
+function deleteCertPhoto(certId) {
+  if (!roleGuard()) return;
+  const cert = certificatesData.find(c => c.id === certId);
+  if (!cert || !cert.photo) return;
+  if (!confirm('Bu sertifika fotoğrafını silmek istediğinizden emin misiniz? / Are you sure you want to delete this certificate photo?')) return;
+  delete cert.photo;
+  save();
+  openDetailModal('category', 'cert');
+}
+
+function openCertPhotoLightbox(certId) {
+  const cert = certificatesData.find(c => c.id === certId);
+  if (!cert || !cert.photo) return;
+  const imgEl = document.getElementById('cert-photo-lightbox-img');
+  const containerEl = document.getElementById('cert-photo-lightbox-container');
+
+  // Açılır pencere, fotoğrafın gerçek en/boy oranına göre otomatik boyutlanır (ekrana sığacak
+  // şekilde sınırlandırılır) — dikey, yatay veya kare sertifikalar için doğru görünür. /
+  // The popup auto-sizes to the photo's actual aspect ratio (capped to fit the screen) — looks
+  // correct for portrait, landscape, or square certificates.
+  function fitToImage() {
+    const naturalW = imgEl.naturalWidth || 600, naturalH = imgEl.naturalHeight || 800;
+    const maxW = Math.min(window.innerWidth * 0.94, 920);
+    const maxH = window.innerHeight * 0.82;
+    const scale = Math.min(1, maxW / naturalW, maxH / naturalH);
+    const w = Math.max(220, Math.round(naturalW * scale));
+    const h = Math.round(naturalH * scale);
+    imgEl.style.width = w + 'px';
+    imgEl.style.height = h + 'px';
+    if (containerEl) containerEl.style.width = w + 'px';
+  }
+  imgEl.onload = fitToImage;
+  imgEl.src = cert.photo;
+  if (imgEl.complete) fitToImage();
+
+  document.getElementById('cert-photo-lightbox-title').innerText = cert.name || 'Sertifika / Certificate';
+  document.getElementById('cert-photo-lightbox').classList.add('open');
+}
+function closeCertPhotoLightbox() { document.getElementById('cert-photo-lightbox').classList.remove('open'); }
+function closeCertPhotoLightboxBg(e) { if (e.target === document.getElementById('cert-photo-lightbox')) closeCertPhotoLightbox(); }
 
 function deleteModalItem(id, type) {
   if (!roleGuard()) return;
@@ -4117,6 +4287,19 @@ document.addEventListener('DOMContentLoaded', function() {
       <div style="font-size:14px; font-weight:800; color:#64748b; margin-bottom:16px; letter-spacing:.03em;">BÖLÜM BAZLI BAŞARI ORANLARI / SECTION-BY-SECTION SUCCESS RATES</div>
       <div id="osd-vertical-bars" style="display:flex; align-items:flex-start; gap:28px; padding:10px 12px 4px; margin-bottom:8px;"></div>
     </div>
+  </div>
+</div>
+
+<!-- Sertifika Fotoğrafı — Büyütme / Certificate Photo — Lightbox -->
+<div id="cert-photo-lightbox" class="modal-overlay" onclick="closeCertPhotoLightboxBg(event)">
+  <div id="cert-photo-lightbox-container" class="modal-container" onclick="event.stopPropagation()" style="width:min(640px, 94vw); max-width:94vw; background:transparent; box-shadow:none; transition:width 0.25s ease;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div id="cert-photo-lightbox-title" style="color:#fff; font-weight:800; font-size:14px;"></div>
+      <button onclick="closeCertPhotoLightbox()" style="background:rgba(255,255,255,0.15); border:none; border-radius:8px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; flex-shrink:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <img id="cert-photo-lightbox-img" src="" style="display:block; max-width:94vw; max-height:82vh; object-fit:contain; border-radius:12px; box-shadow:0 20px 50px rgba(0,0,0,0.5); background:#fff;">
   </div>
 </div>
 </body>

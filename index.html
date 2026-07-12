@@ -17,6 +17,7 @@
 :root {
   --bg: #EEF0F3; --white: #ffffff; --text: #0f172a; --muted: #6B7280;
   --primary: #4F46E5; --primary-d: #3730A3; --success: #10B981; --success-bg: #f0fdf4;
+  --success-deep: #15803D; --success-deep-bg: #f0fdf4;
   --warning: #F59E0B; --warning-bg: #FEFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
   --purple: #8B5CF6; --cyan: #06B6D4; --orange: #F97316; --teal: #0D9488; --rose: #E11D48;
   --border: #e5e8ed; --border-h: #CBD5E1; --header: #27272a; --shadow: 0 4px 16px rgba(20,25,40,0.05);
@@ -36,7 +37,8 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: radial-gradient(circle at center, #ffffff 0%, #e2e8f0 70%, #cbd5e1 100%);
   z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 30px 24px; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden;
+  padding: 30px 24px; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
 .welcome-screen.hidden { opacity: 0; pointer-events: none; transform: scale(1.03); }
 .welcome-drapery {
@@ -101,8 +103,8 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .btn-login-caption span { display: block; color: #64748b; font-weight: 600; font-size: 11px; margin-top: 2px; }
 .scroll-indicator { width: 22px; height: 36px; border: 2px solid #94a3b8; border-radius: 99px; display: flex; justify-content: center; padding-top: 6px; z-index: 10; margin-bottom: 12px; position: relative; }
 .scroll-wheel { width: 4px; height: 8px; background: #94a3b8; border-radius: 99px; animation: scrollAnim 1.6s infinite; }
-.welcome-footer { font-size: 11px; color: #64748b; font-weight: 500; z-index: 10; position: relative; }
-.welcome-footer-wrap { position: absolute; bottom: 30px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10; }
+.welcome-footer { font-size: 11px; color: #64748b; font-weight: 500; z-index: 10; position: relative; text-align: center; }
+.welcome-footer-wrap { position: relative; margin-top: 26px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 10; }
 @keyframes scrollAnim { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(8px); opacity: 0; } }
 
 .container { max-width: 1600px; margin: 0 auto; padding: 16px 12px; }
@@ -139,7 +141,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .side-logo-img { width: 100%; max-width: 175px; height: auto; display: block; }
 .side-logo-dept { font-size: 10.5px; font-weight: 700; color: #FF0000; letter-spacing: 1.2px; text-transform: uppercase; text-align: center; line-height: 1.4; }
 
-.side-nav-list { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.side-nav-list { display: flex; flex-direction: column; gap: 5px; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .side-nav-item {
   display: flex; align-items: center; gap: 14px; background: none; border: none; color: #FFFFFF;
   font-size: 14px; font-weight: 700; padding: 12px 15px; border-radius: 12px; cursor: pointer;
@@ -274,6 +276,12 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
   .ring-dashboard-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 480px) {
+  .dept-heading { font-size: 13px !important; letter-spacing: 1px !important; }
+  .dept-sub { font-size: 9.5px !important; letter-spacing: 1.6px !important; }
+  .side-logo-dept { font-size: 9px !important; letter-spacing: 0.6px !important; }
+  .topbar-title h1 { font-size: 16px !important; }
+  .page-section-title { font-size: 12px !important; }
+
   .chart-row { grid-template-columns: 1fr; }
   .bottom-split-grid { grid-template-columns: 1fr; }
   .ring-dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -760,12 +768,12 @@ tr.hidden-row { display: none !important; }
           <div class="kpi-label">Yapılmadı ❌ / Not Done ❌</div><div class="kpi-val" id="kpi-crit-val" style="color:var(--danger);">0 <span class="kpi-val-pct" id="kpi-crit-pct">(%0)</span></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-crit-bar" style="background:var(--danger); width:0%;"></div></div>
         </div>
-        <div class="kpi-card pink no-click">
+        <div class="kpi-card" style="border-left: 5px solid var(--success-deep);" onclick="openOverallSuccessDetail()" title="Detaylar için tıklayın / Click for details">
           <div class="kpi-card-top">
-            <div class="kpi-card-icon" style="background:var(--gold); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23"/></svg></div>
+            <div class="kpi-card-icon" style="background:var(--success-deep); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23"/></svg></div>
           </div>
-          <div class="kpi-label">Genel Durum Başarı Oranı / Overall Success Rate</div><div class="kpi-val" id="kpi-cert-rate" style="color:var(--gold);">%0</div>
-          <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-cert-bar" style="background:var(--gold); width:0%;"></div></div>
+          <div class="kpi-label">Genel Durum Başarı Oranı / Overall Success Rate</div><div class="kpi-val" id="kpi-cert-rate" style="color:var(--success-deep);">%0</div>
+          <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-cert-bar" style="background:var(--success-deep); width:0%;"></div></div>
         </div>
       </div>
 
@@ -1782,8 +1790,9 @@ function save() {
 // ve ayrıca uygulama açıkken periyodik olarak (10 dakikada bir). Son 3 otomatik yedek saklanır. /
 // Since this is a serverless single-file app, a real server-side cron job cannot run here; instead,
 // rotating automatic backups are kept in browser storage: on every save, and also periodically
-// (every 10 minutes) while the app is open. The last 3 automatic backups are retained.
-const AUTO_BACKUP_MAX = 3;
+// (every 10 minutes) while the app is open. The last 20 automatic backups are retained (raised to
+// the practical maximum given localStorage's ~5-10MB per-origin quota and this app's data size).
+const AUTO_BACKUP_MAX = 20;
 
 function writeAutoBackup() {
   try {
@@ -2029,14 +2038,19 @@ function load(onReady) {
 }
 
 // ═══════════════════ ÜYELİK GİRİŞİ & YETKİLENDİRME / MEMBERSHIP LOGIN & AUTHORIZATION ═══════════════════
-// Firebase yapılandırıldıysa: GERÇEK Firebase Authentication kullanılır (güvenli, sunucu taraflı
-// doğrulama). Yapılandırılmadıysa: eski tarayıcı-içi basit giriş moduna otomatik döner. /
-// If Firebase is configured: REAL Firebase Authentication is used (secure, server-verified).
-// If not configured: automatically falls back to the old simple browser-side login mode.
-const SITE_USERS = {
-  'abaydogan': { password: 'Eroglu2026*Admin', role: 'admin', name: 'Abdullah Baydoğan' },
-  'ems':       { password: 'Eroglu2026*User',  role: 'user',  name: 'EMS Kullanıcı / User' }
-};
+// Firebase Authentication, sunucu tarafında doğrulanan TEK güvenli giriş yöntemidir. /
+// Firebase Authentication is the ONLY secure, server-verified login method.
+// ─────────────────────────────────────────────────────────────────────────────────────────────
+// GÜVENLİK UYARISI (DÜZELTİLDİ): Bu dosya sunucusuz, tek parçalık statik bir HTML dosyası olduğu
+// için istemci tarafı JavaScript koduna asla GERÇEK bir parola gömülmemelidir — "Sayfa Kaynağını
+// Görüntüle" ile herkes okuyabilir. Daha önce burada düz metin bir yönetici parolası sabit
+// kodlanmıştı; bu tamamen kaldırıldı. Firebase bağlantısı kullanılamıyorsa site
+// artık yalnızca GÖRÜNTÜLEYİCİ (salt okunur) moduna düşer — yönetici girişi mümkün değildir. /
+// SECURITY WARNING (FIXED): Since this file is a serverless, single-file static HTML page, a REAL
+// password must never be embedded in client-side JavaScript — anyone can read it via "View Page
+// Source". A plaintext admin password was previously hard-coded here; it has been fully removed.
+// If Firebase is unavailable, the site now falls back to VIEWER-ONLY (read-only)
+// mode — admin login is not possible without Firebase.
 let currentUserRole = 'user';   // Varsayılan: herkes görüntüleyici olarak başlar / default: everyone starts as viewer
 let currentUserName = 'Görüntüleyici / Viewer';
 
@@ -2058,28 +2072,9 @@ function handleLogin() {
     return;
   }
 
-  // ── Yerel mod (Firebase yapılandırılmamışsa) / Local mode (when Firebase isn't configured) ──
-  const account = SITE_USERS[u.toLowerCase()];
-  if (!account || account.password !== p) {
-    errEl.innerText = 'Kullanıcı adı veya şifre hatalı. / Incorrect username or password.';
-    return;
-  }
-  errEl.innerText = '';
-  const remember = document.getElementById('login-remember');
-  const payload = JSON.stringify({ username: u.toLowerCase(), role: account.role, name: account.name });
-  try {
-    if (remember && remember.checked) {
-      localStorage.setItem('ems_current_user', payload);
-      sessionStorage.removeItem('ems_current_user');
-    } else {
-      sessionStorage.setItem('ems_current_user', payload);
-      localStorage.removeItem('ems_current_user');
-    }
-  } catch(e) {}
-  currentUserRole = account.role;
-  currentUserName = account.name;
-  applyRolePermissions();
-  enterApp();
+  // Firebase kullanılamıyor: güvenlik nedeniyle yönetici girişine izin verilmez (bkz. yukarıdaki not) /
+  // Firebase unavailable: admin login is disallowed for security reasons (see note above)
+  errEl.innerText = 'Yönetici girişi şu anda kullanılamıyor (bulut bağlantısı yok). Görüntüleyici olarak devam edebilirsiniz. / Admin login is unavailable right now (no cloud connection). You can continue as a viewer.';
 }
 
 // Görüntüleyici olarak (giriş yapmadan) devam et — herkes canlı veriyi görebilir /
@@ -2142,6 +2137,11 @@ function checkExistingSession() {
     if (!raw) return false;
     const u = JSON.parse(raw);
     if (!u || !u.role) return false;
+    // Güvenlik: Firebase devre dışıyken yönetici girişi artık mümkün olmadığından, eski/kalıntı bir
+    // oturum kaydında 'admin' rolü bulunsa bile asla yönetici yetkisi verilmez. /
+    // Security: since admin login is no longer possible while Firebase is disabled, even a
+    // leftover/stale stored session claiming an 'admin' role is never honored.
+    if (u.role === 'admin') { try { localStorage.removeItem('ems_current_user'); sessionStorage.removeItem('ems_current_user'); } catch(e) {} return false; }
     currentUserRole = u.role;
     currentUserName = u.name;
     applyRolePermissions();
@@ -2800,21 +2800,31 @@ function renderHomeSectionDashboards() {
   }
 
   // Müşteri Denetimleri: tüm denetim bulgularının kapanma oranı / closure rate across all audit findings
-  let auditsPct = 0;
-  const allFindings = [];
-  customerAudits.forEach(a => { if (Array.isArray(a.findings)) allFindings.push(...a.findings); });
-  const closedFindings = allFindings.filter(f => f.status === 'closed').length;
-  if (allFindings.length) {
-    auditsPct = Math.round(closedFindings / allFindings.length * 100);
-  } else if (customerAudits.length) {
-    auditsPct = Math.round(customerAudits.filter(a => a.capStatus === 'closed').length / customerAudits.length * 100);
-  }
+  // Her denetim, münferit bulgu kayıtlarına (findings) sahipse onlar sayılır; yoksa CAT6/CAT5/Major/Minor
+  // toplamı ile CAP durumu kullanılır — müşteri bazlı Bulgu Grafiği (openCustomerFindingsChart) ile BİREBİR
+  // aynı mantık, böylece bu iki görünüm her zaman senkronize kalır. /
+  // Each audit counts its individual finding records when present; otherwise the CAT6/CAT5/Major/Minor
+  // totals plus the CAP status are used — the EXACT same logic as the per-customer Findings Chart
+  // (openCustomerFindingsChart), so these two views always stay in sync.
+  let auditsClosed = 0, auditsTotalFindings = 0;
+  customerAudits.forEach(a => {
+    if (Array.isArray(a.findings) && a.findings.length > 0) {
+      auditsTotalFindings += a.findings.length;
+      auditsClosed += a.findings.filter(f => f.status === 'closed').length;
+    } else {
+      const cnt = getAuditCounts(a);
+      const total = cnt.cat6 + cnt.cat5 + cnt.major + cnt.minor;
+      auditsTotalFindings += total;
+      if (a.capStatus === 'closed') auditsClosed += total;
+    }
+  });
+  const auditsPct = auditsTotalFindings ? Math.round(auditsClosed / auditsTotalFindings * 100) : 0;
 
   const PREVIOUS_QUESTION_BASELINE = 287; // Konsolidasyon öncesi soru sayısı / question count before the merge/consolidation
 
   const sections = [
     { label: 'Müşteriler', sub: 'Customers', pct: custPctAvg, color: '#2DD4BF', dark: '#0D9488', icon: '👥', onclick: 'openCustomerPicker()', count: `${customersList.length} Müşteri / Customers` },
-    { label: 'Müşteri Denetimleri', sub: 'Customer Audits', pct: auditsPct, color: '#F87171', dark: '#C1272D', icon: '🕵️', onclick: 'openCustomerAudits()', count: `${closedFindings} / ${allFindings.length} Bulgu / Findings` },
+    { label: 'Müşteri Denetimleri', sub: 'Customer Audits', pct: auditsPct, color: '#F87171', dark: '#C1272D', icon: '🕵️', onclick: 'openCustomerAudits()', count: `${auditsClosed} / ${auditsTotalFindings} Bulgu / Findings` },
     { label: 'Sertifikalar', sub: 'Certificates', pct: certPct, color: '#E8C878', dark: '#B8923E', icon: '🏅', onclick: "openDetailModal('category','cert')", count: `${compOf(certificatesData)} / ${certificatesData.length} Sertifika / Certs` },
     { label: 'CSR & Sürdürülebilirlik', sub: 'CSR & Sustainability', pct: csrPct, color: '#818CF8', dark: '#4F46E5', icon: '🌱', onclick: "openDetailModal('group','sustain,csr')", count: `${compOf(csrQ)} / ${csrQ.length} Soru / Questions` },
     { label: 'İSG', sub: 'HSE', pct: hsePct, color: '#A78BFA', dark: '#7C3AED', icon: '🦺', onclick: "openDetailModal('category','hse')", count: `${compOf(hseQ)} / ${hseQ.length} Soru / Questions` },
@@ -2833,6 +2843,63 @@ function renderHomeSectionDashboards() {
     </div>
   `).join('');
 }
+
+// ═══════ "GENEL DURUM BAŞARI ORANI" KARTI — DETAY SAYFASI / "OVERALL SUCCESS RATE" CARD — DETAIL PAGE ═══════
+// 443 soruluk uyumluluk kontrol listesini bölüm bazında (Sürdürülebilirlik, CSR, İSG, Çevre, Sivil Savunma)
+// kırılıma ayırıp dikey çubuk grafiklerle gösterir. / Breaks down the 443-question compliance checklist
+// section by section (Sustainability, CSR, HSE, Environment, Civil Defence) with vertical bar charts.
+function openOverallSuccessDetail() {
+  const cat = {
+    sustain: { t: 0, comp: 0 }, csr: { t: 0, comp: 0 }, hse: { t: 0, comp: 0 },
+    env: { t: 0, comp: 0 }, cd: { t: 0, comp: 0 }
+  };
+  auditQuestions.forEach(q => {
+    if (cat[q.category]) {
+      cat[q.category].t++;
+      if (q.status === 'compliant') cat[q.category].comp++;
+    }
+  });
+  const totalQ = auditQuestions.length;
+  const compQ = auditQuestions.filter(q => q.status === 'compliant').length;
+  const minQ = auditQuestions.filter(q => q.status === 'minor').length;
+  const critQ = auditQuestions.filter(q => q.status === 'critical').length;
+  const overallPct = totalQ ? Math.round(compQ / totalQ * 100) : 0;
+
+  document.getElementById('osd-desc').innerHTML = `Bu oran, tüm bölümlerdeki ${totalQ} denetim kriterinin ne kadarının "Tamamlandı" olarak işaretlendiğini gösterir. Aşağıdaki grafik, oranın bölüm bazında nasıl dağıldığını görselleştirir. / This rate shows how many of the ${totalQ} audit criteria across all sections are marked "Completed". The chart below visualizes how the rate breaks down by section.`;
+
+  document.getElementById('osd-ring').innerHTML = buildRingSVG(overallPct, '#22C55E', '#15803D').replace('width="180" height="180"', 'width="220" height="220"');
+  document.getElementById('osd-legend').innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; color:var(--success);"><span style="width:15px;height:15px;border-radius:4px;background:var(--success);"></span>Tamamlandı / Completed — ${compQ}</div>
+    <div style="display:flex; align-items:center; gap:10px; color:var(--warning);"><span style="width:15px;height:15px;border-radius:4px;background:var(--warning);"></span>Devam Ediyor / In Progress — ${minQ}</div>
+    <div style="display:flex; align-items:center; gap:10px; color:var(--danger);"><span style="width:15px;height:15px;border-radius:4px;background:var(--danger);"></span>Yapılmadı / Not Done — ${critQ}</div>
+  `;
+
+  const sectionDefs = [
+    { key: 'sustain', label: 'Sürdürülebilirlik', sub: 'Sustainability', color: '#818CF8', dark: '#4F46E5' },
+    { key: 'csr', label: 'CSR', sub: 'CSR', color: '#A5B4FC', dark: '#6366F1' },
+    { key: 'hse', label: 'İSG', sub: 'HSE', color: '#A78BFA', dark: '#7C3AED' },
+    { key: 'env', label: 'Çevre', sub: 'Environment', color: '#22D3EE', dark: '#0891B2' },
+    { key: 'cd', label: 'Sivil Savunma', sub: 'Civil Defence', color: '#FB923C', dark: '#EA580C' }
+  ];
+  const bars = sectionDefs.map(s => ({ ...s, pct: cat[s.key].t ? Math.round(cat[s.key].comp / cat[s.key].t * 100) : 0, t: cat[s.key].t, comp: cat[s.key].comp }));
+  bars.push({ key: 'all', label: 'Tüm Bölümler', sub: 'All Sections', color: '#22C55E', dark: '#15803D', pct: overallPct, t: totalQ, comp: compQ });
+
+  document.getElementById('osd-vertical-bars').innerHTML = bars.map(b => `
+    <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:0;">
+      <div style="font-size:18px; font-weight:900; color:${b.dark};">%${b.pct}</div>
+      <div style="width:100%; max-width:80px; height:180px; margin-top:8px; display:flex; align-items:flex-end; justify-content:center;">
+        <div style="width:100%; height:${Math.max(b.pct, 3)}%; background:linear-gradient(180deg, ${b.color}, ${b.dark}); border-radius:14px 14px 5px 5px; box-shadow:0 8px 20px rgba(0,0,0,0.18); transition:height 0.6s cubic-bezier(0.16,1,0.3,1);"></div>
+      </div>
+      <div style="font-size:14px; font-weight:800; color:var(--text); margin-top:14px; text-align:center; line-height:1.3;">${b.label}</div>
+      <div style="font-size:12px; font-weight:600; color:var(--muted); text-align:center;">${b.sub}</div>
+      <div style="font-size:13px; font-weight:700; color:var(--muted); margin-top:4px;">${b.comp}/${b.t}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('overall-success-modal').classList.add('open');
+}
+function closeOverallSuccessDetail() { document.getElementById('overall-success-modal').classList.remove('open'); }
+function closeOverallSuccessDetailBg(e) { if (e.target === document.getElementById('overall-success-modal')) closeOverallSuccessDetail(); }
 
 function changeQ(id, sel) {
   if (!roleGuard()) return;
@@ -3132,24 +3199,23 @@ function openCustomerFindingsChart(customerKey) {
     <div class="customer-kpi" style="color:var(--rose, #E11D74); cursor:default;"><div class="customer-kpi-label">UYUM ORANI / COMPLIANCE RATE</div><div class="customer-kpi-val">%${compliancePct}</div></div>
   `;
 
-  // Durum donut grafiği (SVG) / Status donut chart (SVG)
-  const R = 60, CIRC = 2 * Math.PI * R;
-  const closedLen = CIRC * (closed / totalStatus);
-  const progLen = CIRC * (inProgress / totalStatus);
-  const openLen = CIRC - closedLen - progLen;
+  // Durum halka grafiği (CSS conic-gradient — SVG yay matematiğinden daha güvenilir, oranlar
+  // her zaman doğru orantılı çizilir) / Status ring chart (CSS conic-gradient — more reliable
+  // than SVG arc math, proportions are always drawn correctly)
+  const hasData = (open + inProgress + closed) > 0;
+  const closedPct2 = hasData ? (closed / totalStatus * 100) : 0;
+  const progPct2 = hasData ? (inProgress / totalStatus * 100) : 0;
+  const ringGradient = hasData
+    ? `conic-gradient(var(--success) 0% ${closedPct2}%, var(--warning) ${closedPct2}% ${closedPct2+progPct2}%, var(--danger) ${closedPct2+progPct2}% 100%)`
+    : `conic-gradient(#e2e8f0 0% 100%)`;
   document.getElementById('cf-donut').innerHTML = `
-    <svg viewBox="0 0 160 160" style="width:200px;height:200px;">
-      <circle cx="80" cy="80" r="${R}" fill="none" stroke="#eef1f4" stroke-width="20"/>
-      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--success)" stroke-width="20"
-        stroke-dasharray="${closedLen} ${CIRC-closedLen}" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
-      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--warning)" stroke-width="20"
-        stroke-dasharray="${progLen} ${CIRC-progLen}" stroke-dashoffset="${-closedLen}" transform="rotate(-90 80 80)"/>
-      <circle cx="80" cy="80" r="${R}" fill="none" stroke="var(--danger)" stroke-width="20"
-        stroke-dasharray="${openLen} ${CIRC-openLen}" stroke-dashoffset="${-(closedLen+progLen)}" transform="rotate(-90 80 80)"/>
-      <text x="80" y="72" text-anchor="middle" font-size="24" font-weight="900" fill="#1e1e24">${totalFindings}</text>
-      <text x="80" y="88" text-anchor="middle" font-size="9" font-weight="700" fill="#64748b">BULGU / FINDINGS</text>
-      <text x="80" y="104" text-anchor="middle" font-size="13" font-weight="900" fill="var(--success)">%${compliancePct} Uyum</text>
-    </svg>
+    <div style="position:relative; width:180px; height:180px; border-radius:50%; background:${ringGradient}; flex-shrink:0;">
+      <div style="position:absolute; inset:22px; background:#fff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:inset 0 2px 6px rgba(0,0,0,0.06);">
+        <div style="font-size:24px; font-weight:900; color:#1e1e24;">${totalFindings}</div>
+        <div style="font-size:9px; font-weight:700; color:#64748b; letter-spacing:.03em;">BULGU / FINDINGS</div>
+        <div style="font-size:13px; font-weight:900; color:var(--success); margin-top:2px;">%${compliancePct} Uyum</div>
+      </div>
+    </div>
     <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:700;">
       <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--success);"></span>Kapatıldı / Closed — ${closed}</div>
       <div style="display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--warning);"></span>Devam Ediyor / In Progress — ${inProgress}</div>
@@ -3227,13 +3293,19 @@ function renderCustomerAudits() {
     const dateStr = a.date ? new Date(a.date).toLocaleDateString('tr-TR') : '-';
     const counts = getAuditCounts(a);
     const hasFindings = Array.isArray(a.findings) && a.findings.length > 0;
+    // Sayı hücrelerinin rengi denetimin genel CAP durumunu yansıtır: Kapandı ise bu bulgular
+    // ÇÖZÜLMÜŞ demektir ve yeşil gösterilir; aksi halde hâlâ aktif/kritik anlamına gelir. /
+    // The count cells' color reflects the audit's overall CAP status: if Closed, these findings
+    // are RESOLVED and shown in green; otherwise they still represent active/critical items.
+    const statusTone = a.capStatus === 'closed' ? 'var(--success)' : (a.capStatus === 'in_progress' ? 'var(--warning)' : 'var(--danger)');
+    const auditTotal = counts.cat6 + counts.cat5 + counts.major + counts.minor;
     return `<tr>
       <td><div onclick="openCustomerFindingsChart('${a.customerKey}')" title="${cName} bulgu grafi\u011fini a\u00e7 / Open ${cName} findings chart" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><span style="width:26px;height:26px;border-radius:50%;background:${cColor};color:#fff;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">${cInit}</span><strong>${cName}</strong></div></td>
       <td style="white-space:nowrap;">${dateStr}</td>
-      <td style="text-align:center; font-weight:800; color:var(--danger);">${counts.cat6}</td>
-      <td style="text-align:center; font-weight:800; color:#E07B2A;">${counts.cat5}</td>
-      <td style="text-align:center; font-weight:800; color:var(--warning);">${counts.major}</td>
-      <td style="text-align:center; font-weight:800; color:var(--muted);">${counts.minor}</td>
+      <td style="text-align:center; font-weight:800; color:${counts.cat6 ? statusTone : 'var(--muted)'};">${counts.cat6}</td>
+      <td style="text-align:center; font-weight:800; color:${counts.cat5 ? statusTone : 'var(--muted)'};">${counts.cat5}</td>
+      <td style="text-align:center; font-weight:800; color:${counts.major ? statusTone : 'var(--muted)'};">${counts.major}</td>
+      <td style="text-align:center; font-weight:800; color:${counts.minor ? statusTone : 'var(--muted)'};">${counts.minor}</td>
       <td style="color:var(--muted); font-size:12px; max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${a.note || ''}">${a.note || ''}</td>
       <td style="white-space:nowrap;">
         <div style="display:flex; gap:6px; align-items:center;">
@@ -3251,7 +3323,7 @@ function renderCustomerAudits() {
         ${hasFindings ? `<button class="btn-save" onclick="openAuditFindings(${a.id})" style="font-size:11px; padding:8px 12px; border-radius:8px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px; height:13px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           Bulgular (${a.findings.length}) / Findings
-        </button>` : `<span style="color:var(--muted); font-size:11px; font-style:italic;">Detay yok / No detail</span>`}
+        </button>` : (auditTotal > 0 ? `<span class="status-sel ${capStatusClass[a.capStatus] || 'critical'}" style="font-size:11px; padding:6px 12px; display:inline-block;" title="Bu denetim için münferit bulgu kaydı girilmemiş; CAT6/CAT5/Major/Minor toplamları CAP durumuna göre değerlendirilir. / No individual finding records were entered for this audit; the CAT6/CAT5/Major/Minor totals are evaluated per the CAP status.">${auditTotal} Bulgu (Özet) / ${auditTotal} Findings (Summary)</span>` : `<span style="color:var(--muted); font-size:11px; font-style:italic;">Bulgu yok / No findings</span>`)}
       </td>
     </tr>`;
   }).join('');
@@ -4013,6 +4085,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
       <div style="font-size:12px; font-weight:800; color:#64748b; margin-bottom:6px; letter-spacing:.03em;">DENETİM KAYITLARI / AUDIT RECORDS</div>
       <div id="cf-audit-list" style="border:1px solid #eef1f4; border-radius:10px; overflow:hidden;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Genel Durum Başarı Oranı — Detay Modalı / Overall Success Rate — Detail Modal -->
+<div id="overall-success-modal" class="modal-overlay" onclick="closeOverallSuccessDetailBg(event)">
+  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(1500px, 97vw); width:97vw; height:92vh;">
+    <div class="modal-header">
+      <div class="modal-title">🏅 Genel Durum Başarı Oranı / Overall Success Rate</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="closeOverallSuccessDetail()" title="Geri / Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeOverallSuccessDetail(); goHome();" title="Anasayfa / Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeOverallSuccessDetail()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div style="padding:24px 40px 32px; overflow-y:auto; height:calc(92vh - 64px); box-sizing:border-box;">
+      <div id="osd-desc" style="font-size:14px; color:var(--muted); margin-bottom:20px; line-height:1.7; max-width:900px;"></div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center; justify-content:center; padding:22px; background:#fafbfc; border-radius:18px; margin-bottom:24px;">
+        <div id="osd-ring"></div>
+        <div id="osd-legend" style="display:flex; flex-direction:column; gap:14px; font-size:15px; font-weight:700;"></div>
+      </div>
+
+      <div style="font-size:14px; font-weight:800; color:#64748b; margin-bottom:16px; letter-spacing:.03em;">BÖLÜM BAZLI BAŞARI ORANLARI / SECTION-BY-SECTION SUCCESS RATES</div>
+      <div id="osd-vertical-bars" style="display:flex; align-items:flex-start; gap:28px; padding:10px 12px 4px; margin-bottom:8px;"></div>
     </div>
   </div>
 </div>

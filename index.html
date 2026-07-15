@@ -1094,6 +1094,9 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     <div class="modal-header">
       <div class="modal-title" id="audit-findings-title" data-i18n="audit_findings_title">🔍 Denetim Bulguları / Audit Findings</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="exportAuditFindingsPDF()" data-i18n-attr="title:btn_download_pdf" title="PDF İndir / Download PDF" style="color:var(--danger);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
         <button class="modal-close" onclick="stepAuditFindings(-1)" data-i18n-attr="title:prev_audit" title="Önceki Denetim / Previous Audit">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
         </button>
@@ -5407,7 +5410,12 @@ function openCustomerPicker() {
       const s = calcCustomerStats(c.key);
       subtitle = `%${s.pct} Tamamlandı / Completed (${s.comp}/${s.total})`;
     }
-    const clickFn = hasAudit ? `openCustomerFindingsChart('${c.key}')` : `openCustomerDashboard('${c.key}')`;
+    // Artık HER müşteri kartı (denetimi olsun ya da olmasın) aynı Bulgu Grafiği / Dashboard'u açar —
+    // openCustomerFindingsChart, denetimi olmayan müşteriler için de güvenli şekilde sıfır/boş bir
+    // grafik gösterir. /
+    // Every customer card (audited or not) now opens the SAME Findings Chart / Dashboard —
+    // openCustomerFindingsChart safely shows an empty/zero chart for customers with no audits yet.
+    const clickFn = `openCustomerFindingsChart('${c.key}')`;
     const onclickAttr = neverAudited ? '' : `onclick="try{ ${clickFn}; }catch(e){ console.error('Müşteri panosu açma hatası / Customer dashboard open error:', e); alert('Bir hata oluştu / An error occurred: ' + e.message); }"`;
     return `<div class="customer-card" ${onclickAttr} style="${neverAudited ? 'cursor:default; opacity:0.85;' : ''}">
       <div class="customer-card-logo" style="background:${c.color};">${c.init}</div>
@@ -5920,7 +5928,7 @@ function renderAuditFindingsTable() {
   ];
   kpiRow.innerHTML = kpis.map(k => `<div class="customer-kpi ${findingsStatusFilter === k.key ? 'active-filter' : ''}" style="color:${k.color};" onclick="setFindingsStatusFilter('${k.key}')">
     <div class="customer-kpi-label">${k.label}</div><div class="customer-kpi-val">${k.val}${k.pct !== null ? ` <span class="kpi-val-pct">(%${k.pct})</span>` : ''}</div>
-  </div>`).join('') + `<div class="customer-kpi" style="color:var(--gold); cursor:default;">
+  </div>`).join('') + `<div class="customer-kpi" style="color:var(--gold); cursor:pointer;" onclick="try{ closeAuditFindings(); openCustomerFindingsChart('${a.customerKey}'); }catch(e){ console.error('Bulgu grafiği açma hatası / Findings chart open error:', e); }" title="${t3('Bulgu Grafiğini aç', 'Open Findings Chart', 'فتح رسم النتائج')}">
     <div class="customer-kpi-label">📈 % ${t3('TAMAMLANMA','COMPLETION','الإنجاز')}</div><div class="customer-kpi-val">%${pct} <span class="kpi-val-pct">(${closed}/${total})</span></div>
   </div>`;
 
@@ -6373,48 +6381,55 @@ function exportReportPDF() {
 // This function operates on the SINGLE SHARED modal (global-filter-modal) that hosts the "Total /
 // Completed / In Progress / Not Completed / % Compliance" cards — every module, category, status
 // filter, and the "All Criteria" view all reuse this SAME modal, so one button covers all of them.
-function exportModalCriteriaPDF() {
+function exportGenericTablePDF(opts) {
+  // Ortak, yeniden kullanılabilir PDF dışa aktarma çekirdeği — herhangi bir KPI şeridi + tablo
+  // ikilisini (mevcut filtreye göre) koyu temalı, çok sayfalı bir PDF'e dönüştürür. /
+  // Shared, reusable PDF export core — turns any KPI-strip + table pair (respecting whatever
+  // filter is currently applied) into a dark-themed, multi-page PDF.
   const jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
   if (typeof html2canvas === 'undefined' || !jsPDFLib) {
     alert(t3('PDF kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.', 'The PDF library failed to load. Please check your internet connection and try again.', 'فشل تحميل مكتبة PDF.'));
     return;
   }
-  const rows = Array.from(document.querySelectorAll('#tbody-modal-global > tr')).filter(tr => tr.cells && tr.cells.length >= 5);
+  const tbodyEl = document.getElementById(opts.tbodyId);
+  const kpiRowEl = document.getElementById(opts.kpiRowId);
+  const titleText = (document.getElementById(opts.titleId) || {}).innerText || opts.fallbackTitle;
+  if (!tbodyEl) return;
+
+  const table = tbodyEl.closest('table');
+  const headers = table ? Array.from(table.querySelectorAll('thead th')).map(th => th.innerText.trim()) : [];
+  const rows = Array.from(tbodyEl.children).filter(tr => tr.cells && tr.cells.length > 1);
   if (rows.length === 0) {
     alert(t3('İndirilecek bir kayıt bulunamadı.', 'No records found to export.', 'لا توجد سجلات لتصديرها.'));
     return;
   }
 
-  const titleText = (document.getElementById('modal-title-text') || {}).innerText || t3('Kriter Listesi', 'Criteria List', 'قائمة المعايير');
-  const kpiCards = Array.from(document.querySelectorAll('#modal-kpi-row .customer-kpi')).map(card => ({
+  const STATUS_COLORS = { compliant: '#2DD4BF', minor: '#FBBF24', critical: '#F472B6', closed: '#2DD4BF', in_progress: '#FBBF24', open: '#F472B6' };
+  const kpiCards = kpiRowEl ? Array.from(kpiRowEl.querySelectorAll('.customer-kpi')).map(card => ({
     label: (card.querySelector('.customer-kpi-label') || {}).innerText || '',
     val: (card.querySelector('.customer-kpi-val') || {}).innerText || '',
     color: card.style.color || '#818CF8'
-  }));
+  })) : [];
 
+  // Her satırdan hücreleri genel amaçlı olarak çıkarır: içinde <select> varsa seçili seçeneğin metnini
+  // ve durum rengini alır; rozetler (title niteliği olan öğeler) varsa onları birleştirir; aksi halde
+  // düz metni alır. /
+  // Extracts cells from each row generically: if a cell contains a <select>, uses the selected
+  // option's text and status color; if it contains badges ([title] elements), joins them; otherwise
+  // falls back to plain text.
   const dataRows = rows.map(tr => {
-    const cells = tr.cells;
-    const relatedCell = cells[4];
-    let related = '';
-    const badgeTitles = relatedCell ? Array.from(relatedCell.querySelectorAll('[title]')).map(e => e.getAttribute('title')).filter(Boolean) : [];
-    related = badgeTitles.length > 0 ? badgeTitles.join(', ') : (relatedCell ? relatedCell.innerText.trim() : '');
-    const statusCell = cells[5];
-    let statusText = statusCell ? statusCell.innerText.trim() : '';
-    let statusVal = 'critical';
-    const sel = statusCell ? statusCell.querySelector('select') : null;
-    if (sel) { statusVal = sel.value; statusText = sel.options[sel.selectedIndex].textContent.trim(); }
-    return {
-      no: cells[0].innerText.trim(),
-      modul: cells[1].innerText.trim(),
-      kriter: cells[2].innerText.trim(),
-      detay: cells[3] ? cells[3].innerText.trim() : '',
-      related: related,
-      statusText: statusText,
-      statusVal: statusVal
-    };
+    return Array.from(tr.cells).map(cell => {
+      const sel = cell.querySelector('select');
+      if (sel) {
+        const val = sel.value;
+        return { text: sel.options[sel.selectedIndex].textContent.trim(), color: STATUS_COLORS[val] || null, isStatus: true };
+      }
+      const badgeTitles = Array.from(cell.querySelectorAll('[title]')).map(e => e.getAttribute('title')).filter(Boolean);
+      if (badgeTitles.length > 0) return { text: badgeTitles.join(', '), color: null, isStatus: false };
+      return { text: cell.innerText.trim(), color: null, isStatus: false };
+    });
   });
 
-  const STATUS_COLORS = { compliant: '#2DD4BF', minor: '#FBBF24', critical: '#F472B6' };
   const PAGE_W = 1600, PAGE_H = 900;
   const ROWS_PER_PAGE = 9;
   const logoImg = document.querySelector('.side-logo-img');
@@ -6448,28 +6463,19 @@ function exportModalCriteriaPDF() {
   function tableForRows(pageRows) {
     return `
       <div style="margin:0 40px; background:#fff; border-radius:16px; overflow:hidden; flex:1;">
-        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+        <table style="width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed;">
           <thead>
             <tr style="background:#F1F5F9;">
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; width:40px;">No</th>
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; width:150px;">${t3('Modül', 'Module', 'الوحدة')}</th>
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B;">${t3('Kriter', 'Criteria', 'المعيار')}</th>
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; width:200px;">${t3('Detaylar', 'Details', 'التفاصيل')}</th>
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; width:150px;">${t3('İlgili Müşteriler', 'Related Customers', 'العملاء المعنيون')}</th>
-              <th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; width:130px;">${t3('Durum', 'Status', 'الحالة')}</th>
+              ${headers.map((h, i) => `<th style="text-align:left; padding:10px 14px; font-size:11px; color:#64748B; ${i === 0 ? 'width:40px;' : ''}">${esc(h)}</th>`).join('')}
             </tr>
           </thead>
           <tbody>
             ${pageRows.map((r, i) => `
               <tr style="border-top:1px solid #EEF0F2; ${i % 2 === 1 ? 'background:#FAFBFD;' : ''}">
-                <td style="padding:10px 14px; font-weight:800; color:#1E1E24;">${esc(r.no)}</td>
-                <td style="padding:10px 14px; font-size:11px; font-weight:800; color:#64748B; text-transform:uppercase;">${esc(r.modul)}</td>
-                <td style="padding:10px 14px; font-weight:700; color:#1E1E24;">${esc(r.kriter)}</td>
-                <td style="padding:10px 14px; color:#64748B; font-size:12px;">${esc(r.detay)}</td>
-                <td style="padding:10px 14px; color:#475569; font-size:11.5px;">${esc(r.related)}</td>
-                <td style="padding:10px 14px;">
-                  <span style="display:inline-block; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:800; color:#fff; background:${STATUS_COLORS[r.statusVal] || '#94A3B8'};">${esc(r.statusText)}</span>
-                </td>
+                ${r.map((c, ci) => c.isStatus
+                  ? `<td style="padding:10px 14px;"><span style="display:inline-block; padding:4px 10px; border-radius:99px; font-size:11px; font-weight:800; color:#fff; background:${c.color || '#94A3B8'};">${esc(c.text)}</span></td>`
+                  : `<td style="padding:10px 14px; ${ci === 0 ? 'font-weight:800; color:#1E1E24;' : 'color:#334155; font-size:12.5px;'} overflow-wrap:break-word;">${esc(c.text)}</td>`
+                ).join('')}
               </tr>`).join('')}
           </tbody>
         </table>
@@ -6511,9 +6517,28 @@ function exportModalCriteriaPDF() {
     const safeName = titleText.replace(/[^\p{L}\p{N}]+/gu, '_').slice(0, 60);
     doc.save(`EMS_${safeName}_${new Date().toISOString().slice(0,10)}.pdf`);
   }).catch(e => {
-    console.error('Modal PDF oluşturma hatası / Modal PDF generation error:', e);
+    console.error('PDF oluşturma hatası / PDF generation error:', e);
     if (holder.parentNode) document.body.removeChild(holder);
     alert(t3('PDF oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.', 'An error occurred while generating the PDF. Please try again.', 'حدث خطأ أثناء إنشاء PDF.'));
+  });
+}
+
+// "Tüm Kriterler & Evraklar" ve tüm modül/kategori/durum filtreli görünümler için / For "All Criteria &
+// Documents" and every module/category/status-filtered view
+function exportModalCriteriaPDF() {
+  exportGenericTablePDF({
+    titleId: 'modal-title-text', kpiRowId: 'modal-kpi-row', tbodyId: 'tbody-modal-global',
+    fallbackTitle: t3('Kriter Listesi', 'Criteria List', 'قائمة المعايير')
+  });
+}
+
+// "Müşteri Denetimleri" bölümünde bir denetimin Toplam Bulgu / Açık / Devam Ediyor / Kapandı
+// bulgu listesi için / For a customer audit's Total Findings / Open / In Progress / Closed
+// findings list in the "Customer Audits" section
+function exportAuditFindingsPDF() {
+  exportGenericTablePDF({
+    titleId: 'audit-findings-title', kpiRowId: 'findings-kpi-row', tbodyId: 'tbody-audit-findings',
+    fallbackTitle: t3('Denetim Bulguları', 'Audit Findings', 'نتائج التدقيق')
   });
 }
 
@@ -6684,7 +6709,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Müşteriye Özel Bulgu Grafiği Modalı — 443 soruluk uyumluluk panosundan bağımsızdır /
      Customer-specific Findings Chart Modal — independent from the 443-question compliance dashboard -->
 <div id="customer-findings-chart-modal" class="modal-overlay" onclick="closeCustomerFindingsChartBg(event)">
-  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(760px, 96vw);">
+  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(1200px, 96vw);">
     <div class="modal-header">
       <div class="modal-title" id="cf-chart-title" data-i18n="findings_chart_title">Bulgu Grafiği / Findings Chart</div>
       <div class="modal-close-group">

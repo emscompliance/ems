@@ -665,11 +665,11 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     </div>
 
     <div class="viewer-link-wrap" id="admin-toggle-wrap">
-      <a href="javascript:void(0)" onclick="toggleAdminLoginForm()" class="viewer-link" data-i18n="login_card_title">🔒 Yönetici Girişi / Admin Login</a>
+      <a href="javascript:void(0)" onclick="toggleAdminLoginForm()" class="viewer-link" data-i18n="login_card_title">🔒 Personel Girişi / Staff Login</a>
     </div>
 
     <div class="login-card" id="login-card" style="display:none;">
-      <div class="login-card-title" id="login-card-title" data-i18n="login_card_title">🔒 Yönetici Girişi / Admin Login</div>
+      <div class="login-card-title" id="login-card-title" data-i18n="login_card_title">🔒 Personel Girişi / Staff Login</div>
       <input type="text" id="login-username" class="login-input" data-i18n-attr="placeholder:login_username_ph" placeholder="Kullanıcı Adı / Username" autocomplete="username" onkeydown="if(event.key==='Enter'){document.getElementById('login-password').focus();}">
       <input type="password" id="login-password" class="login-input" data-i18n-attr="placeholder:login_password_ph" placeholder="Şifre / Password" autocomplete="current-password" onkeydown="if(event.key==='Enter'){handleLogin();}">
       <label class="login-remember-wrap"><input type="checkbox" id="login-remember" checked> <span data-i18n="login_remember">Beni hatırla / Remember me</span></label>
@@ -743,6 +743,10 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">📊</span>
         <span data-i18n="nav_export_report">Rapor İndir / Export Report</span>
       </button>
+      <button class="side-nav-item admin-only-el" onclick="openUserManagement()" style="display:none;">
+        <span class="nav-emoji">👥</span>
+        <span data-i18n="nav_user_management">Kullanıcı Yönetimi / User Management</span>
+      </button>
       <button class="side-nav-item admin-only-el" onclick="exportBackup()" style="display:none;">
         <span class="nav-emoji">💾</span>
         <span data-i18n="nav_backup">Yedekle / Backup Data</span>
@@ -777,7 +781,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
           </button>
           <button onclick="showAdminLogin()" id="btn-admin-login" class="side-user-contact-btn" style="cursor:pointer; font-family:inherit;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span data-i18n="nav_admin_login">Yönetici Girişi</span>
+            <span data-i18n="nav_admin_login">Personel Girişi</span>
           </button>
         </div>
       </div>
@@ -976,6 +980,31 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
   </div>
 </div>
 
+<!-- KULLANICI YÖNETİMİ MODALI / USER MANAGEMENT MODAL -->
+<div id="user-management-modal" class="modal-overlay" onclick="closeUserManagementBg(event)">
+  <div class="modal-container" style="max-width:min(980px, 96vw);" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">👥 Kullanıcı Yönetimi / User Management</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="closeUserManagement()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
+        Yeni bir personel için önce <strong>Firebase Console → Authentication</strong> kısmından e-posta/şifre ile bir hesap oluşturun. O kişi siteye bu bilgilerle bir kez giriş yaptığında burada otomatik olarak listelenir; sonra ona aşağıdan departman yetkisi atayabilirsiniz.<br>
+        For a new team member, first create an email/password account in <strong>Firebase Console → Authentication</strong>. Once they log into the site with those credentials for the first time, they will appear here automatically — you can then assign their department permissions below.
+      </div>
+      <button class="btn-save" onclick="loadUserManagementList()" style="margin-bottom:14px; font-size:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Listeyi Yenile / Refresh List
+      </button>
+      <div id="user-management-list" style="display:flex; flex-direction:column; gap:12px; max-height:60vh; overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MÜŞTERİ DASHBOARD & KRİTER MODALI / CUSTOMER DASHBOARD & CRITERIA MODAL -->
 <div id="customer-dashboard-modal" class="modal-overlay" onclick="closeCustomerDashboardBg(event)">
   <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(1400px, 98vw);">
@@ -1048,7 +1077,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
       <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;" data-i18n="cust_audits_desc">Müşterilere ait geçmiş marka denetim ziyaretlerini (tarih, bulgu sayısı, CAP durumu) buradan takip edebilirsiniz. / Track each customer's past brand audit visits — date, findings breakdown, and CAP status — here.</div>
       <div class="customer-kpi-row" id="audits-kpi-row" style="margin-bottom:18px;"></div>
 
-      <div class="editor-only-el" style="background:#fafbfd; padding:14px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:16px;">
+      <div class="editor-only-el" data-scope="customer_audits" style="background:#fafbfd; padding:14px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:16px;">
         <strong style="display:block; margin-bottom:10px; color:var(--text); font-size:13px;" data-i18n="add_new_audit_record">Yeni Denetim Kaydı Ekle / Add New Audit Record</strong>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-bottom:10px;">
           <select id="au-customer" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); background:#fff; min-height:44px; font-size:14px;"></select>
@@ -1246,9 +1275,10 @@ const UI_TRANSLATIONS = {
   nav_backup:            { tr: 'Yedekle',                       en: 'Backup Data',                ar: 'نسخ احتياطي' },
   nav_restore:           { tr: 'Geri Yükle',                    en: 'Restore Data',               ar: 'استعادة البيانات' },
   nav_backup_history:    { tr: 'Geçmiş Yedekler',                en: 'Backup History',             ar: 'النسخ الاحتياطية السابقة' },
+  nav_user_management:  { tr: 'Kullanıcı Yönetimi',              en: 'User Management',             ar: 'إدارة المستخدمين' },
   side_contact:          { tr: 'İletişim',                        en: 'Contact',                     ar: 'اتصل بنا' },
   side_logout:           { tr: 'Çıkış',                           en: 'Log Out',                     ar: 'تسجيل الخروج' },
-  nav_admin_login:       { tr: 'Yönetici Girişi',                en: 'Admin Login',                ar: 'دخول المسؤول' },
+  nav_admin_login:       { tr: 'Personel Girişi',                en: 'Staff Login',                ar: 'دخول الموظفين' },
   topbar_title:          { tr: 'Genel Durum',                    en: 'Overall Status',             ar: 'الحالة العامة' },
   search_placeholder:    { tr: 'Kriter, belge veya standart arayın...', en: 'Search criteria, documents or standards...', ar: 'ابحث عن معيار أو مستند أو قياسي...' },
   btn_search:            { tr: 'Ara',                            en: 'Search',                      ar: 'بحث' },
@@ -1279,7 +1309,7 @@ const UI_TRANSLATIONS = {
   kpi_compliance_rate:    { tr: '% Uyum Oranı',                      en: '% Compliance',                    ar: '% نسبة الامتثال' },
   page_title:             { tr: 'EMS - Sürdürülebilirlik, CSR & İSG Yönetimi', en: 'EMS - Sustainability, CSR & HSE Management', ar: 'EMS - إدارة الاستدامة والمسؤولية الاجتماعية والصحة والسلامة' },
   btn_enter_site:         { tr: 'Siteye Gir',                        en: 'Enter Site',                      ar: 'دخول الموقع' },
-  login_card_title:       { tr: '🔒 Yönetici Girişi',                 en: '🔒 Admin Login',                   ar: '🔒 دخول المسؤول' },
+  login_card_title:       { tr: '🔒 Personel Girişi',                 en: '🔒 Staff Login',                   ar: '🔒 دخول الموظفين' },
   login_username_ph:      { tr: 'Kullanıcı Adı',                      en: 'Username',                        ar: 'اسم المستخدم' },
   login_password_ph:      { tr: 'Şifre',                              en: 'Password',                        ar: 'كلمة المرور' },
   login_remember:         { tr: 'Beni hatırla',                       en: 'Remember me',                     ar: 'تذكرني' },
@@ -3175,6 +3205,75 @@ function openBackupHistory() {
 function closeBackupHistory() { document.getElementById('backup-history-modal').classList.remove('open'); }
 function closeBackupHistoryBg(e) { if (e.target === document.getElementById('backup-history-modal')) closeBackupHistory(); }
 
+// ═══════════════════ KULLANICI YÖNETİMİ / USER MANAGEMENT (yalnızca yönetici) ═══════════════════
+function openUserManagement() {
+  if (!roleGuard()) return;
+  document.getElementById('user-management-modal').classList.add('open');
+  loadUserManagementList();
+}
+function closeUserManagement() { document.getElementById('user-management-modal').classList.remove('open'); }
+function closeUserManagementBg(e) { if (e.target === document.getElementById('user-management-modal')) closeUserManagement(); }
+
+function loadUserManagementList() {
+  const listEl = document.getElementById('user-management-list');
+  if (!listEl) return;
+  if (!FIREBASE_ENABLED || !fbDb) {
+    listEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:30px; font-style:italic;">${t3('Kullanıcı listesi için bulut bağlantısı gereklidir.', 'A cloud connection is required for the user list.', 'يتطلب اتصال سحابي لعرض قائمة المستخدمين.')}</div>`;
+    return;
+  }
+  listEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:20px;">${t3('Yükleniyor...', 'Loading...', 'جارٍ التحميل...')}</div>`;
+  fbDb.collection('users').get().then(snap => {
+    if (snap.empty) {
+      listEl.innerHTML = `<div style="text-align:center; color:var(--muted); padding:30px; font-style:italic;">${t3('Henüz kayıtlı bir kullanıcı yok. Yeni personel siteye ilk kez giriş yaptığında burada görünecek.', 'No registered users yet. New staff will appear here after their first login.', 'لا يوجد مستخدمون مسجلون بعد. سيظهر الموظفون الجدد هنا بعد أول تسجيل دخول.')}</div>`;
+      return;
+    }
+    const users = [];
+    snap.forEach(doc => users.push({ uid: doc.id, ...doc.data() }));
+    users.sort((a, b) => (a.email || '').localeCompare(b.email || ''));
+    listEl.innerHTML = users.map(u => {
+      const depts = Array.isArray(u.departments) ? u.departments : [];
+      return `
+      <div style="background:#fafbfd; border:1.5px solid var(--border); border-radius:12px; padding:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+          <div>
+            <div style="font-weight:800; color:var(--text); font-size:14px;">${u.displayName || u.email || u.uid}</div>
+            <div style="font-size:11.5px; color:var(--muted);">${u.email || ''}</div>
+          </div>
+          <div style="font-size:11px; font-weight:800; padding:4px 10px; border-radius:99px; background:${depts.length > 0 ? 'var(--success-bg)' : 'var(--warning-bg)'}; color:${depts.length > 0 ? 'var(--success)' : 'var(--warning)'};">
+            ${depts.length > 0 ? '✅ ' + depts.length + ' ' + t3('yetki', 'scope(s)', 'صلاحية') : '⏳ ' + t3('Yetki bekleniyor', 'Awaiting authorization', 'بانتظار الصلاحية')}
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:8px; margin-bottom:12px;">
+          ${DEPARTMENT_SCOPES.map(d => `
+            <label style="display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer;">
+              <input type="checkbox" data-uid="${u.uid}" data-dept="${d.key}" ${depts.includes(d.key) ? 'checked' : ''} style="width:16px; height:16px; cursor:pointer;">
+              ${d.label}
+            </label>`).join('')}
+        </div>
+        <button class="btn-save" onclick="saveUserDepartments('${u.uid}')" style="font-size:12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+          ${t3('Yetkileri Kaydet', 'Save Permissions', 'حفظ الصلاحيات')}
+        </button>
+      </div>`;
+    }).join('');
+  }).catch(e => {
+    console.error('Kullanıcı listesi okuma hatası / User list read error:', e);
+    listEl.innerHTML = `<div style="text-align:center; color:var(--danger); padding:30px;">${t3('Kullanıcı listesi yüklenemedi.', 'Failed to load the user list.', 'فشل تحميل قائمة المستخدمين.')}</div>`;
+  });
+}
+
+function saveUserDepartments(uid) {
+  if (!roleGuard()) return;
+  const checks = document.querySelectorAll(`#user-management-list input[data-uid="${uid}"]`);
+  const departments = Array.from(checks).filter(c => c.checked).map(c => c.dataset.dept);
+  fbDb.collection('users').doc(uid).set({ departments: departments }, { merge: true }).then(() => {
+    loadUserManagementList();
+  }).catch(e => {
+    console.error('Yetki kaydetme hatası / Permission save error:', e);
+    alert(t3('Yetkiler kaydedilemedi. Lütfen tekrar deneyin.', 'Failed to save permissions. Please try again.', 'فشل حفظ الصلاحيات. حاول مرة أخرى.'));
+  });
+}
+
 function renderBackupHistoryList() {
   const list = document.getElementById('backup-history-list');
   if (!list) return;
@@ -3553,6 +3652,52 @@ function load(onReady) {
 // mode — admin login is not possible without Firebase.
 let currentUserRole = 'user';   // Varsayılan: herkes görüntüleyici olarak başlar / default: everyone starts as viewer
 let currentUserName = t3('Görüntüleyici', 'Viewer', 'مشاهد');
+let currentUserDepartments = []; // Departman bazlı düzenleme yetkileri (admin değilse) / department-based edit scopes (when not admin)
+let currentUserPending = false;  // Firestore'da kaydı olan ama henüz hiç departman atanmamış kullanıcı / a user with a Firestore record but no department assigned yet
+
+// Portaldaki her düzenlenebilir bölüme karşılık gelen departman/yetki anahtarları. Bunlar aynı zamanda
+// 457 denetim kriterinin "category" alanıyla BİREBİR eşleşir (sustain/csr/hse/env/cd), böylece bir
+// departman kullanıcısının hangi modülü düzenleyebileceği doğrudan verinin kendisinden anlaşılır. /
+// The department/permission keys corresponding to each editable section of the portal. The first five
+// match the 457 audit criteria's "category" field EXACTLY (sustain/csr/hse/env/cd), so which module a
+// department user can edit is determined directly from the data itself.
+const DEPARTMENT_SCOPES = [
+  { key: 'sustain',         label: t3('Sürdürülebilirlik & Enerji', 'Sustainability & Energy', 'الاستدامة والطاقة') },
+  { key: 'csr',             label: t3('Kurum Bilgileri & CSR', 'Legal & CSR', 'المعلومات المؤسسية والمسؤولية الاجتماعية') },
+  { key: 'hse',             label: t3('İş Sağlığı ve Güvenliği', 'HSE & Safety', 'الصحة والسلامة المهنية') },
+  { key: 'env',             label: t3('Çevre ve Kimyasal Yönetimi', 'Environmental & Chemical', 'البيئة وإدارة المواد الكيميائية') },
+  { key: 'cd',              label: t3('Sivil Savunma & Yangın', 'Civil Defence & Fire', 'الدفاع المدني والحريق') },
+  { key: 'cert',            label: t3('Sertifika Portalı', 'Certificate Portal', 'بوابة الشهادات') },
+  { key: 'customer_audits', label: t3('Müşteri Denetimleri', 'Customer Audits', 'تدقيقات العملاء') },
+  { key: 'documents',       label: t3('Şirket Profili & Yasal Dökümanlar', 'Company Profile & Legal Documents', 'ملف الشركة والمستندات القانونية') }
+];
+function departmentLabel(key) { const d = DEPARTMENT_SCOPES.find(x => x.key === key); return d ? d.label : key; }
+
+// Belirli bir yetki alanında (departmanda) düzenleme hakkı var mı? Yönetici her zaman evet. /
+// Does the current user have edit rights in a given scope (department)? Admin is always yes.
+function canEditScope(scopeKey) {
+  if (currentUserRole === 'admin') return true;
+  if (!scopeKey) return false;
+  return currentUserDepartments.includes(scopeKey);
+}
+
+// Sayfada, data-scope niteliği taşıyan "editor-only-el" öğelerinin görünürlüğünü, kullanıcının o
+// departmana yetkisi olup olmadığına göre TEK TEK ayarlar (blanket viewer-mode gizlemesinin üzerine
+// yazar). Bu fonksiyon, ilgili tabloyu/listeyi yeniden çizen her render fonksiyonunun sonunda
+// çağrılmalıdır. /
+// Individually sets the visibility of "editor-only-el" elements that carry a data-scope attribute,
+// based on whether the current user has rights in that department (overriding the blanket
+// viewer-mode hide). This must be called at the end of every render function that redraws the
+// relevant table/list.
+function applyScopedElementVisibility(root) {
+  (root || document).querySelectorAll('.editor-only-el[data-scope]').forEach(el => {
+    if (canEditScope(el.dataset.scope)) {
+      el.style.setProperty('display', el.dataset.showAs || 'flex', 'important');
+    } else {
+      el.style.removeProperty('display');
+    }
+  });
+}
 
 function handleLogin() {
   const uEl = document.getElementById('login-username');
@@ -3586,13 +3731,17 @@ function enterAsViewer() {
   enterApp();
 }
 
-// Standart kullanıcı için salt-okunur koruma / read-only guard for standard users
-function roleGuard() {
-  if (currentUserRole !== 'admin') {
+// Standart kullanıcı için salt-okunur koruma; scopeKey verilirse o departmana yetkili kullanıcılar da
+// geçer (yönetici zaten her zaman geçer). scopeKey verilmezse eskisi gibi SADECE yönetici geçer. /
+// Read-only guard for standard users; if a scopeKey is given, users authorized for that department
+// also pass (admin always passes regardless). If no scopeKey is given, behaves exactly as before —
+// ONLY admin passes.
+function roleGuard(scopeKey) {
+  if (!canEditScope(scopeKey)) {
     alert(t3(
-      'Bu işlem için yönetici yetkisi gereklidir. Standart kullanıcılar yalnızca görüntüleme yapabilir.',
-      'Administrator privileges required. Standard users have view-only access.',
-      'يتطلب هذا الإجراء صلاحيات المسؤول. يمكن للمستخدمين العاديين العرض فقط.'
+      scopeKey ? 'Bu işlem için "' + departmentLabel(scopeKey) + '" bölümünde düzenleme yetkiniz olması gerekir.' : 'Bu işlem için yönetici yetkisi gereklidir. Standart kullanıcılar yalnızca görüntüleme yapabilir.',
+      scopeKey ? 'You need edit rights in the "' + departmentLabel(scopeKey) + '" section for this action.' : 'Administrator privileges required. Standard users have view-only access.',
+      scopeKey ? 'يتطلب هذا الإجراء صلاحية التعديل في قسم "' + departmentLabel(scopeKey) + '".' : 'يتطلب هذا الإجراء صلاحيات المسؤول. يمكن للمستخدمين العاديين العرض فقط.'
     ));
     return false;
   }
@@ -3606,9 +3755,47 @@ function applyRolePermissions() {
   const nameEl = document.querySelector('.side-user-name');
   const roleEl = document.querySelector('.side-user-role');
   if (nameEl && currentUserName) nameEl.innerText = currentUserName;
-  if (roleEl) roleEl.innerText = isAdmin ? t3('Yönetici', 'Admin', 'مسؤول') : t3('Standart Kullanıcı (Görüntüleyici)', 'Standard User (Viewer)', 'مستخدم عادي (مشاهد)');
+  if (roleEl) {
+    if (isAdmin) {
+      roleEl.innerText = t3('Yönetici', 'Admin', 'مسؤول');
+    } else if (currentUserDepartments.length > 0) {
+      roleEl.innerText = currentUserDepartments.map(departmentLabel).join(', ');
+    } else if (currentUserPending) {
+      roleEl.innerText = t3('Yetki bekleniyor', 'Awaiting authorization', 'بانتظار الصلاحية');
+    } else {
+      roleEl.innerText = t3('Standart Kullanıcı (Görüntüleyici)', 'Standard User (Viewer)', 'مستخدم عادي (مشاهد)');
+    }
+  }
   const adminLoginBtn = document.getElementById('btn-admin-login');
   if (adminLoginBtn) adminLoginBtn.style.display = isAdmin ? 'none' : '';
+  applyScopedElementVisibility();
+}
+
+// İsimli (yönetici olmayan) bir hesabın departman yetkilerini Firestore'dan okur; kayıt yoksa oluşturur. /
+// Reads a named (non-admin) account's department scopes from Firestore; creates the record if missing.
+function loadUserDepartmentProfile(uid, email) {
+  if (!fbDb) { currentUserDepartments = []; currentUserName = email; applyRolePermissions(); return; }
+  const ref = fbDb.collection('users').doc(uid);
+  ref.get().then(snap => {
+    if (snap.exists) {
+      const data = snap.data() || {};
+      currentUserDepartments = Array.isArray(data.departments) ? data.departments : [];
+      currentUserName = data.displayName || email;
+      currentUserPending = currentUserDepartments.length === 0;
+    } else {
+      ref.set({ email: email, displayName: email.split('@')[0], departments: [], createdAt: new Date().toISOString() })
+        .catch(e => console.error('Kullanıcı kaydı oluşturma hatası / User record creation error:', e));
+      currentUserDepartments = [];
+      currentUserName = email;
+      currentUserPending = true;
+    }
+    applyRolePermissions();
+  }).catch(e => {
+    console.error('Kullanıcı profili okuma hatası / User profile read error:', e);
+    currentUserDepartments = [];
+    currentUserName = email;
+    applyRolePermissions();
+  });
 }
 
 // Firebase modunda: oturum durumu Firebase tarafından otomatik yönetilir (kalıcı oturum dahil) /
@@ -3618,11 +3805,25 @@ if (FIREBASE_ENABLED && fbAuth) {
   fbAuth.onAuthStateChanged(user => {
     if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
       currentUserRole = 'admin';
+      currentUserDepartments = [];
+      currentUserPending = false;
       currentUserName = 'Abdullah Baydoğan (' + t3('Yönetici', 'Admin', 'مسؤول') + ')';
-    } else if (user) {
-      // Anonim oturum (veya yönetici olmayan başka bir hesap): standart görüntüleyici /
-      // Anonymous session (or a non-admin account): standard viewer
+    } else if (user && user.email && !user.isAnonymous) {
+      // İsimli (e-posta/şifreli) ve yönetici olmayan bir hesap: Firestore'daki users/{uid} kaydından
+      // departman yetkilerini oku; kayıt yoksa (ilk giriş) boş yetkili bir kayıt oluştur — yönetici
+      // daha sonra "Kullanıcı Yönetimi" panelinden departman atayacaktır. /
+      // A named (email/password) non-admin account: read department scopes from the users/{uid}
+      // Firestore record; if it doesn't exist yet (first login), create an empty-permission record —
+      // the admin will assign departments later from the "User Management" panel.
       currentUserRole = 'user';
+      loadUserDepartmentProfile(user.uid, user.email);
+      return; // applyRolePermissions() bu fonksiyonun içindeki callback'te çağrılıyor / applyRolePermissions() is called from within that function's callback
+    } else if (user) {
+      // Anonim oturum: standart görüntüleyici, departman yetkisi yok /
+      // Anonymous session: standard viewer, no department rights
+      currentUserRole = 'user';
+      currentUserDepartments = [];
+      currentUserPending = false;
       currentUserName = t3('Görüntüleyici', 'Viewer', 'مشاهد');
     } else {
       // ═══ KRİTİK DÜZELTME ═══ Hiç kimse giriş yapmamışsa (standart/görüntüleyici ziyaretçi), Firebase
@@ -3728,7 +3929,7 @@ function showAdminLogin() {
   const titleEl = document.getElementById('login-card-title');
   const userEl = document.getElementById('login-username');
   if (FIREBASE_ENABLED) {
-    if (titleEl) titleEl.innerText = '🔑 ' + t3('Yönetici Girişi', 'Admin Login', 'دخول المسؤول');
+    if (titleEl) titleEl.innerText = '🔑 ' + t3('Personel Girişi', 'Staff Login', 'دخول الموظفين');
     if (userEl) userEl.placeholder = t3('E-posta', 'Email', 'البريد الإلكتروني');
   }
 })();
@@ -3861,7 +4062,7 @@ function openDetailModal(type, value, catFilter, statusFilter) {
 
     if (value === 'cert') {
       htmlForm = `
-        <div class="editor-only-el" style="background:#fafbfd; padding:12px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:14px; font-size:12px;">
+        <div class="editor-only-el" data-scope="cert" style="background:#fafbfd; padding:12px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:14px; font-size:12px;">
           <strong style="display:block; margin-bottom:8px; color:var(--text);">${t3('Yeni Sertifika Ekle', 'Add Certificate', 'إضافة شهادة')}</strong>
           <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:8px;">
             <input type="text" id="m-cert-name" placeholder="${t3('Sertifika Adı * (Örn: BSCI)', 'Certificate Name * (e.g. BSCI)', 'اسم الشهادة * (مثال: BSCI)')}" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font-size:16px; min-height:44px;">
@@ -3883,7 +4084,7 @@ function openDetailModal(type, value, catFilter, statusFilter) {
         </div>`;
     } else {
       htmlForm = `
-        <div class="editor-only-el" style="background:#fafbfd; padding:12px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:14px; font-size:12px;">
+        <div class="editor-only-el" data-scope="${value}" style="background:#fafbfd; padding:12px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:14px; font-size:12px;">
           <strong style="display:block; margin-bottom:8px; color:var(--text);">${t3('Yeni Kriter Ekle', 'Add Criteria', 'إضافة معيار')}</strong>
           <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:8px;">
             <input type="text" id="m-q-text" placeholder="${t3('Kriter Adı *', 'Criteria Name *', 'اسم المعيار *')}" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font-size:16px; min-height:44px;">
@@ -4082,16 +4283,16 @@ function openDetailModal(type, value, catFilter, statusFilter) {
           relatedCustomersHtml = `
             <div style="display:flex; align-items:center; gap:6px;">
               <img src="${certObj.photo}" onclick="openCertPhotoLightbox(${item.id})" title="${t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12);">
-              <button class="editor-only-el" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
+              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
-              <button class="editor-only-el" onclick="deleteCertPhoto(${item.id})" title="${t3('Sil (yanlış yüklemeleri kaldırır)', 'Delete (removes wrong uploads)', 'حذف (يزيل التحميلات الخاطئة)')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--danger);">
+              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="deleteCertPhoto(${item.id})" title="${t3('Sil (yanlış yüklemeleri kaldırır)', 'Delete (removes wrong uploads)', 'حذف (يزيل التحميلات الخاطئة)')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--danger);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
               </button>
             </div>`;
         } else {
           relatedCustomersHtml = `
-            <button class="editor-only-el" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Sertifika fotoğrafı veya PDF yükle', 'Upload certificate photo or PDF', 'رفع صورة الشهادة أو PDF')}" style="display:flex; align-items:center; gap:5px; background:#fafbfd; border:1.5px dashed var(--border-h); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:700;">
+            <button class="editor-only-el" data-scope="cert" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Sertifika fotoğrafı veya PDF yükle', 'Upload certificate photo or PDF', 'رفع صورة الشهادة أو PDF')}" style="display:flex; align-items:center; gap:5px; background:#fafbfd; border:1.5px dashed var(--border-h); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:700;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
               ${t3('Yükle', 'Upload', 'رفع')}
             </button>`;
@@ -4132,10 +4333,11 @@ function openDetailModal(type, value, catFilter, statusFilter) {
 
   tbody.innerHTML = tbodyHtml;
   modal.classList.add('open');
+  applyScopedElementVisibility(modal);
 }
 
 function saveQuestionModal(cat) {
-  if (!roleGuard()) return;
+  if (!roleGuard(cat)) return;
   const textEl = document.getElementById('m-q-text');
   const scopeEl = document.getElementById('m-q-scope');
   const statusEl = document.getElementById('m-q-status');
@@ -4156,7 +4358,7 @@ function saveQuestionModal(cat) {
 }
 
 function saveCertModal() {
-  if (!roleGuard()) return;
+  if (!roleGuard('cert')) return;
   const nameEl = document.getElementById('m-cert-name');
   const scopeEl = document.getElementById('m-cert-scope');
   const priorityEl = document.getElementById('m-cert-priority');
@@ -4182,7 +4384,7 @@ function saveCertModal() {
 let _certPhotoUploadTargetId = null;
 
 function triggerCertPhotoUpload(certId) {
-  if (!roleGuard()) return;
+  if (!roleGuard('cert')) return;
   _certPhotoUploadTargetId = certId;
   const input = document.getElementById('cert-photo-file-input');
   if (input) { input.value = ''; input.click(); }
@@ -4278,7 +4480,7 @@ function handleCertPhotoFileChange(event) {
 
 // Yanlış yüklenen bir sertifika fotoğrafını kaldırır / Removes a wrongly uploaded certificate photo
 function deleteCertPhoto(certId) {
-  if (!roleGuard()) return;
+  if (!roleGuard('cert')) return;
   const cert = certificatesData.find(c => c.id === certId);
   if (!cert || !cert.photo) return;
   if (!confirm(t3('Bu sertifika fotoğrafını silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this certificate photo?', 'هل أنت متأكد أنك تريد حذف صورة هذه الشهادة؟'))) return;
@@ -4373,7 +4575,7 @@ function renderDocLibraryGrid() {
       '<div style="position:relative; width:100%; aspect-ratio:4/3; border-radius:10px; overflow:hidden; background:#f4f5f7; display:flex; align-items:center; justify-content:center; cursor:' + (hasMedia ? 'pointer' : 'default') + ';"' + clickAttr + '>' + thumb + '</div>' +
       '<div style="font-weight:800; font-size:13px; color:var(--text); word-break:break-word;">' + (doc.name || t3('İsimsiz Belge', 'Untitled Document', 'مستند بدون عنوان')) + '</div>' +
       (doc.description ? '<div style="font-size:11.5px; color:var(--muted); line-height:1.4;">' + doc.description + '</div>' : '') +
-      '<div class="editor-only-el" style="display:flex; gap:6px; margin-top:auto; padding-top:6px;">' +
+      '<div class="editor-only-el" data-scope="documents" style="display:flex; gap:6px; margin-top:auto; padding-top:6px;">' +
         '<button onclick="triggerDocUpload(\'' + storeKey + '\',' + doc.id + ')" title="' + (hasMedia ? t3('Değiştir', 'Replace', 'استبدال') : t3('Yükle (Resim/PDF/Video)', 'Upload (Image/PDF/Video)', 'رفع (صورة/PDF/فيديو)')) + '" style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; background:#fafbfd; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--text); font-size:11px; font-weight:700;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> ' + (hasMedia ? t3('Değiştir', 'Replace', 'استبدال') : t3('Yükle', 'Upload', 'رفع')) + '</button>' +
         '<button onclick="editDocMeta(\'' + storeKey + '\',' + doc.id + ')" title="' + t3('Düzenle', 'Edit', 'تعديل') + '" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--muted);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
         (hasMedia ? '<button onclick="deleteDocFile(\'' + storeKey + '\',' + doc.id + ')" title="' + t3('Dosyayı Sil (yanlış yüklemeleri kaldırır)', 'Delete File (removes wrong uploads)', 'حذف الملف (يزيل التحميلات الخاطئة)') + '" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--danger);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg></button>' : '') +
@@ -4382,15 +4584,16 @@ function renderDocLibraryGrid() {
     '</div>';
   }).join('');
 
-  html += '<div class="editor-only-el" onclick="addDocEntry(\'' + storeKey + '\')" style="border:1.5px dashed var(--border-h); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--muted); background:#fafbfd;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Yeni Belge Ekle', 'Add New Document', 'إضافة مستند جديد') + '</div></div>';
+  html += '<div class="editor-only-el" data-scope="documents" onclick="addDocEntry(\'' + storeKey + '\')" style="border:1.5px dashed var(--border-h); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--muted); background:#fafbfd;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Yeni Belge Ekle', 'Add New Document', 'إضافة مستند جديد') + '</div></div>';
 
-  html += '<div class="editor-only-el" onclick="triggerMultiDocUpload(\'' + storeKey + '\')" style="border:1.5px dashed var(--primary); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--primary); background:#f5f5ff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/><line x1="12" y1="3" x2="12" y2="3"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Çoklu Dosya Ekle', 'Add Multiple Files', 'إضافة ملفات متعددة') + '<br><span style="font-weight:600; font-size:10px;">' + t3('(her dosya ayrı bir belge olur)', '(each file becomes a document)', '(كل ملف يصبح مستنداً منفصلاً)') + '</span></div></div>';
+  html += '<div class="editor-only-el" data-scope="documents" onclick="triggerMultiDocUpload(\'' + storeKey + '\')" style="border:1.5px dashed var(--primary); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--primary); background:#f5f5ff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/><line x1="12" y1="3" x2="12" y2="3"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Çoklu Dosya Ekle', 'Add Multiple Files', 'إضافة ملفات متعددة') + '<br><span style="font-weight:600; font-size:10px;">' + t3('(her dosya ayrı bir belge olur)', '(each file becomes a document)', '(كل ملف يصبح مستنداً منفصلاً)') + '</span></div></div>';
 
   grid.innerHTML = html;
+  applyScopedElementVisibility(grid);
 }
 
 function addDocEntry(storeKey) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   const name = prompt(t3('Belge adı:', 'Document name:', 'اسم المستند:'));
   if (!name || !name.trim()) return;
   const description = prompt(t3('Açıklama (opsiyonel):', 'Description (optional):', 'الوصف (اختياري):')) || '';
@@ -4402,7 +4605,7 @@ function addDocEntry(storeKey) {
 }
 
 function editDocMeta(storeKey, id) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   const arr = _getDocStoreArray(storeKey);
   const doc = arr.find(d => d.id === id);
   if (!doc) return;
@@ -4417,7 +4620,7 @@ function editDocMeta(storeKey, id) {
 }
 
 function deleteDocEntry(storeKey, id) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   if (!confirm(t3('Bu belge kaydını tamamen silmek istediğinizden emin misiniz?', 'Are you sure you want to permanently delete this document entry?', 'هل أنت متأكد أنك تريد حذف سجل هذا المستند نهائيًا؟'))) return;
   const arr = _getDocStoreArray(storeKey);
   const idx = arr.findIndex(d => d.id === id);
@@ -4429,7 +4632,7 @@ function deleteDocEntry(storeKey, id) {
 }
 
 function deleteDocFile(storeKey, id) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   const arr = _getDocStoreArray(storeKey);
   const doc = arr.find(d => d.id === id);
   if (!doc || !doc.photo) return;
@@ -4443,7 +4646,7 @@ function deleteDocFile(storeKey, id) {
 }
 
 function triggerDocUpload(storeKey, id) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   currentDocLibraryStore = storeKey;
   _docUploadTargetId = id;
   const input = document.getElementById('doc-file-input');
@@ -4455,7 +4658,7 @@ function triggerDocUpload(storeKey, id) {
 // Multiple file upload: EACH selected file is added as a SEPARATE document entry named after the
 // file — for adding several legal documents (licenses, certificates, permits, etc.) in one go.
 function triggerMultiDocUpload(storeKey) {
-  if (!roleGuard()) return;
+  if (!roleGuard('documents')) return;
   currentDocLibraryStore = storeKey;
   const input = document.getElementById('doc-multi-file-input');
   if (input) { input.value = ''; input.click(); }
@@ -4795,7 +4998,10 @@ function pdfViewerGoPage(delta) {
 }
 
 function deleteModalItem(id, type) {
-  if (!roleGuard()) return;
+  let scope;
+  if (type === 'q') { const q = auditQuestions.find(x => x.id === id); scope = q ? q.category : undefined; }
+  else { scope = 'cert'; }
+  if (!roleGuard(scope)) return;
   if (confirm(t3("Bu kaydı silmek istediğinizden emin misiniz?", "Are you sure you want to delete this record?", "هل أنت متأكد أنك تريد حذف هذا السجل؟"))) {
     if (type === 'q') {
       auditQuestions = auditQuestions.filter(q => q.id !== id);
@@ -5319,12 +5525,12 @@ function closeOverallSuccessDetail() { document.getElementById('overall-success-
 function closeOverallSuccessDetailBg(e) { if (e.target === document.getElementById('overall-success-modal')) closeOverallSuccessDetail(); }
 
 function changeQ(id, sel) {
-  if (!roleGuard()) return;
   const q = auditQuestions.find(x => x.id === id);
+  if (!roleGuard(q ? q.category : undefined)) return;
   if (q) { q.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); calcMetrics(); applyFilter(); }
 }
 function changeC(id, sel) {
-  if (!roleGuard()) return;
+  if (!roleGuard('cert')) return;
   const c = certificatesData.find(x => x.id === id);
   if (c) { c.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); calcMetrics(); applyFilter(); }
 }
@@ -5572,7 +5778,8 @@ function renderCustomerTable() {
 }
 
 function changeCustomerStatus(qid, sel) {
-  if (!roleGuard()) return;
+  const q = auditQuestions.find(x => x.id === qid);
+  if (!roleGuard(q ? q.category : undefined)) return;
   if (!customerStatuses[currentCustomerKey]) customerStatuses[currentCustomerKey] = {};
   customerStatuses[currentCustomerKey][qid] = sel.value;
   sel.className = 'status-sel ' + sel.value;
@@ -5830,7 +6037,7 @@ function renderCustomerAudits() {
 }
 
 function saveCustomerAudit() {
-  if (!roleGuard()) return;
+  if (!roleGuard('customer_audits')) return;
   const customerKey = document.getElementById('au-customer').value;
   const date = document.getElementById('au-date').value;
   const cat6 = parseInt(document.getElementById('au-cat6').value) || 0;
@@ -5854,13 +6061,13 @@ function saveCustomerAudit() {
 }
 
 function changeAuditCapStatus(id, sel) {
-  if (!roleGuard()) return;
+  if (!roleGuard('customer_audits')) return;
   const a = customerAudits.find(x => x.id === id);
   if (a) { a.capStatus = sel.value; sel.className = 'status-sel ' + (capStatusClass[sel.value] || 'critical'); save(); renderCustomerAudits(); }
 }
 
 function deleteCustomerAudit(id) {
-  if (!roleGuard()) return;
+  if (!roleGuard('customer_audits')) return;
   if (confirm(t3('Bu denetim kaydını silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this audit record?', 'هل أنت متأكد أنك تريد حذف سجل التدقيق هذا؟'))) {
     customerAudits = customerAudits.filter(a => a.id !== id);
     save();
@@ -5984,7 +6191,7 @@ function renderAuditFindingsTable() {
 }
 
 function changeFindingStatus(findingNo, sel) {
-  if (!roleGuard()) return;
+  if (!roleGuard('customer_audits')) return;
   const a = customerAudits.find(x => x.id === currentFindingsAuditId);
   if (!a || !Array.isArray(a.findings)) return;
   const f = a.findings.find(x => x.no === findingNo);
@@ -5996,7 +6203,7 @@ function changeFindingStatus(findingNo, sel) {
 }
 
 function saveFindingRow(findingNo, btn) {
-  if (!roleGuard()) return;
+  if (!roleGuard('customer_audits')) return;
   save();
   const originalHTML = btn.innerHTML;
   btn.innerHTML = '✓ Kaydedildi';

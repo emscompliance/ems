@@ -3159,12 +3159,15 @@ function save() {
 // AUTOMATIC / PERIODIC BACKUP (CRON-JOB-LIKE, CLIENT-SIDE)
 // Bu, sunucusuz tek dosyalık bir uygulama olduğundan gerçek bir sunucu cron job'ı çalıştırılamaz;
 // bunun yerine tarayıcı hafızasında dönüşümlü (rotasyonlu) otomatik yedekler tutulur: her kayıtta
-// ve ayrıca uygulama açıkken periyodik olarak (10 dakikada bir). Son 3 otomatik yedek saklanır. /
+// ve ayrıca uygulama açıkken periyodik olarak (5 dakikada bir). Son 30 otomatik yedek saklanır;
+// tarayıcı depolama kotası (localStorage, genelde ~5-10MB) dolarsa en eski yedekler otomatik olarak
+// silinip yazma tekrar denenir, böylece yeni bir yedek asla sessizce kaybolmaz. /
 // Since this is a serverless single-file app, a real server-side cron job cannot run here; instead,
 // rotating automatic backups are kept in browser storage: on every save, and also periodically
-// (every 10 minutes) while the app is open. The last 20 automatic backups are retained (raised to
-// the practical maximum given localStorage's ~5-10MB per-origin quota and this app's data size).
-const AUTO_BACKUP_MAX = 20;
+// (every 5 minutes) while the app is open. The last 30 automatic backups are retained; if the
+// browser storage quota (localStorage, typically ~5-10MB) is exceeded, the oldest backups are
+// automatically pruned and the write is retried, so a new backup is never silently lost.
+const AUTO_BACKUP_MAX = 30;
 
 function writeAutoBackup() {
   try {
@@ -3172,7 +3175,23 @@ function writeAutoBackup() {
     let manifest = manifestRaw ? JSON.parse(manifestRaw) : [];
     const key = 'ems_ab_' + Date.now();
     const snapshot = { savedAt: new Date().toISOString(), auditQuestions, certificatesData, customerStatuses, customerAudits, companyProfileDocs, legalDocumentsDocs };
-    localStorage.setItem(key, JSON.stringify(snapshot));
+    const snapshotJson = JSON.stringify(snapshot);
+    try {
+      localStorage.setItem(key, snapshotJson);
+    } catch (quotaErr) {
+      // ═══ EK KORUMA ═══ Depolama kotası dolduysa, en eski yedeklerin yarısını sil ve tekrar dene —
+      // böylece yeni yedek sessizce kaybolmak yerine eski (daha az değerli) yedeklerin yerini alır. /
+      // ═══ EXTRA PROTECTION ═══ If storage quota is full, delete the oldest half of backups and
+      // retry — so the new backup replaces old (less valuable) ones instead of silently being lost.
+      console.warn('Otomatik yedek deposu dolu, en eski yedekler siliniyor / Auto-backup storage full, pruning oldest backups:', quotaErr);
+      const pruneCount = Math.max(1, Math.ceil(manifest.length / 2));
+      for (let i = 0; i < pruneCount && manifest.length; i++) {
+        const oldKey = manifest.shift();
+        localStorage.removeItem(oldKey);
+      }
+      localStorage.setItem('ems_ab_manifest', JSON.stringify(manifest));
+      localStorage.setItem(key, snapshotJson);
+    }
     manifest.push(key);
     while (manifest.length > AUTO_BACKUP_MAX) {
       const oldKey = manifest.shift();
@@ -3180,18 +3199,18 @@ function writeAutoBackup() {
     }
     localStorage.setItem('ems_ab_manifest', JSON.stringify(manifest));
     // Geriye dönük uyumluluk için tekil anahtarı da güncelle / also keep the single-key copy for backward compatibility
-    localStorage.setItem('ems_autobackup', JSON.stringify(snapshot));
+    localStorage.setItem('ems_autobackup', snapshotJson);
   } catch(e) { console.error('Auto-backup error:', e); }
 }
 
-// Uygulama açık kalırken periyodik (10 dakikada bir) otomatik yedek tetiklenir /
-// Triggers a periodic automatic backup every 10 minutes while the app remains open
+// Uygulama açık kalırken periyodik (5 dakikada bir) otomatik yedek tetiklenir /
+// Triggers a periodic automatic backup every 5 minutes while the app remains open
 setInterval(() => {
   if (typeof auditQuestions !== 'undefined' && Array.isArray(auditQuestions) && auditQuestions.length) {
     writeAutoBackup();
     updateBackupInfo();
   }
-}, 10 * 60 * 1000);
+}, 5 * 60 * 1000);
 
 // Tarayıcıdaki son 20 dönüşümlü otomatik yedeği listeler ve herhangi birine geri dönmeye izin verir —
 // veri kaybı fark edildiğinde, kaybolmadan önceki bir ana geri dönmek için. /
@@ -3551,6 +3570,7 @@ function loadLocal() {
 // changes, every open browser updates instantly.
 let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false };
 let _cloudFirstRenderDone = false;
+let _anyCloudDocDefaulted = false; // Bu oturumda herhangi bir kritik belge boş/eksik görünüp varsayılana düştü mü? / Did any critical document appear empty/missing and fall back to defaults this session?
 
 function initCloudData(onReady) {
   const col = fbDb.collection('ems_csr');
@@ -3559,8 +3579,18 @@ function initCloudData(onReady) {
     if (snap.exists && Array.isArray(snap.data().auditQuestions) && snap.data().auditQuestions.length > 0) {
       auditQuestions = snap.data().auditQuestions;
     } else {
+      // ═══ KRİTİK GÜVENLİK DÜZELTMESİ ═══ Daha önce burada, belge boş/eksik görünüyorsa varsayılan
+      // veri OTOMATİK OLARAK buluta geri yazılıyordu. Bu, geçici bir okuma sorunu (örn. güvenlik
+      // kuralları henüz yayılıyorken) yaşandığında GERÇEK VERİNİN SESSİZCE SİLİNMESİNE yol açabilirdi.
+      // Artık varsayılan veri sadece EKRANDA gösterilir, buluta ASLA otomatik yazılmaz — gerçek veri
+      // hep olduğu gibi bulutta kalır. /
+      // ═══ CRITICAL SAFETY FIX ═══ This used to AUTOMATICALLY write default data back to the cloud
+      // whenever the document appeared empty/missing. That could SILENTLY WIPE OUT REAL DATA during
+      // a transient read issue (e.g. while security rules were still propagating). Defaults are now
+      // only shown ON SCREEN and are NEVER auto-written to the cloud — the real data stays untouched.
       auditQuestions = JSON.parse(JSON.stringify(defaultAuditQuestions));
-      if (currentUserRole === 'admin') col.doc('questions').set({ auditQuestions, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ADMIN_EMAIL });
+      _anyCloudDocDefaulted = true;
+      console.warn('UYARI: Firestore icindeki "questions" belgesi bos/eksik gorunuyor - varsayilan veri sadece goruntuleniyor, buluta YAZILMADI. / WARNING: the "questions" document appears empty/missing in Firestore - defaults are only being displayed, NOT written to the cloud.');
     }
     _cloudDocsLoaded.questions = true;
     _onCloudDocChange(onReady);
@@ -3571,7 +3601,8 @@ function initCloudData(onReady) {
       certificatesData = snap.data().certificatesData;
     } else {
       certificatesData = JSON.parse(JSON.stringify(defaultCertificatesData));
-      if (currentUserRole === 'admin') col.doc('certificates').set({ certificatesData, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ADMIN_EMAIL });
+      _anyCloudDocDefaulted = true;
+      console.warn('UYARI: Firestore icindeki "certificates" belgesi bos/eksik gorunuyor - varsayilan veri sadece goruntuleniyor, buluta YAZILMADI. / WARNING: the "certificates" document appears empty/missing in Firestore - defaults are only being displayed, NOT written to the cloud.');
     }
     _cloudDocsLoaded.certificates = true;
     _onCloudDocChange(onReady);
@@ -3588,7 +3619,8 @@ function initCloudData(onReady) {
       customerAudits = snap.data().customerAudits;
     } else {
       customerAudits = JSON.parse(JSON.stringify(defaultCustomerAudits));
-      if (currentUserRole === 'admin') col.doc('customerAudits').set({ customerAudits, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: ADMIN_EMAIL });
+      _anyCloudDocDefaulted = true;
+      console.warn('UYARI: Firestore icindeki "customerAudits" belgesi bos/eksik gorunuyor - varsayilan veri sadece goruntuleniyor, buluta YAZILMADI. / WARNING: the "customerAudits" document appears empty/missing in Firestore - defaults are only being displayed, NOT written to the cloud.');
     }
     _cloudDocsLoaded.customerAudits = true;
     _onCloudDocChange(onReady);
@@ -3609,9 +3641,14 @@ function initCloudData(onReady) {
 
 function _onCloudDocChange(onReady) {
   const addedCount = postProcessData();
-  // İlk kez (admin tarafında) eksik varsayılanlar tespit edildiyse buluta geri yaz /
-  // If missing defaults were detected (on the admin's side), persist the merge back to the cloud
-  if (addedCount > 0 && currentUserRole === 'admin') save();
+  // İlk kez (admin tarafında) eksik varsayılanlar tespit edildiyse buluta geri yaz — ANCAK bu oturumda
+  // herhangi bir kritik belge (questions/certificates/customerAudits) boş/eksik görünüp yerel varsayılana
+  // düştüyse ASLA otomatik kaydetme — bu, geçici bir okuma sorununu kalıcı veri kaybına çevirebilir. /
+  // If missing defaults were detected (on the admin's side), persist the merge back to the cloud —
+  // BUT if any critical document (questions/certificates/customerAudits) appeared empty/missing and
+  // fell back to local defaults this session, NEVER auto-save — that would turn a transient read
+  // issue into permanent data loss.
+  if (addedCount > 0 && currentUserRole === 'admin' && !_anyCloudDocDefaulted) save();
 
   if (!_cloudFirstRenderDone && Object.values(_cloudDocsLoaded).every(Boolean)) {
     _cloudFirstRenderDone = true;
@@ -7036,4 +7073,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 </body>
 </html>
-

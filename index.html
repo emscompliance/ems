@@ -539,7 +539,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
 
 /* Sticky floating FAB (pure icon-only navigation) */
 .sticky-home-fab {
-  position: fixed; bottom: 24px; right: 20px; width: 56px; height: 56px;
+  position: absolute; bottom: 24px; right: 20px; width: 56px; height: 56px;
   border-radius: 50%; background: var(--primary); color: #fff; border: none;
   box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4); cursor: pointer; display: flex;
   align-items: center; justify-content: center; z-index: 40;
@@ -3120,7 +3120,17 @@ let currentModalStatusFilter = 'all';
 // ═══════════════════════════════════════════════════════════════════════════
 function save() {
   if (FIREBASE_ENABLED && fbDb) {
-    if (currentUserRole !== 'admin') return; // Sadece admin buluta yazabilir / only admin writes to the cloud
+    // ═══ DÜZELTİLDİ ═══ Önceden burada SADECE admin buluta yazabiliyordu — bu, departman bazlı
+    // yetkilendirme sistemini tamamen etkisiz kılıyordu: bir departman kullanıcısı roleGuard()'ı
+    // geçip yerel ekranında değişikliği görse bile, save() burada sessizce hiçbir şey yazmadan geri
+    // dönüyordu, yani değişiklik ASLA kalıcı olmuyordu. Artık en az bir departmana yetkili olan
+    // kullanıcılar da kaydedebiliyor. /
+    // ═══ FIXED ═══ This used to let ONLY admin write to the cloud — which completely neutered the
+    // department-based permission system: a department user could pass roleGuard() and see the
+    // change on their own screen, but save() would then silently return here without writing
+    // anything, so the change was NEVER actually persisted. Now users with at least one assigned
+    // department can save too.
+    if (currentUserRole !== 'admin' && currentUserDepartments.length === 0) return;
     // ═══ KRİTİK GÜVENLİK KONTROLÜ ═══ Bulut verisi tam olarak yüklenmeden save() ASLA çalıştırılmaz —
     // aksi halde hafızadaki henüz senkronize olmamış (varsayılan/eski) veri, buluttaki GERÇEK veriyi
     // sessizce silip üzerine yazabilir (örn. bir müşterinin gerçek ilerleme kaydı kaybolabilir). /
@@ -3813,7 +3823,11 @@ function applyRolePermissions() {
 function loadUserDepartmentProfile(uid, email) {
   if (!fbDb) { currentUserDepartments = []; currentUserName = email; applyRolePermissions(); return; }
   const ref = fbDb.collection('users').doc(uid);
-  ref.get().then(snap => {
+  // Canlı dinleyici kullanılır — böylece yönetici yetki atadığı anda, kullanıcı yeniden giriş
+  // yapmadan bile yeni yetkileri devreye girer. /
+  // Uses a live listener — so the moment the admin assigns departments, the new permissions take
+  // effect for the user even without them logging out and back in.
+  ref.onSnapshot(snap => {
     if (snap.exists) {
       const data = snap.data() || {};
       currentUserDepartments = Array.isArray(data.departments) ? data.departments : [];
@@ -3827,7 +3841,7 @@ function loadUserDepartmentProfile(uid, email) {
       currentUserPending = true;
     }
     applyRolePermissions();
-  }).catch(e => {
+  }, e => {
     console.error('Kullanıcı profili okuma hatası / User profile read error:', e);
     currentUserDepartments = [];
     currentUserName = email;

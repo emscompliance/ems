@@ -233,15 +233,24 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .search-wrap svg { color: var(--muted); width:18px; height:18px; stroke-width: 2; flex-shrink:0; }
 .search-wrap input { flex:1; border:none; outline:none; font-size:16px; color:var(--text); min-width:0; background:transparent; }
 
-/* ═══ GÖRÜNTÜLEYİCİ MODU / VIEWER MODE (standart kullanıcı salt-okunur) ═══ */
-.viewer-mode .btn-del,
-.viewer-mode .btn-save,
-.viewer-mode .btn-add-question,
-.viewer-mode .btn-add-cert,
-.viewer-mode .btn-add-audit,
-.viewer-mode .btn-edit { display: none !important; }
-.viewer-mode select { pointer-events: none !important; opacity: 0.65; background-image: none !important; }
-.viewer-mode input[type="file"] { display: none !important; }
+/* ═══ GÖRÜNTÜLEYİCİ MODU / VIEWER MODE (hiçbir departmana yetkisi olmayan kullanıcı, salt-okunur) ═══ */
+/* ═══ KRİTİK DÜZELTME ═══ Bu kurallar önceden .viewer-mode'a (yani admin OLMAYAN HERKESE, departman
+   yetkisi olan kullanıcılar dahil) bağlıydı — bu, tüm durum açılır menülerini ve kaydet/sil/ekle
+   butonlarını departman kullanıcıları için de tamamen devre dışı bırakıyor, departman yetkilendirme
+   sistemini komple etkisiz kılıyordu. Artık sadece HİÇBİR departmana yetkisi olmayan (gerçek salt-okunur
+   görüntüleyici) kullanıcılar için geçerli. /
+   ═══ CRITICAL FIX ═══ These rules used to key off .viewer-mode (i.e. ANYONE who isn't admin,
+   including department-scoped users) — completely disabling all status dropdowns and save/delete/add
+   buttons for department users too, fully neutering the department permission system. Now they only
+   apply to users with NO department access at all (genuine read-only viewers). */
+.no-edit-access .btn-del,
+.no-edit-access .btn-save,
+.no-edit-access .btn-add-question,
+.no-edit-access .btn-add-cert,
+.no-edit-access .btn-add-audit,
+.no-edit-access .btn-edit { display: none !important; }
+.no-edit-access select { pointer-events: none !important; opacity: 0.65; background-image: none !important; }
+.no-edit-access input[type="file"] { display: none !important; }
 .viewer-mode .editor-only-el { display: none !important; }
 .btn-search-trigger {
   background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 8px;
@@ -539,14 +548,16 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
 
 /* Sticky floating FAB (pure icon-only navigation) */
 .sticky-home-fab {
-  position: fixed; bottom: 24px; right: 20px; width: 56px; height: 56px;
-  border-radius: 50%; background: var(--primary); color: #fff; border: none;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4); cursor: pointer; display: flex;
-  align-items: center; justify-content: center; z-index: 40;
-  transition: transform 0.2s, background 0.2s;
+  position: fixed; bottom: 24px; right: 20px; width: 48px; height: 48px;
+  border-radius: 50%; background: #EA580C; color: #fff; border: none;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4); cursor: pointer; display: flex;
+  align-items: center; justify-content: center; z-index: 50;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.2s, background 0.2s;
 }
-.sticky-home-fab:hover { transform: scale(1.05); background: var(--primary-d); }
-.sticky-home-fab svg { width: 24px; height: 24px; stroke-width: 2.5; }
+.sticky-home-fab.visible { opacity: 1; pointer-events: auto; }
+.sticky-home-fab svg { width: 20px; height: 20px; stroke-width: 2.5; }
+.sticky-home-fab:hover { transform: scale(1.05); background: #C2410C; }
 
 /* Bottom Mobile Navigation */
 .mobile-nav-bar {
@@ -573,7 +584,8 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
 @media (max-width: 900px) {
   body { padding-bottom: 170px; }
   .mobile-nav-bar { display: flex; }
-  .sticky-home-fab { bottom: 84px; }
+  .sticky-home-fab { bottom: 84px; right: 16px; width: 44px; height: 44px; }
+  .sticky-home-fab svg { width: 20px; height: 20px; }
 }
 
 @media (max-width: 768px) {
@@ -643,7 +655,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
 
 <!-- Sticky Home FAB Button (Pure icon navigation) -->
 <button class="sticky-home-fab" onclick="goHome()" data-i18n-attr="title:btn_back" title="Dön / Back">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
 </button>
 
 <div id="view-welcome" class="welcome-screen">
@@ -3841,6 +3853,7 @@ function applyRolePermissions() {
   const isAdmin = currentUserRole === 'admin';
   document.querySelectorAll('.admin-only-el').forEach(el => { el.style.display = isAdmin ? '' : 'none'; });
   document.body.classList.toggle('viewer-mode', !isAdmin);
+  document.body.classList.toggle('no-edit-access', !isAdmin && currentUserDepartments.length === 0);
   const nameEl = document.querySelector('.side-user-name');
   const roleEl = document.querySelector('.side-user-role');
   if (nameEl && currentUserName) nameEl.innerText = currentUserName;
@@ -7208,6 +7221,27 @@ document.addEventListener('DOMContentLoaded', function() {
   calcMetrics();
   applyFilter();
 });
+
+// ═══ SABİT ANASAYFA BUTONU — SADECE KAYDIRDIKTAN SONRA GÖRÜNÜR ═══
+// Referans alınan çalışan bir siteden uyarlandı: buton normalde tamamen görünmez ve tıklanamaz
+// durumda (opacity:0 + pointer-events:none), sayfa 300px'den fazla kaydırıldığında görünür hale
+// gelir. Bu, butonun sayfanın en üstündeki kartlarla ASLA çakışmamasını sağlar — çünkü kartların
+// bulunduğu üst bölgede buton zaten görünmez durumdadır. /
+// ═══ FIXED HOME BUTTON — ONLY VISIBLE AFTER SCROLLING ═══
+// Adapted from a working reference site: the button starts completely invisible and unclickable
+// (opacity:0 + pointer-events:none), and becomes visible once the page is scrolled down more than
+// 300px. This guarantees it never overlaps the cards at the top of the page — since it's already
+// invisible in that region.
+(function () {
+  const btn = document.querySelector('.sticky-home-fab');
+  if (!btn) return;
+  function updateVisibility() {
+    const scrolled = document.body.scrollTop || document.documentElement.scrollTop;
+    btn.classList.toggle('visible', scrolled > 300);
+  }
+  window.addEventListener('scroll', updateVisibility);
+  updateVisibility();
+})();
 </script>
 
 <!-- Müşteriye Özel Bulgu Grafiği Modalı — 443 soruluk uyumluluk panosundan bağımsızdır /

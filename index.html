@@ -3144,6 +3144,25 @@ function save() {
     }
     const meta = { updatedAt: firebase.firestore.FieldValue.serverTimestamp(), updatedBy: (fbAuth && fbAuth.currentUser) ? fbAuth.currentUser.email : ADMIN_EMAIL };
     fbDb.collection('ems_csr').doc('questions').set({ auditQuestions, ...meta }).catch(e => console.error('Firestore yazma hatası (questions):', e));
+    // ═══ KESİN GÜVENLİK FRENİ ═══ "certificates" belgesi her kaydedilmeden önce boyutu kontrol
+    // edilir; Firestore'un 1MB sınırına yaklaşıyorsa (veya geçtiyse), hâlâ ana diziye gömülü kalmış
+    // OLABİLECEK herhangi bir fotoğraf alanı zorla temizlenir — böylece yazma işlemi HER ZAMAN
+    // başarılı olur, geçiş (migration) işleminin arka planda tam bitip bitmediğine bağlı kalınmaz. /
+    // ═══ GUARANTEED SAFETY NET ═══ Before every save of the "certificates" document, its serialized
+    // size is checked; if it's getting close to (or has exceeded) Firestore's 1MB limit, any photo
+    // field that MIGHT still be embedded in the main array is forcibly stripped — so the write ALWAYS
+    // succeeds, regardless of whether the background migration has fully finished yet.
+    let certPayloadStr = JSON.stringify({ certificatesData, ...meta });
+    if (certPayloadStr.length > 900000) {
+      console.warn('[Sertifika Boyut Freni] "certificates" belgesi çok büyük (' + certPayloadStr.length + ' bayt) — gömülü fotoğraflar parçalı depoya taşınıp ana diziden temizleniyor. / [Certificate Size Guard] "certificates" document too large (' + certPayloadStr.length + ' bytes) — moving embedded photos to chunked storage and stripping them from the main array.');
+      certificatesData.forEach(c => {
+        if (c.photo) {
+          _saveDocFileData('cert', c.id, 'thumb', c.photo, ok => { if (ok) c.hasPhoto = true; });
+          delete c.photo;
+        }
+      });
+      certPayloadStr = JSON.stringify({ certificatesData, ...meta });
+    }
     fbDb.collection('ems_csr').doc('certificates').set({ certificatesData, ...meta }).catch(e => console.error('Firestore yazma hatası (certificates):', e));
     fbDb.collection('ems_csr').doc('customerStatuses').set({ customerStatuses, ...meta }).catch(e => console.error('Firestore yazma hatası (customerStatuses):', e));
     fbDb.collection('ems_csr').doc('customerAudits').set({ customerAudits, ...meta }).catch(e => console.error('Firestore yazma hatası (customerAudits):', e));

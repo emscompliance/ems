@@ -3662,6 +3662,7 @@ function _onCloudDocChange(onReady) {
 
   if (!_cloudFirstRenderDone && Object.values(_cloudDocsLoaded).every(Boolean)) {
     _cloudFirstRenderDone = true;
+    migrateCertPhotosToChunkedStorage();
     if (onReady) onReady();
   } else if (_cloudFirstRenderDone) {
     // Sonraki her canlı güncellemede ekranı tazele / refresh the screen on every subsequent live update
@@ -4385,10 +4386,11 @@ function openDetailModal(type, value, catFilter, statusFilter) {
         // Sertifika fotoğrafı: küçük önizleme (tıklayınca büyük görünüm açılır) veya yükleme butonu /
         // Certificate photo: small preview (click to open full view) or an upload button
         const certObj = certificatesData.find(c => c.id === item.id);
-        if (certObj && certObj.photo) {
+        if (certObj && (certObj.hasPhoto || certObj.photo)) {
+          const _thumbSrc = certObj.photo || ''; // Eski (gömülü) veri varsa hemen göster; yoksa aşağıda tembel yüklenir / show immediately if legacy embedded data exists; otherwise lazy-loaded below
           relatedCustomersHtml = `
             <div style="display:flex; align-items:center; gap:6px;">
-              <img src="${certObj.photo}" onclick="openDocLightbox('cert', ${item.id})" title="${certObj.hasFullPdf ? t3('Çok sayfalı PDF belgesini görüntülemek için tıklayın', 'Click to view the full multi-page PDF', 'انقر لعرض ملف PDF متعدد الصفحات') : t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12);">
+              <img id="cert-thumb-${item.id}" src="${_thumbSrc}" onclick="openDocLightbox('cert', ${item.id})" title="${certObj.hasFullPdf ? t3('Çok sayfalı PDF belgesini görüntülemek için tıklayın', 'Click to view the full multi-page PDF', 'انقر لعرض ملف PDF متعدد الصفحات') : t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12); background:#eef0f4;">
               ${certObj.hasFullPdf ? `<span style="font-size:9px; font-weight:800; background:var(--primary); color:#fff; padding:2px 5px; border-radius:5px;">📄 ${t3('Çok Sayfalı', 'Multi-page', 'متعدد الصفحات')}</span>` : ''}
               <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -4448,6 +4450,21 @@ function openDetailModal(type, value, catFilter, statusFilter) {
   tbody.innerHTML = tbodyHtml;
   modal.classList.add('open');
   applyScopedElementVisibility(modal);
+  // Parçalı depoda saklanan sertifika küçük resimlerini tembel (lazy) olarak yükle — bu resimler artık
+  // ana veri dizisinin İÇİNDE değil, ayrı küçük dokümanlarda tutuluyor (Firestore 1MB doküman sınırını
+  // aşmamak için). /
+  // Lazy-load certificate thumbnails from chunked storage — these are no longer embedded INSIDE the
+  // main data array, but kept in separate small documents (to stay under Firestore's 1MB document limit).
+  if (type === 'category' && value === 'cert') {
+    certificatesData.forEach(c => {
+      if (c.hasPhoto && !c.photo) {
+        _loadDocFileData('cert', c.id, 'thumb', dataUrl => {
+          const el = document.getElementById('cert-thumb-' + c.id);
+          if (el && dataUrl) el.src = dataUrl;
+        });
+      }
+    });
+  }
 }
 
 function saveQuestionModal(cat) {
@@ -4617,48 +4634,54 @@ function handleCertPhotoFileChange(event) {
           console.log('[Sertifika Yükleme] Önizleme oluşturuldu, kaydediliyor / Preview generated, saving...');
           const cert = certificatesData.find(c => c.id === certId);
           if (!cert) { console.error('[Sertifika Yükleme] Sertifika bulunamadı, id:', certId); alert(t3('Sertifika bulunamadı. Sayfa yenilenip tekrar denenecek.', 'Certificate not found. The page will refresh and you can try again.', 'لم يتم العثور على الشهادة. سيتم تحديث الصفحة للمحاولة مرة أخرى.')); openDetailModal('category', 'cert'); return; }
-          cert.photo = dataUrl;
+
+          // ═══ KRİTİK DÜZELTME ═══ Önizleme artık ana diziye GÖMÜLMÜYOR — bunun yerine tam PDF'lerle
+          // AYNI parçalı depoya kaydediliyor. Gömme yöntemi, sertifika sayısı arttıkça "certificates"
+          // belgesinin Firestore'un 1MB doküman sınırını aşmasına ve TÜM sertifika kayıtlarının
+          // başarısız olmasına yol açıyordu. /
+          // ═══ CRITICAL FIX ═══ The preview is no longer embedded in the main array — instead it's
+          // saved in the SAME chunked storage as full PDFs. Embedding used to make the "certificates"
+          // document exceed Firestore's 1MB document limit as more certificates were added, causing
+          // ALL certificate saves to fail.
           cert.mediaType = isPdf ? 'pdf' : 'image';
+          delete cert.photo; // eski gömülü alan varsa temizle / clear the old embedded field if present
+          console.log('[Sertifika Yükleme] Küçük önizleme parçalı depoya yazılıyor / Writing small preview to chunked storage...');
+          _saveDocFileData('cert', certId, 'thumb', dataUrl, thumbOk => {
+            cert.hasPhoto = !!thumbOk;
+            if (!thumbOk) console.error('[Sertifika Yükleme] Önizleme depolama başarısız / Preview storage failed');
 
-          // Küçük önizleme HER ZAMAN hemen kaydedilir — tam PDF depolaması (varsa) buna ek, engelleyici
-          // olmayan ikinci bir adımdır. Böylece tam PDF saklama başarısız olsa bile en azından önizleme
-          // kalıcı olur. /
-          // The small preview is ALWAYS saved immediately — full-PDF storage (if applicable) is an
-          // additional, NON-BLOCKING second step. So even if full-PDF storage fails, the preview is
-          // still persisted.
-          if (!isPdf) { delete cert.hasFullPdf; _deleteDocFileData('cert', certId, 'pdf'); }
-          else if (file.size > MAX_FULL_PDF_BYTES) { delete cert.hasFullPdf; }
+            const finishUp = () => {
+              save();
+              console.log('[Sertifika Yükleme] Kaydedildi / Saved');
+              openDetailModal('category', 'cert');
+            };
 
-          save();
-          console.log('[Sertifika Yükleme] Önizleme kaydedildi / Preview saved');
-          openDetailModal('category', 'cert');
-
-          if (isPdf && file.size > MAX_FULL_PDF_BYTES) {
-            alert(t3(
-              `PDF dosyası çok büyük olduğu için tüm sayfalar saklanamadı (sadece ilk sayfa önizlemesi kaydedildi). PDF dosyalarının ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB altında olması önerilir.`,
-              `The PDF is too large to store all pages (only the first-page preview was saved). PDF files should be under ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB.`,
-              `الملف كبير جدًا لتخزين جميع الصفحات (تم حفظ معاينة الصفحة الأولى فقط). يجب أن تكون ملفات PDF أقل من ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} ميغابايت.`
-            ));
-          } else if (isPdf && file.size <= MAX_FULL_PDF_BYTES) {
-            // Tam PDF'i ayrıca (engelleyici olmayan şekilde) sakla / additionally (non-blockingly) store the full PDF
+            if (!isPdf) { delete cert.hasFullPdf; _deleteDocFileData('cert', certId, 'pdf'); finishUp(); return; }
+            if (file.size > MAX_FULL_PDF_BYTES) {
+              delete cert.hasFullPdf;
+              finishUp();
+              alert(t3(
+                `PDF dosyası çok büyük olduğu için tüm sayfalar saklanamadı (sadece ilk sayfa önizlemesi kaydedildi). PDF dosyalarının ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB altında olması önerilir.`,
+                `The PDF is too large to store all pages (only the first-page preview was saved). PDF files should be under ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB.`,
+                `الملف كبير جدًا لتخزين جميع الصفحات (تم حفظ معاينة الصفحة الأولى فقط). يجب أن تكون ملفات PDF أقل من ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} ميغابايت.`
+              ));
+              return;
+            }
+            // Tam PDF'i ayrıca sakla / additionally store the full PDF
             const reader = new FileReader();
             reader.onload = e => {
               try {
                 console.log('[Sertifika Yükleme] Tam PDF okundu, depolanıyor / Full PDF read, storing...');
                 _saveDocFileData('cert', certId, 'pdf', e.target.result, ok => {
-                  const c2 = certificatesData.find(c => c.id === certId);
-                  if (c2) {
-                    c2.hasFullPdf = !!ok;
-                    if (!ok) console.error('[Sertifika Yükleme] Tam PDF depolama başarısız (önizleme yine de korunuyor) / Full PDF storage failed (preview is still kept)');
-                    save();
-                    openDetailModal('category', 'cert');
-                  }
+                  cert.hasFullPdf = !!ok;
+                  if (!ok) console.error('[Sertifika Yükleme] Tam PDF depolama başarısız (önizleme yine de korunuyor) / Full PDF storage failed (preview is still kept)');
+                  finishUp();
                 });
-              } catch (e2) { console.error('[Sertifika Yükleme] Tam PDF işleme hatası / Full PDF processing error:', e2); }
+              } catch (e2) { console.error('[Sertifika Yükleme] Tam PDF işleme hatası / Full PDF processing error:', e2); finishUp(); }
             };
-            reader.onerror = () => console.error('[Sertifika Yükleme] Dosya okuma hatası (tam PDF) / File read error (full PDF)');
+            reader.onerror = () => { console.error('[Sertifika Yükleme] Dosya okuma hatası (tam PDF) / File read error (full PDF)'); finishUp(); };
             reader.readAsDataURL(file);
-          }
+          });
         } catch (e3) {
           console.error('[Sertifika Yükleme] Kaydetme hatası / Save error:', e3);
           alert(t3('Kaydederken bir hata oluştu: ', 'An error occurred while saving: ', 'حدث خطأ أثناء الحفظ: ') + e3.message);
@@ -4682,9 +4705,11 @@ function deleteCertPhoto(certId) {
   try {
     if (!roleGuard('cert')) return;
     const cert = certificatesData.find(c => c.id === certId);
-    if (!cert || !cert.photo) return;
+    if (!cert || !(cert.hasPhoto || cert.photo)) return;
     if (!confirm(t3('Bu sertifika fotoğrafını silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this certificate photo?', 'هل أنت متأكد أنك تريد حذف صورة هذه الشهادة؟'))) return;
     delete cert.photo;
+    if (cert.hasPhoto) _deleteDocFileData('cert', certId, 'thumb');
+    delete cert.hasPhoto;
     if (cert.hasFullPdf) _deleteDocFileData('cert', certId, 'pdf');
     delete cert.hasFullPdf;
     delete cert.mediaType;
@@ -4896,6 +4921,40 @@ const FS_CHUNK_SIZE = 700000;
 // to chunked Firestore documents when Firebase is enabled (see above), or directly to a localStorage
 // key otherwise (no chunking needed there, browser quota is already generous).
 function _docFileBaseKey(storeKey, id, kind) { return storeKey + '_' + kind + '_' + id; }
+
+let _certPhotoMigrationDone = false;
+// ═══ KRİTİK VERİ TAŞIMA ═══ Sertifika fotoğrafları önceden doğrudan "certificates" Firestore
+// belgesinin İÇİNE gömülüyordu. Sertifika sayısı arttıkça bu belge Firestore'un SERT 1MB doküman
+// sınırını aştı — bu yüzden HİÇBİR sertifika değişikliği (yeni fotoğraf dahil) artık kaydedilemiyordu
+// ("Document ... exceeds the maximum allowed size of 1,048,576 bytes" hatası). Bu fonksiyon, halihazırda
+// gömülü olan tüm fotoğrafları tam PDF'lerle AYNI parçalı depoya taşır ve ana diziden çıkarır — böylece
+// ana belge küçülür ve tekrar yazılabilir hale gelir. /
+// ═══ CRITICAL DATA MIGRATION ═══ Certificate photos used to be embedded DIRECTLY INSIDE the
+// "certificates" Firestore document. As the number of certificates grew, this document exceeded
+// Firestore's HARD 1MB per-document limit — meaning NO certificate change (including new photos)
+// could be saved anymore ("Document ... exceeds the maximum allowed size of 1,048,576 bytes" error).
+// This function moves any already-embedded photos into the SAME chunked storage used for full PDFs,
+// removing them from the main array — shrinking the main document back to a writable size.
+function migrateCertPhotosToChunkedStorage() {
+  if (_certPhotoMigrationDone || !FIREBASE_ENABLED || !fbDb) return;
+  const toMigrate = certificatesData.filter(c => c.photo && typeof c.photo === 'string' && c.photo.startsWith('data:'));
+  if (toMigrate.length === 0) { _certPhotoMigrationDone = true; return; }
+  console.warn('[Sertifika Veri Taşıma] ' + toMigrate.length + ' gömülü fotoğraf parçalı depoya taşınıyor / Migrating ' + toMigrate.length + ' embedded photo(s) to chunked storage...');
+  let remaining = toMigrate.length;
+  toMigrate.forEach(cert => {
+    const photoData = cert.photo;
+    _saveDocFileData('cert', cert.id, 'thumb', photoData, ok => {
+      if (ok) { cert.hasPhoto = true; delete cert.photo; }
+      remaining--;
+      if (remaining === 0) {
+        _certPhotoMigrationDone = true;
+        save();
+        console.warn('[Sertifika Veri Taşıma] Tamamlandı, ana belge küçültülüp kaydedildi / Migration complete, main document shrunk and saved.');
+        openDetailModal('category', 'cert');
+      }
+    });
+  });
+}
 
 function _saveDocFileData(storeKey, id, kind, dataUrl, onDone) {
   if (FIREBASE_ENABLED && fbDb) {
@@ -5110,7 +5169,7 @@ function openDocLightbox(storeKey, id) {
     });
     return;
   }
-  if (!doc.photo) return;
+  if (!doc.photo && !doc.hasPhoto) return;
 
   const imgEl = document.getElementById('cert-photo-lightbox-img');
   const containerEl = document.getElementById('cert-photo-lightbox-container');
@@ -5126,10 +5185,18 @@ function openDocLightbox(storeKey, id) {
     if (containerEl) containerEl.style.width = w + 'px';
   }
   imgEl.onload = fitToImage;
-  imgEl.src = doc.photo;
-  if (imgEl.complete) fitToImage();
   document.getElementById('cert-photo-lightbox-title').innerText = doc.name || t3('Belge', 'Document', 'مستند');
   document.getElementById('cert-photo-lightbox').classList.add('open');
+  if (doc.photo) {
+    imgEl.src = doc.photo;
+    if (imgEl.complete) fitToImage();
+  } else {
+    // Önizleme ana diziye gömülü değil — parçalı depodan yükle / preview isn't embedded — load it from chunked storage
+    imgEl.src = '';
+    _loadDocFileData(storeKey, id, 'thumb', thumbData => {
+      if (thumbData) imgEl.src = thumbData;
+    });
+  }
 }
 
 function closeDocViewer() { document.getElementById('doc-viewer-modal').classList.remove('open'); }

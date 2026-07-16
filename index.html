@@ -182,7 +182,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .dept-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: #FF0000; letter-spacing: 2px; text-transform: uppercase; }
 .topbar-title h1 { font-size: 19px; font-weight: 850; color: var(--text); }
 .topbar-title p { font-size: 14.5px; color: var(--muted); margin-top: 5px; font-weight: 600; }
-.topbar .search-wrap { align-self: flex-end; flex: none; width: 300px; max-width: 100%; margin-bottom: 0; }
+.topbar .search-wrap { align-self: flex-end; flex: none; width: 600px; max-width: 100%; margin-bottom: 0; }
 
 .page-section-title { font-size: 13.5px; font-weight: 800; color: var(--text); margin: 26px 0 12px 0; text-transform: uppercase; letter-spacing: 0.06em; display:flex; align-items:center; gap:8px; }
 .page-section-title .see-all { margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: none; letter-spacing: 0; cursor: pointer; }
@@ -229,7 +229,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .btn-pptx:hover { background: var(--primary-d); }
 .btn-pptx svg { width:18px; height:18px; stroke-width:2; flex-shrink:0; }
 
-.search-wrap { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 8px 12px; display: flex; gap: 10px; align-items: center; margin-bottom: 20px; box-shadow: var(--shadow); }
+.search-wrap { background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 5px 12px; display: flex; gap: 10px; align-items: center; margin-bottom: 20px; box-shadow: var(--shadow); }
 .search-wrap svg { color: var(--muted); width:18px; height:18px; stroke-width: 2; flex-shrink:0; }
 .search-wrap input { flex:1; border:none; outline:none; font-size:16px; color:var(--text); min-width:0; background:transparent; }
 
@@ -747,13 +747,17 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">🧯</span>
         <span data-i18n="nav_cd">Sivil Savunma / Civil Defence</span>
       </button>
+      <button class="side-nav-item" onclick="openDepartmentsHub()">
+        <span class="nav-emoji">🏭</span>
+        <span data-i18n="nav_departments">Departmanlar / Departments</span>
+      </button>
       <button class="side-nav-item" onclick="openDetailModal('status','all')">
         <span class="nav-emoji">📋</span>
         <span data-i18n="nav_all_questions">Tüm Sorular / All Questions</span>
       </button>
       <button class="side-nav-item" onclick="exportReportPDF()">
         <span class="nav-emoji">📊</span>
-        <span data-i18n="nav_export_report">Rapor İndir / Export Report</span>
+        <span data-i18n="nav_export_report">Genel Rapor İndir / Download General Report</span>
       </button>
       <button class="side-nav-item admin-only-el" onclick="openUserManagement()" style="display:none;">
         <span class="nav-emoji">👥</span>
@@ -767,12 +771,9 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">📤</span>
         <span data-i18n="nav_restore">Geri Yükle / Restore Data</span>
       </button>
-      <button class="side-nav-item admin-only-el" onclick="openBackupHistory()" style="display:none;">
-        <span class="nav-emoji">🕘</span>
-        <span data-i18n="nav_backup_history">Geçmiş Yedekler / Backup History</span>
-      </button>
       <input type="file" id="restore-file-input" accept=".json" style="display:none;" onchange="importBackup(event)">
       <input type="file" id="cert-photo-file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleCertPhotoFileChange(event)">
+      <input type="file" id="dept-item-photo-file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleDeptItemPhotoFileChange(event)">
       <input type="file" id="doc-file-input" accept="image/*,application/pdf,video/*" style="display:none;" onchange="handleDocFileChange(event)">
       <input type="file" id="doc-multi-file-input" accept="image/*,application/pdf,video/*" multiple style="display:none;" onchange="handleMultiDocFileChange(event)">
       <div class="side-backup-info admin-only-el" id="side-backup-info" style="display:none;"></div>
@@ -984,8 +985,8 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     </div>
     <div class="modal-body">
       <div style="font-size:12.5px; color:var(--muted); margin-bottom:14px; line-height:1.5;">
-        Bu tarayıcıda otomatik olarak alınmış son 20 yedek burada listelenir (her kayıtta ve her 10 dakikada bir alınır). Bir veri kaybı fark ederseniz, kaybolmadan önceki bir yedeği seçip geri yükleyebilirsiniz. Bu işlem geri alınamaz.<br>
-        The last 20 automatic backups taken in this browser are listed here (one is taken on every save, and every 10 minutes). If you notice data loss, pick a backup from before it happened and restore it. This action cannot be undone.
+        Bu tarayıcıda otomatik olarak alınmış son 30 yedek burada listelenir. Bir veri kaybı fark ederseniz, kaybolmadan önceki bir yedeği seçip geri yükleyebilirsiniz. Bu işlem geri alınamaz.<br>
+        The last 30 automatic backups taken in this browser are listed here. If you notice data loss, pick a backup from before it happened and restore it. This action cannot be undone.
       </div>
       <div id="backup-history-list" style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow-y:auto;"></div>
     </div>
@@ -1017,7 +1018,76 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
   </div>
 </div>
 
-<!-- MÜŞTERİ DASHBOARD & KRİTER MODALI / CUSTOMER DASHBOARD & CRITERIA MODAL -->
+<!-- ÜRETİM DEPARTMANLARI MERKEZİ / PRODUCTION DEPARTMENTS HUB (sitenin geri kalanından bağımsız) -->
+<div id="departments-hub-modal" class="modal-overlay" onclick="closeDepartmentsHubBg(event)">
+  <div class="modal-container" style="max-width:min(1300px, 97vw);" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">🏭 Departmanlar / Departments</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="goHome()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeDepartmentsHub()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:18px; line-height:1.5;">
+        Her üretim departmanının kendi checklist'i ve kendi uyum puanlaması vardır — bu bölüm sitenin CSR/uyum modülünden tamamen bağımsızdır.<br>
+        Each production department has its own checklist and its own compliance score — this section is completely independent from the site's CSR/compliance module.
+      </div>
+      <div id="departments-hub-summary" style="margin-bottom:18px;"></div>
+      <div id="departments-hub-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPARTMAN CHECKLIST DETAYI / DEPARTMENT CHECKLIST DETAIL -->
+<div id="department-checklist-modal" class="modal-overlay" onclick="closeDepartmentChecklistBg(event)">
+  <div class="modal-container" style="max-width:min(1500px, 98vw);" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="dept-checklist-title">Departman</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="goHome()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="modal-close" onclick="stepDepartment(-1)" title="Önceki Departman / Previous Department">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="stepDepartment(1)" title="Sonraki Departman / Next Department">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeDepartmentChecklist(); openDepartmentsHub();" data-i18n-attr="title:btn_back" title="Geri / Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeDepartmentChecklist()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div id="dept-checklist-kpi-row" class="customer-kpi-row"></div>
+      <div id="dept-checklist-form-container"></div>
+      <div class="table-scroll-hint" data-i18n="table_scroll_hint">← Kaydırarak tabloyu görüntüleyin / Scroll table →</div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; min-width:820px; border-collapse:collapse; font-size:13px;">
+          <thead>
+            <tr style="background:#F1F5F9; text-align:left;">
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted); width:40px;">No</th>
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted); width:120px;">Kategori / Category</th>
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted);">Kontrol Maddesi / Checklist Item</th>
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted); width:220px;">Not / Notes</th>
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted); width:110px;">Fotoğraf / Photo</th>
+              <th style="padding:10px 12px; font-size:11px; color:var(--muted); width:200px;">Durum / Status</th>
+            </tr>
+          </thead>
+          <tbody id="dept-checklist-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="customer-dashboard-modal" class="modal-overlay" onclick="closeCustomerDashboardBg(event)">
   <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(1400px, 98vw);">
     <div class="modal-header">
@@ -1248,6 +1318,22 @@ function splitBilingual(text) {
   if (idx === -1) return { tr: text, en: text };
   return { tr: text.substring(0, idx).trim(), en: text.substring(idx + 3).trim() };
 }
+// ═══ GÜVENLİK: HTML KAÇIŞI / SECURITY: HTML ESCAPING ═══
+// Artık departman yetkisi verilen birden fazla kullanıcı serbest metin girebildiğinden (soru/sertifika
+// adı, departman kontrol maddesi, notlar), bu metinler ekrana yazılırken HTML olarak yorumlanmasını
+// önlemek için kaçış (escape) uygulanır — kayıtlı (stored) XSS riskine karşı savunma. /
+// Since multiple users with department permissions can now enter free text (question/certificate
+// names, department checklist items, notes), this text is escaped before being rendered to prevent
+// it from being interpreted as HTML — a defense against stored XSS.
+function escHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 function biText(text) {
   const parts = splitBilingual(text);
   return (currentLang === 'tr') ? parts.tr : parts.en;
@@ -1260,15 +1346,15 @@ function biText(text) {
 // AR_Q_SCOPE / AR_CERT_SCOPE). When Arabic is selected, these dictionaries are checked first; if a
 // translation is missing (a very rare edge case), it falls back to the English half.
 function localizedItemText(item) {
-  if (currentLang === 'ar' && item.type === 'q' && AR_Q_TEXT[item.id]) return AR_Q_TEXT[item.id];
-  return biText(item.text);
+  if (currentLang === 'ar' && item.type === 'q' && AR_Q_TEXT[item.id]) return escHtml(AR_Q_TEXT[item.id]);
+  return escHtml(biText(item.text));
 }
 function localizedItemScope(item) {
   if (currentLang === 'ar') {
-    if (item.type === 'q' && AR_Q_SCOPE[item.id]) return AR_Q_SCOPE[item.id];
-    if (item.type === 'c' && AR_CERT_SCOPE[item.id]) return AR_CERT_SCOPE[item.id];
+    if (item.type === 'q' && AR_Q_SCOPE[item.id]) return escHtml(AR_Q_SCOPE[item.id]);
+    if (item.type === 'c' && AR_CERT_SCOPE[item.id]) return escHtml(AR_CERT_SCOPE[item.id]);
   }
-  return biText(item.scope);
+  return escHtml(biText(item.scope));
 }
 
 const UI_TRANSLATIONS = {
@@ -1283,10 +1369,10 @@ const UI_TRANSLATIONS = {
   nav_env:               { tr: 'Çevre ve Kimya',                en: 'Environment & Chemical',     ar: 'البيئة والكيماويات' },
   nav_cd:                { tr: 'Sivil Savunma',                 en: 'Civil Defence',              ar: 'الدفاع المدني' },
   nav_all_questions:     { tr: 'Tüm Sorular',                   en: 'All Questions',              ar: 'جميع الأسئلة' },
-  nav_export_report:     { tr: 'Rapor İndir',                   en: 'Export Report',              ar: 'تصدير التقرير' },
+  nav_export_report:     { tr: 'Genel Rapor İndir',              en: 'Download General Report',    ar: 'تنزيل التقرير العام' },
   nav_backup:            { tr: 'Yedekle',                       en: 'Backup Data',                ar: 'نسخ احتياطي' },
   nav_restore:           { tr: 'Geri Yükle',                    en: 'Restore Data',               ar: 'استعادة البيانات' },
-  nav_backup_history:    { tr: 'Geçmiş Yedekler',                en: 'Backup History',             ar: 'النسخ الاحتياطية السابقة' },
+  nav_departments:       { tr: 'Departmanlar',                    en: 'Departments',                ar: 'الأقسام' },
   nav_user_management:  { tr: 'Kullanıcı Yönetimi',              en: 'User Management',             ar: 'إدارة المستخدمين' },
   side_contact:          { tr: 'İletişim',                        en: 'Contact',                     ar: 'اتصل بنا' },
   side_logout:           { tr: 'Çıkış',                           en: 'Log Out',                     ar: 'تسجيل الخروج' },
@@ -3182,6 +3268,7 @@ function save() {
     // Each document library is kept in its own Firestore document (to stay under the 1MB per-document limit)
     fbDb.collection('ems_csr').doc('companyProfile').set({ companyProfileDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (companyProfile):', e));
     fbDb.collection('ems_csr').doc('legalDocuments').set({ legalDocumentsDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (legalDocuments):', e));
+    fbDb.collection('ems_csr').doc('productionChecklist').set({ productionChecklist, ...meta }).catch(e => console.error('Firestore yazma hatası (productionChecklist):', e));
     writeAutoBackup(); // yerel yedek her koşulda tutulur / local backup is always kept too
     return;
   }
@@ -3192,6 +3279,7 @@ function save() {
     localStorage.setItem('ems_audits', JSON.stringify(customerAudits));
     localStorage.setItem('ems_company', JSON.stringify(companyProfileDocs));
     localStorage.setItem('ems_legal', JSON.stringify(legalDocumentsDocs));
+    localStorage.setItem('ems_prod_checklist', JSON.stringify(productionChecklist));
     writeAutoBackup();
   } catch(e) { console.error("Local storage save error: ", e); }
 }
@@ -3215,7 +3303,7 @@ function writeAutoBackup() {
     const manifestRaw = localStorage.getItem('ems_ab_manifest');
     let manifest = manifestRaw ? JSON.parse(manifestRaw) : [];
     const key = 'ems_ab_' + Date.now();
-    const snapshot = { savedAt: new Date().toISOString(), auditQuestions, certificatesData, customerStatuses, customerAudits, companyProfileDocs, legalDocumentsDocs };
+    const snapshot = { savedAt: new Date().toISOString(), auditQuestions, certificatesData, customerStatuses, customerAudits, companyProfileDocs, legalDocumentsDocs, productionChecklist };
     const snapshotJson = JSON.stringify(snapshot);
     try {
       localStorage.setItem(key, snapshotJson);
@@ -3332,6 +3420,326 @@ function saveUserDepartments(uid) {
     console.error('Yetki kaydetme hatası / Permission save error:', e);
     alert(t3('Yetkiler kaydedilemedi. Lütfen tekrar deneyin.', 'Failed to save permissions. Please try again.', 'فشل حفظ الصلاحيات. حاول مرة أخرى.'));
   });
+}
+
+// ═══════════════════ ÜRETİM DEPARTMANLARI / PRODUCTION DEPARTMENTS ═══════════════════
+// Bu modül, sitenin CSR/uyum sistemiyle HİÇBİR veri veya hesaplama paylaşmaz — tamamen kendi
+// başına, ayrı bir Firestore belgesinde (productionChecklist) yaşar. /
+// This module shares NO data or calculations with the site's CSR/compliance system — it lives
+// entirely on its own, in a separate Firestore document (productionChecklist).
+
+function openDepartmentsHub() {
+  renderDepartmentsHub();
+  document.getElementById('departments-hub-modal').classList.add('open');
+}
+function closeDepartmentsHub() { document.getElementById('departments-hub-modal').classList.remove('open'); }
+function closeDepartmentsHubBg(e) { if (e.target === document.getElementById('departments-hub-modal')) closeDepartmentsHub(); }
+
+function renderDepartmentsHub() {
+  const summaryEl = document.getElementById('departments-hub-summary');
+  const grid = document.getElementById('departments-hub-grid');
+  if (!grid) return;
+
+  // Genel Başarı Oranı — SADECE üretim departmanları özelinde, sitenin diğer hiçbir bölümüyle
+  // (457 soruluk CSR sistemi dahil) ilişkili değildir. /
+  // Overall Success Rate — SPECIFIC ONLY to production departments, unrelated to any other part
+  // of the site (including the 457-question CSR system).
+  const allTotal = productionChecklist.length;
+  const allComp = productionChecklist.filter(x => x.status === 'compliant').length;
+  const allPct = allTotal > 0 ? Math.round(allComp / allTotal * 100) : 0;
+  if (summaryEl) {
+    const PIE_R = 32, PIE_C = 43, PIE_CIRC = 2 * Math.PI * PIE_R;
+    const pieArc = PIE_CIRC * (allPct / 100);
+    const barsHtml = PRODUCTION_DEPARTMENTS.map(d => {
+      const items = productionChecklist.filter(x => x.dept === d.key);
+      const t = items.length, c = items.filter(x => x.status === 'compliant').length;
+      const p = t ? Math.round(c / t * 100) : 0;
+      const barH = Math.max(4, Math.round(140 * p / 100));
+      return `
+      <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 76px;">
+        <div style="font-size:13px; font-weight:900; color:#fff; margin-bottom:6px;">%${p}</div>
+        <div style="width:48px; height:140px; display:flex; align-items:flex-end; justify-content:center; background:rgba(255,255,255,0.07); border-radius:8px 8px 0 0;">
+          <div style="width:100%; height:${barH}px; border-radius:8px 8px 2px 2px; background:linear-gradient(180deg, ${d.c1} 0%, ${d.c2} 100%); box-shadow:0 4px 10px rgba(0,0,0,0.25);"></div>
+        </div>
+        <div style="font-size:17px; margin-top:8px; line-height:1;">${d.icon}</div>
+        <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.8); text-align:center; margin-top:3px; line-height:1.25; width:74px;">${d.label}</div>
+      </div>`;
+    }).join('');
+
+    summaryEl.innerHTML = `
+      <div style="position:relative; background:linear-gradient(155deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); border-radius:20px; padding:26px 30px 22px; box-shadow:0 12px 28px rgba(30,27,75,0.3);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; gap:16px; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:15px; font-weight:900; color:#fff; letter-spacing:0.02em;">${t3('GENEL BAŞARI ORANI', 'OVERALL SUCCESS RATE', 'معدل النجاح العام')}</div>
+            <div style="font-size:11.5px; font-weight:600; color:rgba(255,255,255,0.6); margin-top:3px;">${allComp} / ${allTotal} ${t3('Madde Tamamlandı', 'Items Completed', 'بند مكتمل')}</div>
+          </div>
+          <svg width="86" height="86" viewBox="0 0 86 86" style="flex-shrink:0;">
+            <defs>
+              <linearGradient id="deptSummaryPieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#A5B4FC"/><stop offset="100%" stop-color="#818CF8"/>
+              </linearGradient>
+            </defs>
+            <circle cx="${PIE_C}" cy="${PIE_C}" r="${PIE_R}" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="13"/>
+            <circle cx="${PIE_C}" cy="${PIE_C}" r="${PIE_R}" fill="none" stroke="url(#deptSummaryPieGrad)" stroke-width="13" stroke-linecap="round"
+              stroke-dasharray="${pieArc.toFixed(2)} ${(PIE_CIRC - pieArc).toFixed(2)}" transform="rotate(-90 ${PIE_C} ${PIE_C})"/>
+            <text x="${PIE_C}" y="${PIE_C + 6}" text-anchor="middle" font-size="19" font-weight="900" fill="#fff">%${allPct}</text>
+          </svg>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:10px; overflow-x:auto; min-width:0; padding-bottom:4px;">${barsHtml}</div>
+      </div>`;
+  }
+
+  grid.innerHTML = PRODUCTION_DEPARTMENTS.map(d => {
+    const items = productionChecklist.filter(x => x.dept === d.key);
+    const total = items.length;
+    const comp = items.filter(x => x.status === 'compliant').length;
+    const pct = total > 0 ? Math.round(comp / total * 100) : 0;
+    return `
+    <div class="ring-card" onclick="openDepartmentChecklist('${d.key}')" style="--ring-c1:${d.c1}; --ring-c2:${d.c2}; --ring-glow:${d.c1};">
+      <div class="ring-card-icon-badge">${d.icon}</div>
+      ${buildRingSVG(pct, d.c1, d.c2, t3('UYUM ORANI', 'COMPLIANCE', 'الامتثال'))}
+      <div class="ring-card-title">${d.label}</div>
+      <div class="ring-card-count">${total} ${t3('Madde', 'Items', 'بند')}</div>
+    </div>`;
+  }).join('');
+}
+
+function openDepartmentChecklist(deptKey) {
+  currentDeptKey = deptKey;
+  currentDeptCatFilter = 'all';
+  closeDepartmentsHub();
+  renderDepartmentChecklist(deptKey);
+  document.getElementById('department-checklist-modal').classList.add('open');
+}
+// Departman detayında, tüm 8 departman arasında ileri/geri gezinmeyi sağlar /
+// Allows stepping forward/backward across all 8 departments from the detail view
+function stepDepartment(direction) {
+  const idx = PRODUCTION_DEPARTMENTS.findIndex(d => d.key === currentDeptKey);
+  if (idx === -1) return;
+  const nextIdx = (idx + direction + PRODUCTION_DEPARTMENTS.length) % PRODUCTION_DEPARTMENTS.length;
+  currentDeptKey = PRODUCTION_DEPARTMENTS[nextIdx].key;
+  currentDeptCatFilter = 'all';
+  renderDepartmentChecklist(currentDeptKey);
+}
+function closeDepartmentChecklist() { document.getElementById('department-checklist-modal').classList.remove('open'); }
+function closeDepartmentChecklistBg(e) { if (e.target === document.getElementById('department-checklist-modal')) closeDepartmentChecklist(); }
+
+function renderDepartmentChecklist(deptKey) {
+  const dept = PRODUCTION_DEPARTMENTS.find(d => d.key === deptKey);
+  if (!dept) return;
+  const CATS = [
+    { key: 'compliance', label: t3('Compliance', 'Compliance', 'الامتثال'), color: '#4F46E5' },
+    { key: 'csr',        label: t3('CSR', 'CSR', 'المسؤولية الاجتماعية'), color: '#0D9488' },
+    { key: 'social',     label: t3('Sosyal', 'Social', 'اجتماعي'), color: '#DB2777' },
+    { key: 'technical',  label: t3('Teknik', 'Technical', 'تقني'), color: '#D97706' }
+  ];
+  const catFilter = currentDeptCatFilter || 'all';
+  const allItems = productionChecklist.filter(x => x.dept === deptKey);
+  const items = catFilter === 'all' ? allItems : allItems.filter(x => x.cat === catFilter);
+  const total = allItems.length;
+  const comp = allItems.filter(x => x.status === 'compliant').length;
+  const min = allItems.filter(x => x.status === 'minor').length;
+  const crit = allItems.filter(x => x.status === 'critical').length;
+  const pct = total > 0 ? Math.round(comp / total * 100) : 0;
+
+  document.getElementById('dept-checklist-title').innerText = dept.icon + ' ' + dept.label;
+
+  const kpis = [
+    { label: t3('TOPLAM MADDE', 'TOTAL ITEMS', 'إجمالي البنود'), val: total, color: dept.c1 },
+    { label: t3('TAMAMLANDI', 'COMPLETED', 'مكتمل'), val: comp, pct: total ? Math.round(comp/total*100) : 0, color: 'var(--success)' },
+    { label: t3('DEVAM EDİYOR', 'IN PROGRESS', 'قيد التنفيذ'), val: min, pct: total ? Math.round(min/total*100) : 0, color: 'var(--warning)' },
+    { label: t3('YAPILMADI', 'NOT DONE', 'لم يتم'), val: crit, pct: total ? Math.round(crit/total*100) : 0, color: 'var(--danger)' },
+    { label: t3('UYUM ORANI', 'COMPLIANCE', 'نسبة الامتثال'), val: '%' + pct, color: dept.c1 }
+  ];
+  document.getElementById('dept-checklist-kpi-row').innerHTML = kpis.map(k => `
+    <div class="customer-kpi" style="color:${k.color};">
+      <div class="customer-kpi-label">${k.label}</div>
+      <div class="customer-kpi-val">${k.val}${k.pct !== undefined ? ` <span class="kpi-val-pct">(%${k.pct})</span>` : ''}</div>
+    </div>`).join('');
+
+  const canEdit = currentUserRole === 'admin';
+  const catFilterHtml = `
+    <div style="margin-bottom:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:12px; font-weight:800; color:var(--muted);">${t3('Kategori Filtresi', 'Category Filter', 'تصفية الفئة')}:</span>
+      <select id="dept-cat-filter" onchange="currentDeptCatFilter=this.value; renderDepartmentChecklist('${deptKey}');" style="padding:8px 10px; border-radius:8px; border:1px solid var(--border-h); background:#fff; font-size:12.5px; font-weight:700;">
+        <option value="all" ${catFilter==='all'?'selected':''}>${t3('Tüm Kategoriler', 'All Categories', 'جميع الفئات')}</option>
+        ${CATS.map(c => `<option value="${c.key}" ${catFilter===c.key?'selected':''}>${c.label}</option>`).join('')}
+      </select>
+    </div>`;
+  document.getElementById('dept-checklist-form-container').innerHTML = catFilterHtml + (canEdit ? `
+    <div style="background:#fafbfd; padding:14px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:16px;">
+      <strong style="display:block; margin-bottom:10px; color:var(--text); font-size:13px;">${t3('Yeni Kontrol Maddesi Ekle', 'Add New Checklist Item', 'إضافة بند جديد')}</strong>
+      <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-bottom:10px;">
+        <input type="text" id="dept-item-text" placeholder="${t3('Kontrol Maddesi *', 'Checklist Item *', 'بند التحقق *')}" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font-size:15px; min-height:44px;">
+        <input type="text" id="dept-item-notes" placeholder="${t3('Not / Detay', 'Notes', 'ملاحظات')}" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font-size:15px; min-height:44px;">
+        <select id="dept-item-cat" style="padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); background:#fff; font-size:14px; min-height:44px;">
+          ${CATS.map(c => `<option value="${c.key}">${c.label}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn-save" onclick="addDeptChecklistItem()" style="font-size:12px; min-height:44px; width:100%; justify-content:center; border-radius:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+        ${t3('Ekle ve Kaydet', 'Add and Save', 'إضافة وحفظ')}
+      </button>
+    </div>` : '');
+
+  const tbody = document.getElementById('dept-checklist-tbody');
+  tbody.innerHTML = items.length === 0 ? `
+    <tr><td colspan="6" style="text-align:center; color:var(--muted); padding:30px; font-style:italic;">${t3('Bu kategoride henüz kontrol maddesi yok.', 'No checklist items in this category yet.', 'لا توجد بنود في هذه الفئة بعد.')}</td></tr>
+  ` : items.map((item, idx) => {
+    const c = CATS.find(x => x.key === item.cat) || CATS[0];
+    return `
+    <tr style="border-top:1px solid var(--border);">
+      <td style="padding:10px 12px; font-weight:800;">${idx + 1}</td>
+      <td style="padding:10px 12px;"><span style="display:inline-block; padding:3px 9px; border-radius:99px; font-size:10.5px; font-weight:800; color:#fff; background:${c.color};">${c.label}</span></td>
+      <td style="padding:10px 12px; font-weight:700;">${deptItemText(item)}</td>
+      <td style="padding:10px 12px; color:var(--muted); font-size:12px;">${escHtml(item.notes) || ''}</td>
+      <td style="padding:10px 12px;">
+        <div style="display:flex; align-items:center; gap:4px;">
+          ${(item.hasPhoto || item.photo) ? `
+            <img id="dept-item-thumb-${item.id}" src="${item.photo || ''}" onclick="openDocLightbox('deptitem', ${item.id})" title="${item.hasFullPdf ? t3('Çok sayfalı PDF belgesini görüntülemek için tıklayın', 'Click to view the full multi-page PDF', 'انقر لعرض ملف PDF متعدد الصفحات') : t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:36px; height:36px; object-fit:cover; border-radius:6px; border:1.5px solid var(--border-h); cursor:pointer; background:#eef0f4;">
+            <button onclick="triggerDeptItemPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:3px; color:var(--muted);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button onclick="deleteDeptItemPhoto(${item.id})" title="${t3('Sil', 'Delete', 'حذف')}" style="background:none; border:none; cursor:pointer; padding:3px; color:var(--danger);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          ` : `
+            <button onclick="triggerDeptItemPhotoUpload(${item.id})" title="${t3('Fotoğraf/PDF Yükle', 'Upload Photo/PDF', 'تحميل صورة/PDF')}" style="display:flex; align-items:center; gap:4px; background:#eef0ff; border:1px dashed var(--primary); color:var(--primary); border-radius:7px; padding:5px 8px; font-size:10.5px; font-weight:700; cursor:pointer;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              ${t3('Yükle', 'Upload', 'رفع')}
+            </button>
+          `}
+        </div>
+      </td>
+      <td style="padding:10px 12px; white-space:nowrap;">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <select class="status-sel ${item.status}" onchange="changeDeptItemStatus(${item.id}, this)" style="min-width:140px;">
+            <option value="compliant" ${item.status==='compliant'?'selected':''}>✅ ${t3('Tamamlandı','Completed','مكتمل')}</option>
+            <option value="minor" ${item.status==='minor'?'selected':''}>⏳ ${t3('Devam Ediyor','In Progress','قيد التنفيذ')}</option>
+            <option value="critical" ${item.status==='critical'?'selected':''}>❌ ${t3('Yapılmadı','Not Done','لم يتم')}</option>
+          </select>
+          <button class="btn-del" onclick="deleteDeptItem(${item.id})" title="${t3('Sil', 'Delete', 'حذف')}" style="padding:4px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Kontrol maddesi küçük resimlerini tembel (lazy) yükle / Lazy-load checklist item thumbnails
+  items.forEach(item => {
+    if (item.hasPhoto && !item.photo) {
+      _loadDocFileData("deptitem", item.id, "thumb", dataUrl => {
+        const el = document.getElementById("dept-item-thumb-" + item.id);
+        if (el && dataUrl) el.src = dataUrl;
+      });
+    }
+  });
+}
+
+function addDeptChecklistItem() {
+  if (!roleGuard()) return;
+  const textEl = document.getElementById('dept-item-text');
+  const notesEl = document.getElementById('dept-item-notes');
+  const catEl = document.getElementById('dept-item-cat');
+  if (!textEl || !textEl.value.trim()) { alert(t3('Kontrol maddesi boş olamaz.', 'Checklist item cannot be empty.', 'لا يمكن أن يكون بند التحقق فارغاً.')); return; }
+  const newId = productionChecklist.length > 0 ? Math.max(...productionChecklist.map(x => x.id)) + 1 : 1;
+  productionChecklist.push({ id: newId, dept: currentDeptKey, cat: catEl ? catEl.value : 'compliance', text: textEl.value.trim(), notes: notesEl ? notesEl.value.trim() : '', status: 'critical' });
+  save();
+  renderDepartmentChecklist(currentDeptKey);
+}
+
+function changeDeptItemStatus(id, sel) {
+  if (!roleGuard()) return;
+  const item = productionChecklist.find(x => x.id === id);
+  if (item) { item.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); renderDepartmentChecklist(currentDeptKey); }
+}
+
+function deleteDeptItem(id) {
+  if (!roleGuard()) return;
+  if (!confirm(t3('Bu kontrol maddesini silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this checklist item?', 'هل أنت متأكد أنك تريد حذف بند التحقق هذا؟'))) return;
+  const item = productionChecklist.find(x => x.id === id);
+  if (item && item.hasPhoto) _deleteDocFileData('deptitem', id, 'thumb');
+  if (item && item.hasFullPdf) _deleteDocFileData('deptitem', id, 'pdf');
+  productionChecklist = productionChecklist.filter(x => x.id !== id);
+  save();
+  renderDepartmentChecklist(currentDeptKey);
+}
+
+// ═══════════════════ KONTROL MADDESİ BAZLI FOTOĞRAF/PDF / PER-CHECKLIST-ITEM PHOTO/PDF ═══════════════════
+// Sertifikalarda kullanılan (ve önceki bir düzeltmeyle sağlamlaştırılan) AYNI parçalı depolama
+// desenini kullanır: küçük önizleme + isteğe bağlı tam çok sayfalı PDF, tek bir save() çağrısıyla. /
+// Uses the EXACT SAME chunked-storage pattern used for certificates (and hardened in an earlier
+// fix): a small preview + an optional full multi-page PDF, with a single save() call at the end.
+let _deptItemPhotoUploadTargetId = null;
+
+function triggerDeptItemPhotoUpload(itemId) {
+  if (!roleGuard()) return;
+  _deptItemPhotoUploadTargetId = itemId;
+  const input = document.getElementById('dept-item-photo-file-input');
+  if (input) { input.value = ''; input.click(); }
+}
+
+function handleDeptItemPhotoFileChange(event) {
+  try {
+    const file = event.target.files && event.target.files[0];
+    const itemId = _deptItemPhotoUploadTargetId;
+    if (!file || itemId === null || itemId === undefined) return;
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+    _deptItemPhotoUploadTargetId = null;
+
+    _processUploadedFileToImage(file, 900,
+      dataUrl => {
+        const item = productionChecklist.find(x => x.id === itemId);
+        if (!item) { renderDepartmentChecklist(currentDeptKey); return; }
+        item.mediaType = isPdf ? 'pdf' : 'image';
+        _saveDocFileData('deptitem', itemId, 'thumb', dataUrl, thumbOk => {
+          item.hasPhoto = !!thumbOk;
+          const finishUp = () => { save(); renderDepartmentChecklist(currentDeptKey); };
+
+          if (!isPdf) { delete item.hasFullPdf; _deleteDocFileData('deptitem', itemId, 'pdf'); finishUp(); return; }
+          if (file.size > MAX_FULL_PDF_BYTES) {
+            delete item.hasFullPdf;
+            finishUp();
+            alert(t3(
+              `PDF dosyası çok büyük olduğu için tüm sayfalar saklanamadı (sadece ilk sayfa önizlemesi kaydedildi). PDF dosyalarının ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB altında olması önerilir.`,
+              `The PDF is too large to store all pages (only the first-page preview was saved). PDF files should be under ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB.`,
+              `الملف كبير جدًا لتخزين جميع الصفحات (تم حفظ معاينة الصفحة الأولى فقط).`
+            ));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = e => {
+            _saveDocFileData('deptitem', itemId, 'pdf', e.target.result, ok => { item.hasFullPdf = !!ok; finishUp(); });
+          };
+          reader.onerror = () => finishUp();
+          reader.readAsDataURL(file);
+        });
+      },
+      errType => {
+        if (errType === 'type') alert(t3('Lütfen bir resim dosyası ya da PDF seçin.', 'Please select an image file or a PDF.', 'يرجى اختيار ملف صورة أو PDF.'));
+        else if (errType === 'pdfjs') alert(t3('PDF önizleme bileşeni yüklenemedi. Lütfen tekrar deneyin.', 'The PDF preview component failed to load. Please try again.', 'تعذر تحميل مكوّن معاينة PDF.'));
+        else alert(t3('Dosya işlenemedi. Lütfen tekrar deneyin.', 'The file could not be processed. Please try again.', 'تعذرت معالجة الملف.'));
+      }
+    );
+  } catch (e) {
+    console.error('[Kontrol Maddesi Fotoğrafı] Hata / Error:', e);
+    alert(t3('Bir hata oluştu: ', 'An error occurred: ', 'حدث خطأ: ') + e.message);
+  }
+}
+
+function deleteDeptItemPhoto(itemId) {
+  if (!roleGuard()) return;
+  const item = productionChecklist.find(x => x.id === itemId);
+  if (!item || !item.hasPhoto) return;
+  if (!confirm(t3('Bu fotoğrafı silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this photo?', 'هل أنت متأكد أنك تريد حذف هذه الصورة؟'))) return;
+  _deleteDocFileData('deptitem', itemId, 'thumb');
+  delete item.hasPhoto;
+  if (item.hasFullPdf) _deleteDocFileData('deptitem', itemId, 'pdf');
+  delete item.hasFullPdf;
+  delete item.mediaType;
+  save();
+  renderDepartmentChecklist(currentDeptKey);
 }
 
 function renderBackupHistoryList() {
@@ -3572,6 +3980,27 @@ function postProcessData() {
   return addedCount; // >0 ise ve admin ise buluta geri yazılması gerekir / if >0 and user is admin, should be persisted back to the cloud
 }
 
+// ═══ ÜRETİM DEPARTMANLARI SENKRONİZASYONU ═══ Varsayılan checklist'te olup, daha önce kaydedilmiş
+// productionChecklist verisinde bulunmayan tüm yeni maddeleri ekler — auditQuestions için kullanılan
+// AYNI desen. Bu, "eklediğim sorular yansımıyor" sorununu çözer: yeni eklenen varsayılan maddeler artık
+// halihazırda kaydedilmiş departman verisine otomatik olarak birleştirilir. /
+// ═══ PRODUCTION DEPARTMENTS SYNC ═══ Adds any new default checklist items missing from previously
+// saved productionChecklist data — the SAME pattern used for auditQuestions. This fixes the "the
+// questions I added aren't showing up" issue: newly added default items now automatically merge
+// into already-saved department data.
+function postProcessProductionChecklist() {
+  const existingIds = new Set(productionChecklist.map(x => x.id));
+  let added = 0;
+  defaultProductionChecklist.forEach(di => {
+    if (!existingIds.has(di.id)) {
+      productionChecklist.push(JSON.parse(JSON.stringify(di)));
+      added++;
+    }
+  });
+  if (added > 0) console.log('Departman checklist senkronizasyonu: ' + added + ' yeni madde eklendi. / Department checklist sync: ' + added + ' new item(s) merged.');
+  return added;
+}
+
 // ═══ TARAYICI HAFIZASINDAN YÜKLEME (Firebase yapılandırılmamışsa kullanılan mod) ═══
 // LOAD FROM BROWSER STORAGE (fallback mode when Firebase is not configured)
 function loadLocal() {
@@ -3582,6 +4011,7 @@ function loadLocal() {
     let audits = localStorage.getItem('ems_audits');
     let company = localStorage.getItem('ems_company');
     let legal = localStorage.getItem('ems_legal');
+    let prodChecklist = localStorage.getItem('ems_prod_checklist');
     let loadedQ = q ? JSON.parse(q) : null;
     if (loadedQ && (!Array.isArray(loadedQ) || loadedQ.length === 0)) {
       localStorage.removeItem('ems_q');
@@ -3593,6 +4023,7 @@ function loadLocal() {
     customerAudits = audits ? JSON.parse(audits) : JSON.parse(JSON.stringify(defaultCustomerAudits));
     companyProfileDocs = company ? JSON.parse(company) : [];
     legalDocumentsDocs = legal ? JSON.parse(legal) : [];
+    productionChecklist = prodChecklist ? JSON.parse(prodChecklist) : JSON.parse(JSON.stringify(defaultProductionChecklist));
   } catch(e) {
     auditQuestions = JSON.parse(JSON.stringify(defaultAuditQuestions));
     certificatesData = JSON.parse(JSON.stringify(defaultCertificatesData));
@@ -3600,6 +4031,7 @@ function loadLocal() {
     customerAudits = JSON.parse(JSON.stringify(defaultCustomerAudits));
     companyProfileDocs = [];
     legalDocumentsDocs = [];
+    productionChecklist = JSON.parse(JSON.stringify(defaultProductionChecklist));
   }
   postProcessData();
 }
@@ -3609,7 +4041,7 @@ function loadLocal() {
 // Her belge için gerçek-zamanlı dinleyici kurar; biri değişince TÜM tarayıcılarda
 // anında güncellenir. / Sets up a real-time listener per document; when one
 // changes, every open browser updates instantly.
-let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false };
+let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false, productionChecklist: false };
 let _cloudFirstRenderDone = false;
 let _anyCloudDocDefaulted = false; // Bu oturumda herhangi bir kritik belge boş/eksik görünüp varsayılana düştü mü? / Did any critical document appear empty/missing and fall back to defaults this session?
 
@@ -3678,10 +4110,23 @@ function initCloudData(onReady) {
     _cloudDocsLoaded.legalDocuments = true;
     _onCloudDocChange(onReady);
   }, err => console.error('Firestore okuma hatası (legalDocuments):', err));
+
+  // Üretim Departmanları modülü — sitenin geri kalanından tamamen bağımsız ayrı bir belge /
+  // Production Departments module — a completely separate document, independent from the rest of the site
+  col.doc('productionChecklist').onSnapshot(snap => {
+    if (snap.exists && Array.isArray(snap.data().productionChecklist) && snap.data().productionChecklist.length > 0) {
+      productionChecklist = snap.data().productionChecklist;
+    } else {
+      productionChecklist = JSON.parse(JSON.stringify(defaultProductionChecklist));
+    }
+    _cloudDocsLoaded.productionChecklist = true;
+    _onCloudDocChange(onReady);
+  }, err => console.error('Firestore okuma hatası (productionChecklist):', err));
 }
 
 function _onCloudDocChange(onReady) {
   const addedCount = postProcessData();
+  const addedDeptCount = _cloudDocsLoaded.productionChecklist ? postProcessProductionChecklist() : 0;
   // İlk kez (admin tarafında) eksik varsayılanlar tespit edildiyse buluta geri yaz — ANCAK bu oturumda
   // herhangi bir kritik belge (questions/certificates/customerAudits) boş/eksik görünüp yerel varsayılana
   // düştüyse ASLA otomatik kaydetme — bu, geçici bir okuma sorununu kalıcı veri kaybına çevirebilir. /
@@ -3689,7 +4134,7 @@ function _onCloudDocChange(onReady) {
   // BUT if any critical document (questions/certificates/customerAudits) appeared empty/missing and
   // fell back to local defaults this session, NEVER auto-save — that would turn a transient read
   // issue into permanent data loss.
-  if (addedCount > 0 && currentUserRole === 'admin' && !_anyCloudDocDefaulted) save();
+  if ((addedCount > 0 || addedDeptCount > 0) && currentUserRole === 'admin' && !_anyCloudDocDefaulted) save();
 
   if (!_cloudFirstRenderDone && Object.values(_cloudDocsLoaded).every(Boolean)) {
     _cloudFirstRenderDone = true;
@@ -3773,6 +4218,298 @@ const DEPARTMENT_SCOPES = [
   { key: 'documents',       label: t3('Şirket Profili & Yasal Dökümanlar', 'Company Profile & Legal Documents', 'ملف الشركة والمستندات القانونية') }
 ];
 function departmentLabel(key) { const d = DEPARTMENT_SCOPES.find(x => x.key === key); return d ? d.label : key; }
+
+// ═══════════════════ ÜRETİM DEPARTMANLARI MODÜLÜ / PRODUCTION DEPARTMENTS MODULE ═══════════════════
+// Bu, sitenin geri kalanından TAMAMEN BAĞIMSIZ, ayrı bir modüldür: kendi verisi, kendi puanlaması,
+// kendi Firestore belgesi. 457 soruluk CSR/uyum sistemiyle hiçbir ilişkisi yoktur. /
+// This is a module COMPLETELY INDEPENDENT from the rest of the site: its own data, its own scoring,
+// its own Firestore document. It has no relation whatsoever to the 457-question CSR/compliance system.
+const PRODUCTION_DEPARTMENTS = [
+  { key: 'fabric',     label: t3('Kumaş Depo', 'Fabric Warehouse', 'مستودع القماش'),  icon: '🧶', c1: '#2DD4BF', c2: '#0F766E' },
+  { key: 'cutting',    label: t3('Kesimhane', 'Cutting Room', 'ورشة القص'),          icon: '✂️', c1: '#FB923C', c2: '#C2410C' },
+  { key: 'printing',   label: t3('Baskı', 'Printing', 'الطباعة'),            icon: '🎨', c1: '#C084FC', c2: '#7E22CE' },
+  { key: 'embroidery', label: t3('Nakış', 'Embroidery', 'التطريز'),          icon: '🪡', c1: '#F472B6', c2: '#BE185D' },
+  { key: 'sewing',     label: t3('Dikim', 'Sewing', 'الخياطة'),              icon: '🧵', c1: '#60A5FA', c2: '#1D4ED8' },
+  { key: 'qc',         label: t3('Kalite Kontrol', 'Quality Control', 'مراقبة الجودة'), icon: '🔍', c1: '#FBBF24', c2: '#B45309' },
+  { key: 'packaging',  label: t3('Paketleme', 'Packaging', 'التعبئة'),       icon: '📦', c1: '#4ADE80', c2: '#15803D' },
+  { key: 'shipping',   label: t3('Sevkiyat', 'Shipping', 'الشحن'),           icon: '🚚', c1: '#F87171', c2: '#B91C1C' }
+];
+// Her kayıt: { id, dept (yukarıdaki key'lerden biri), text, notes, status: 'compliant'|'minor'|'critical' } /
+// Each record: { id, dept (one of the keys above), text, notes, status: 'compliant'|'minor'|'critical' }
+// Her kayıt: { id, dept, cat: 'compliance'|'csr'|'social'|'technical', text, notes, status } /
+// Each record: { id, dept, cat: 'compliance'|'csr'|'social'|'technical', text, notes, status }
+const defaultProductionChecklist = [
+  // ═══ KUMAŞ / FABRIC ═══
+  { id: 1, dept: 'fabric', cat: 'compliance', text: 'Kumaş test raporları (renk haslığı, çekme, mukavemet) dosyalanıyor mu? / Are fabric test reports (colorfastness, shrinkage, tensile strength) filed?', notes: '', status: 'critical' },
+  { id: 2, dept: 'fabric', cat: 'compliance', text: 'Tedarikçi uygunluk sertifikaları (OEKO-TEX, GOTS vb.) güncel mi? / Are supplier compliance certificates (OEKO-TEX, GOTS, etc.) up to date?', notes: '', status: 'critical' },
+  { id: 3, dept: 'fabric', cat: 'compliance', text: 'Kumaş menşei ve izlenebilirlik kayıtları tutuluyor mu? / Are fabric origin and traceability records maintained?', notes: '', status: 'critical' },
+  { id: 4, dept: 'fabric', cat: 'csr', text: 'Kumaş tedarikçileri sosyal uygunluk denetiminden geçmiş mi? / Have fabric suppliers passed a social compliance audit?', notes: '', status: 'critical' },
+  { id: 5, dept: 'fabric', cat: 'csr', text: 'Geri dönüşümlü/organik kumaş kullanım oranı takip ediliyor mu? / Is the usage rate of recycled/organic fabric tracked?', notes: '', status: 'critical' },
+  { id: 6, dept: 'fabric', cat: 'social', text: 'Kumaş deposu çalışanlarına uygun kaldırma-taşıma ekipmanı sağlanıyor mu? / Are fabric warehouse workers provided with appropriate lifting/handling equipment?', notes: '', status: 'critical' },
+  { id: 7, dept: 'fabric', cat: 'social', text: 'Depo çalışanları için yeterli havalandırma ve aydınlatma var mı? / Is there adequate ventilation and lighting for warehouse workers?', notes: '', status: 'critical' },
+  { id: 8, dept: 'fabric', cat: 'technical', text: 'Kumaş toplama (relaxation) süresi standartlara uygun mu? / Is the fabric relaxation time compliant with standards?', notes: '', status: 'critical' },
+  { id: 9, dept: 'fabric', cat: 'technical', text: 'Kumaş rulo etiketleme ve stok takip sistemi kullanılıyor mu? / Is a fabric roll labeling and stock tracking system used?', notes: '', status: 'critical' },
+  { id: 10, dept: 'fabric', cat: 'technical', text: 'Kumaş nem/sıcaklık kontrollü ortamda depolanıyor mu? / Is fabric stored in a humidity/temperature-controlled environment?', notes: '', status: 'critical' },
+  { id: 11, dept: 'fabric', cat: 'technical', text: 'Kumaş kalite kontrolü (4 point sistemi) uygulanıyor mu? / Is fabric quality control (4-point system) applied?', notes: '', status: 'critical' },
+  { id: 12, dept: 'fabric', cat: 'compliance', text: 'Yanlış/hatalı parti (lot) kumaşlar karantina alanında ayrıştırılıyor mu? / Are incorrect/defective fabric lots segregated in a quarantine area?', notes: '', status: 'critical' },
+
+  // ═══ KESİM / CUTTING ═══
+  { id: 20, dept: 'cutting', cat: 'compliance', text: 'Kesim hata oranları kayıt altına alınıyor mu? / Are cutting error rates recorded?', notes: '', status: 'critical' },
+  { id: 21, dept: 'cutting', cat: 'compliance', text: 'Kesim makası/bıçak bakım kayıtları tutuluyor mu? / Are cutting scissors/blade maintenance records kept?', notes: '', status: 'critical' },
+  { id: 22, dept: 'cutting', cat: 'csr', text: 'Kumaş fire/atık oranı azaltma hedefleri belirlenmiş mi? / Are fabric waste/scrap reduction targets set?', notes: '', status: 'critical' },
+  { id: 23, dept: 'cutting', cat: 'csr', text: 'Kesim artıkları geri dönüşüme yönlendiriliyor mu? / Are cutting scraps directed to recycling?', notes: '', status: 'critical' },
+  { id: 24, dept: 'cutting', cat: 'social', text: 'Kesim çalışanlarına kesici alet güvenlik eğitimi veriliyor mu? / Are cutting workers given sharp-tool safety training?', notes: '', status: 'critical' },
+  { id: 25, dept: 'cutting', cat: 'social', text: 'Kesim masalarında ergonomik çalışma koşulları sağlanıyor mu? / Are ergonomic working conditions provided at cutting tables?', notes: '', status: 'critical' },
+  { id: 26, dept: 'cutting', cat: 'social', text: 'Kesim bölümünde zincirli eldiven ve kesik önleyici ekipman kullanılıyor mu? / Are chainmail gloves and cut-resistant equipment used?', notes: '', status: 'critical' },
+  { id: 27, dept: 'cutting', cat: 'technical', text: 'Kesim öncesi kalıp/marker kontrolü yapılıyor mu? / Is the pattern/marker checked before cutting?', notes: '', status: 'critical' },
+  { id: 28, dept: 'cutting', cat: 'technical', text: 'Katlama (spreading) toleransları ölçülüyor mu? / Are spreading tolerances measured?', notes: '', status: 'critical' },
+  { id: 29, dept: 'cutting', cat: 'technical', text: 'Kesim makinesi bıçak koruma sistemleri çalışıyor mu? / Are cutting machine blade guards functioning?', notes: '', status: 'critical' },
+  { id: 30, dept: 'cutting', cat: 'technical', text: 'Numaralama (bundling) sistemi doğru uygulanıyor mu? / Is the bundling/numbering system correctly applied?', notes: '', status: 'critical' },
+
+  // ═══ BASKI / PRINTING ═══
+  { id: 40, dept: 'printing', cat: 'compliance', text: 'Kullanılan baskı kimyasalları için MSDS/güvenlik bilgi formları mevcut mu? / Are MSDS/safety data sheets available for printing chemicals used?', notes: '', status: 'critical' },
+  { id: 41, dept: 'printing', cat: 'compliance', text: 'Baskı kimyasalları kısıtlı madde listesine (RSL) uygun mu? / Do printing chemicals comply with the Restricted Substances List (RSL)?', notes: '', status: 'critical' },
+  { id: 42, dept: 'printing', cat: 'csr', text: 'Su bazlı/çevre dostu baskı teknikleri tercih ediliyor mu? / Are water-based/eco-friendly printing techniques preferred?', notes: '', status: 'critical' },
+  { id: 43, dept: 'printing', cat: 'csr', text: 'Baskı atık suyu arıtımı yapılıyor mu? / Is printing wastewater treated?', notes: '', status: 'critical' },
+  { id: 44, dept: 'printing', cat: 'social', text: 'Baskı çalışanlarına kişisel koruyucu ekipman (eldiven, maske) sağlanıyor mu? / Are printing workers provided PPE (gloves, masks)?', notes: '', status: 'critical' },
+  { id: 45, dept: 'printing', cat: 'social', text: 'Kimyasal maruziyeti düzenli olarak ölçülüyor mu? / Is chemical exposure regularly measured?', notes: '', status: 'critical' },
+  { id: 46, dept: 'printing', cat: 'technical', text: 'Baskı kalıp/şablon hizalaması kontrol ediliyor mu? / Is print screen/template registration alignment checked?', notes: '', status: 'critical' },
+  { id: 47, dept: 'printing', cat: 'technical', text: 'Renk eşleştirme (color matching) standartlara uygun mu? / Does color matching meet the required standard?', notes: '', status: 'critical' },
+  { id: 48, dept: 'printing', cat: 'technical', text: 'Baskı sonrası kürleme (curing) sıcaklık/süre takip ediliyor mu? / Is post-print curing temperature/time tracked?', notes: '', status: 'critical' },
+  { id: 49, dept: 'printing', cat: 'technical', text: 'Baskı haslık testleri (yıkama, sürtme) yapılıyor mu? / Are print fastness tests (washing, rubbing) performed?', notes: '', status: 'critical' },
+
+  // ═══ NAKIŞ / EMBROIDERY ═══
+  { id: 60, dept: 'embroidery', cat: 'compliance', text: 'Nakış makinesi bakım kayıtları güncel mi? / Are embroidery machine maintenance records up to date?', notes: '', status: 'critical' },
+  { id: 61, dept: 'embroidery', cat: 'compliance', text: 'Alt yüklenici (varsa) nakış atölyeleri denetleniyor mu? / Are subcontracted embroidery workshops (if any) audited?', notes: '', status: 'critical' },
+  { id: 62, dept: 'embroidery', cat: 'csr', text: 'Nakış iplik/malzeme atığı geri kazanılıyor mu? / Is embroidery thread/material waste recovered?', notes: '', status: 'critical' },
+  { id: 63, dept: 'embroidery', cat: 'social', text: 'Nakış operatörleri için göz/el yorgunluğuna karşı mola düzeni var mı? / Are rest breaks scheduled for embroidery operators against eye/hand fatigue?', notes: '', status: 'critical' },
+  { id: 64, dept: 'embroidery', cat: 'social', text: 'Uygun aydınlatma sağlanıyor mu? / Is adequate lighting provided?', notes: '', status: 'critical' },
+  { id: 65, dept: 'embroidery', cat: 'technical', text: 'Nakış deseni dijital dosyaları versiyon kontrolüyle saklanıyor mu? / Are digital embroidery design files kept under version control?', notes: '', status: 'critical' },
+  { id: 66, dept: 'embroidery', cat: 'technical', text: 'İğne kırılması takip/kayıt sistemi var mı (metal kontaminasyon önleme)? / Is there a needle-breakage tracking/logging system (metal contamination prevention)?', notes: '', status: 'critical' },
+  { id: 67, dept: 'embroidery', cat: 'technical', text: 'Nakış gerginlik (tension) ayarları düzenli kontrol ediliyor mu? / Are embroidery tension settings regularly checked?', notes: '', status: 'critical' },
+  { id: 68, dept: 'embroidery', cat: 'technical', text: 'Numune onayı üretim öncesi alınıyor mu? / Is a sample approval obtained before production?', notes: '', status: 'critical' },
+
+  // ═══ DİKİM / SEWING ═══
+  { id: 80, dept: 'sewing', cat: 'compliance', text: 'İş sağlığı güvenliği eğitim kayıtları tam mı? / Are occupational health & safety training records complete?', notes: '', status: 'critical' },
+  { id: 81, dept: 'sewing', cat: 'compliance', text: 'Fason/alt yüklenici dikim hatları denetleniyor mu? / Are subcontracted/outsourced sewing lines audited?', notes: '', status: 'critical' },
+  { id: 82, dept: 'sewing', cat: 'csr', text: 'Çalışma saatleri yasal sınırlar içinde mi? / Are working hours within legal limits?', notes: '', status: 'critical' },
+  { id: 83, dept: 'sewing', cat: 'csr', text: 'Fazla mesai gönüllülük esasına uygun mu? / Is overtime based on voluntary consent?', notes: '', status: 'critical' },
+  { id: 84, dept: 'sewing', cat: 'social', text: 'Dikim hattı ergonomisi (sandalye, masa yüksekliği) uygun mu? / Is sewing line ergonomics (chair, table height) appropriate?', notes: '', status: 'critical' },
+  { id: 85, dept: 'sewing', cat: 'social', text: 'Şikayet mekanizması dikim çalışanlarına duyuruluyor mu? / Is the grievance mechanism communicated to sewing workers?', notes: '', status: 'critical' },
+  { id: 86, dept: 'sewing', cat: 'technical', text: 'İğne kırık takip formu her istasyonda uygulanıyor mu? / Is a broken-needle tracking form applied at every station?', notes: '', status: 'critical' },
+  { id: 87, dept: 'sewing', cat: 'technical', text: 'Dikiş kalitesi (SPI, dikiş tipi) hatta kontrol ediliyor mu? / Is stitch quality (SPI, stitch type) checked on the line?', notes: '', status: 'critical' },
+  { id: 88, dept: 'sewing', cat: 'technical', text: 'Hat dengesi (line balancing) ve verimlilik takibi yapılıyor mu? / Is line balancing and efficiency tracked?', notes: '', status: 'critical' },
+  { id: 89, dept: 'sewing', cat: 'technical', text: 'Ara kalite kontrolü (in-line QC) uygulanıyor mu? / Is in-line quality control applied?', notes: '', status: 'critical' },
+
+  // ═══ KALİTE KONTROL / QUALITY CONTROL ═══
+  { id: 100, dept: 'qc', cat: 'compliance', text: 'AQL (Kabul Edilebilir Kalite Seviyesi) standartları uygulanıyor mu? / Are AQL (Acceptable Quality Level) standards applied?', notes: '', status: 'critical' },
+  { id: 101, dept: 'qc', cat: 'compliance', text: 'Müşteri özel kalite şartnameleri dosyalanmış mı? / Are customer-specific quality specifications on file?', notes: '', status: 'critical' },
+  { id: 102, dept: 'qc', cat: 'csr', text: 'Kalite kontrol süreçlerinde şeffaflık sağlanıyor mu (kayıtlar paylaşılabilir mi)? / Is transparency ensured in quality control processes (records shareable)?', notes: '', status: 'critical' },
+  { id: 103, dept: 'qc', cat: 'social', text: 'QC personeli yeterli sayıda ve eğitimli mi? / Is QC staff adequate in number and training?', notes: '', status: 'critical' },
+  { id: 104, dept: 'qc', cat: 'technical', text: 'Final ürün muayenesi (final inspection) yapılıyor mu? / Is final product inspection performed?', notes: '', status: 'critical' },
+  { id: 105, dept: 'qc', cat: 'technical', text: 'Ölçüm cihazları (mezura, terazi vb.) kalibrasyonu güncel mi? / Are measuring instruments (tape, scale, etc.) calibration up to date?', notes: '', status: 'critical' },
+  { id: 106, dept: 'qc', cat: 'technical', text: 'Kusur kodlama sistemi (defect coding) standart mı? / Is the defect coding system standardized?', notes: '', status: 'critical' },
+  { id: 107, dept: 'qc', cat: 'technical', text: 'Numune saklama/referans arşivi tutuluyor mu? / Is a sample retention/reference archive maintained?', notes: '', status: 'critical' },
+  { id: 108, dept: 'qc', cat: 'technical', text: 'İğne/metal dedektör kontrolü her sevkiyatta yapılıyor mu? / Is a needle/metal detector check performed on every shipment?', notes: '', status: 'critical' },
+
+  // ═══ PAKETLEME / PACKAGING ═══
+  { id: 120, dept: 'packaging', cat: 'compliance', text: 'Paketleme malzemeleri müşteri şartnamesine uygun mu? / Do packaging materials comply with the customer specification?', notes: '', status: 'critical' },
+  { id: 121, dept: 'packaging', cat: 'compliance', text: 'Karton/ambalaj geri dönüşüm oranları takip ediliyor mu? / Are carton/packaging recycling rates tracked?', notes: '', status: 'critical' },
+  { id: 122, dept: 'packaging', cat: 'csr', text: 'Plastik kullanımı azaltma girişimleri var mı? / Are there initiatives to reduce plastic usage?', notes: '', status: 'critical' },
+  { id: 123, dept: 'packaging', cat: 'social', text: 'Paketleme alanında kaldırma-taşıma ergonomisi sağlanıyor mu? / Is lifting/handling ergonomics ensured in the packing area?', notes: '', status: 'critical' },
+  { id: 124, dept: 'packaging', cat: 'technical', text: 'Barkod/etiketleme sistemi doğru çalışıyor mu? / Is the barcode/labeling system working correctly?', notes: '', status: 'critical' },
+  { id: 125, dept: 'packaging', cat: 'technical', text: 'Karton/poşetler metal dedektör taramasından geçiyor mu? / Do cartons/bags pass through metal detector screening?', notes: '', status: 'critical' },
+  { id: 126, dept: 'packaging', cat: 'technical', text: 'Paketleme öncesi son kontrol (pre-shipment check) yapılıyor mu? / Is a final pre-shipment check performed before packing?', notes: '', status: 'critical' },
+  { id: 127, dept: 'packaging', cat: 'technical', text: 'Nem/hasar önleyici ambalajlama standartlara uygun mu? / Does moisture/damage-preventive packaging meet standards?', notes: '', status: 'critical' },
+
+  // ═══ SEVKİYAT / SHIPPING ═══
+  { id: 140, dept: 'shipping', cat: 'compliance', text: 'C-TPAT / tedarik zinciri güvenlik standartları uygulanıyor mu?', notes: '', status: 'critical' },
+  { id: 141, dept: 'shipping', cat: 'compliance', text: 'Sevkiyat evrakları (fatura, çeki listesi, sertifikalar) eksiksiz mi? / Are shipment documents (invoice, packing list, certificates) complete?', notes: '', status: 'critical' },
+  { id: 142, dept: 'shipping', cat: 'csr', text: 'Lojistik karbon ayak izini azaltma çalışmaları var mı? / Are there efforts to reduce the logistics carbon footprint?', notes: '', status: 'critical' },
+  { id: 143, dept: 'shipping', cat: 'social', text: 'Yükleme/boşaltma personeli güvenlik ekipmanı kullanıyor mu? / Do loading/unloading staff use safety equipment?', notes: '', status: 'critical' },
+  { id: 144, dept: 'shipping', cat: 'technical', text: 'Konteyner/kamyon mühürleme (sealing) prosedürü uygulanıyor mu? / Is a container/truck sealing procedure applied?', notes: '', status: 'critical' },
+  { id: 145, dept: 'shipping', cat: 'technical', text: 'Sevkiyat öncesi miktar/ürün doğrulaması yapılıyor mu? / Is quantity/product verification performed before shipment?', notes: '', status: 'critical' },
+  { id: 146, dept: 'shipping', cat: 'technical', text: 'GPS/izlenebilirlik sistemi kullanılıyor mu? / Is a GPS/traceability system used?', notes: '', status: 'critical' },
+  { id: 147, dept: 'shipping', cat: 'technical', text: 'Depo çıkış kontrolü (mal kabul-çıkış eşleşmesi) yapılıyor mu? / Is warehouse exit control (goods receipt-dispatch matching) performed?', notes: '', status: 'critical' },
+
+  // ═══ AŞAĞIDAKİ MADDELER, SİTEDEKİ 457 SORULUK CSR/UYUM LİSTESİ TARANARAK BU DEPARTMANLARLA
+  // İLGİLİ OLAN VE MÜKERRER OLMAYAN SORULARDAN KOPYALANMIŞTIR (kaynak soru No'su belirtilmiştir). /
+  // THE FOLLOWING ITEMS WERE COPIED FROM THE SITE'S 457-QUESTION CSR/COMPLIANCE LIST, AFTER SCANNING
+  // IT FOR QUESTIONS RELEVANT TO THESE DEPARTMENTS AND EXCLUDING DUPLICATES (source question No. noted).
+
+  // --- KUMAŞ / FABRIC (457 soruluk listeden kopyalandı) ---
+  { id: 200, dept: 'fabric', cat: 'technical', text: 'Kumaşlar paletler üzerinde ve belirlenmiş depo alanlarında depolanıyor mu? / Are fabrics stored on pallets and in designated warehouse areas?', notes: 'Kaynak: 457 soruluk liste, No. 55', status: 'critical' },
+  { id: 201, dept: 'fabric', cat: 'compliance', text: 'Kumaş depolama miktarı yasal sınırlar içinde tutuluyor mu? / Are fabric storage quantities maintained within legal limits?', notes: 'Kaynak: 457 soruluk liste, No. 70', status: 'critical' },
+  { id: 202, dept: 'fabric', cat: 'technical', text: 'Kumaş kontrol (inceleme) makinesi mevcut mu ve kullanılıyor mu? / Is a fabric inspection machine available and in use?', notes: 'Kaynak: 457 soruluk liste, No. 292', status: 'critical' },
+  { id: 203, dept: 'fabric', cat: 'technical', text: 'Kumaş LCR (uzunluk/genişlik/rulo) kontrolü yapılıyor mu? / Is fabric LCR (length/width/roll) control performed?', notes: 'Kaynak: 457 soruluk liste, No. 294', status: 'critical' },
+  { id: 204, dept: 'fabric', cat: 'technical', text: 'Kumaş çekme testi standart şablon (50x50 cm) ile yapılıyor ve çekme oranı sınırları karşılanıyor mu? / Is fabric shrinkage tested using a standard 50x50 cm template, meeting shrinkage rate limits?', notes: 'Kaynak: 457 soruluk liste, No. 295', status: 'critical' },
+  { id: 205, dept: 'fabric', cat: 'technical', text: 'Her kumaş/renk için tela yapıştırma parametrelerini (ısı-süre-basınç) tanımlayan bir data sheet formu var mı? / Is there a data sheet defining fusing parameters (heat-time-pressure) per fabric/color?', notes: 'Kaynak: 457 soruluk liste, No. 321', status: 'critical' },
+  { id: 206, dept: 'fabric', cat: 'social', text: 'Tüm kumaş serim makinelerinde hareket sensörleri bulunuyor mu? / Are movement sensors installed on all fabric spreading machines?', notes: 'Kaynak: 457 soruluk liste, No. 69', status: 'critical' },
+
+  // --- KESİM / CUTTING (457 soruluk listeden kopyalandı) ---
+  { id: 210, dept: 'cutting', cat: 'technical', text: 'CAD/kalıp makinesi operatör tarafından düzenli olarak kalibre edilip kayıt tutuluyor mu? / Is the CAD/pattern cutting machine regularly calibrated with records kept?', notes: 'Kaynak: 457 soruluk liste, No. 311', status: 'critical' },
+  { id: 211, dept: 'cutting', cat: 'technical', text: 'Pastal (serim planı) üzerinde kumaş çekme oranı bilgisi ve doğru ip yönü tanımlı mı? / Does the marker (lay plan) specify the fabric shrinkage rate and correct grain direction?', notes: 'Kaynak: 457 soruluk liste, No. 313', status: 'critical' },
+  { id: 212, dept: 'cutting', cat: 'technical', text: 'Otomatik serim ve kesim makineleri kullanılıyor mu? / Are automatic spreading and cutting machines used?', notes: 'Kaynak: 457 soruluk liste, No. 317', status: 'critical' },
+  { id: 213, dept: 'cutting', cat: 'technical', text: 'Kesim demetleri/panelleri lot bilgisiyle etiketlenip takip ediliyor mu? / Are cut bundles/panels labeled with lot information and tracked?', notes: 'Kaynak: 457 soruluk liste, No. 318', status: 'critical' },
+
+  // --- BASKI / PRINTING (457 soruluk listeden kopyalandı) ---
+  { id: 220, dept: 'printing', cat: 'compliance', text: 'Boyahane koridorlar, çıkışlar ve makine yerleşimleri açıkça belirlenmiş şekilde düzenlenmiş mi? / Is the dye house organized with clearly defined aisles, exits, and machinery locations?', notes: 'Kaynak: 457 soruluk liste, No. 62', status: 'critical' },
+  { id: 221, dept: 'printing', cat: 'compliance', text: 'Kimyasal transfer prosedürü mevcut mu? / Is a chemical transfer procedure in place?', notes: 'Kaynak: 457 soruluk liste, No. 167', status: 'critical' },
+  { id: 222, dept: 'printing', cat: 'csr', text: 'Atık su analizleri yapılmış mı? / Have wastewater analyses been conducted?', notes: 'Kaynak: 457 soruluk liste, No. 174', status: 'critical' },
+  { id: 223, dept: 'printing', cat: 'csr', text: 'PFAS içermeyen kimyasal gerekliliklerine uygunluk doğrulanıyor mu? / Is compliance with PFAS-Free chemical requirements verified?', notes: 'Kaynak: 457 soruluk liste, No. 240', status: 'critical' },
+  { id: 224, dept: 'printing', cat: 'csr', text: 'Kullanılan kimyasalların ZDHC Gateway Seviye 3 sertifikasyon oranı takip ediliyor mu? / Is the percentage of chemicals certified at ZDHC Gateway Level 3 tracked?', notes: 'Kaynak: 457 soruluk liste, No. 375', status: 'critical' },
+
+  // --- DİKİM / SEWING (457 soruluk listeden kopyalandı) ---
+  { id: 230, dept: 'sewing', cat: 'compliance', text: 'Dikim bandı için günlük/haftalık üretim hedefleri belirleniyor mu ve üretime başlamadan risk analizi toplantısı yapılıyor mu? / Are daily/weekly production targets set, with a risk assessment meeting held before starting production?', notes: 'Kaynak: 457 soruluk liste, No. 322', status: 'critical' },
+  { id: 231, dept: 'sewing', cat: 'technical', text: 'Dikim bandında güncel teknik dosya, trim kart ve onaylı PP numunesi bulunduruluyor mu? / Are the current technical file, trim card and approved PP sample kept at the sewing line?', notes: 'Kaynak: 457 soruluk liste, No. 323', status: 'critical' },
+  { id: 232, dept: 'sewing', cat: 'compliance', text: 'İğne odası için yetkilendirilmiş personel görevlendirilmiş mi? / Is authorized personnel assigned to the needle control room?', notes: 'Kaynak: 457 soruluk liste, No. 328', status: 'critical' },
+  { id: 233, dept: 'sewing', cat: 'technical', text: 'Kırılan iğne parçası bulunamadığında uygulanacak prosedür (manyetik süpürge ile tarama vb.) tanımlı mı? / Is a defined procedure followed when a broken needle fragment cannot be found?', notes: 'Kaynak: 457 soruluk liste, No. 329', status: 'critical' },
+  { id: 234, dept: 'sewing', cat: 'technical', text: 'Düğme dikim makinelerinde çekme testi (pull test, 70N) periyodik olarak yapılıyor mu? / Is a pull test (70N) periodically performed on button-sewing machines?', notes: 'Kaynak: 457 soruluk liste, No. 330', status: 'critical' },
+
+  // --- KALİTE KONTROL / QUALITY CONTROL (457 soruluk listeden kopyalandı) ---
+  { id: 240, dept: 'qc', cat: 'technical', text: 'Işık kabini mevcut ve kalibre edilmiş mi (standart ışıklar D65/U30 ile)? / Is a light box available and calibrated (with standard D65/U30 lighting)?', notes: 'Kaynak: 457 soruluk liste, No. 296', status: 'critical' },
+  { id: 241, dept: 'qc', cat: 'technical', text: 'Aksesuarlar için AQL standardına uygun giriş kontrolü yapılıyor ve raporları arşivleniyor mu? / Is incoming inspection of accessories performed per AQL standard, with reports archived?', notes: 'Kaynak: 457 soruluk liste, No. 298', status: 'critical' },
+  { id: 242, dept: 'qc', cat: 'technical', text: 'Bir modelde kullanılacak tüm aksesuarlar üretime girmeden metal dedektöründen topluca geçiriliyor mu? / Are all accessories for a given style passed through a metal detector together before production?', notes: 'Kaynak: 457 soruluk liste, No. 301', status: 'critical' },
+  { id: 243, dept: 'qc', cat: 'compliance', text: 'Sipariş sonrası inceleme (inspection) sonucuna kadarki süreç takip ediliyor mu (CPS)? / Is the process from order placement to inspection result tracked (CPS)?', notes: 'Kaynak: 457 soruluk liste, No. 303', status: 'critical' },
+  { id: 244, dept: 'qc', cat: 'technical', text: 'Tela (fusing) makineleri için kalibrasyon sertifikası (en az 6 ayda bir) mevcut mu? / Is there a calibration certificate for fusing machines (at least every 6 months)?', notes: 'Kaynak: 457 soruluk liste, No. 320', status: 'critical' },
+  { id: 245, dept: 'qc', cat: 'technical', text: 'Bant sonu (end-of-line) kalite kontrolü ve ölçü kontrolü yapılıp raporlanıyor mu? / Is end-of-line quality control and measurement control performed and reported?', notes: 'Kaynak: 457 soruluk liste, No. 326', status: 'critical' },
+  { id: 246, dept: 'qc', cat: 'compliance', text: 'Kalite kontrolden geçmemiş/geçmiş ürünler ile ret edilen ürünler için ayrı bir karantina alanı var mı? / Is there a separate quarantine area for uninspected and rejected products?', notes: 'Kaynak: 457 soruluk liste, No. 334', status: 'critical' },
+
+  // --- PAKETLEME / PACKAGING (457 soruluk listeden kopyalandı) ---
+  { id: 250, dept: 'packaging', cat: 'technical', text: 'Karton rulolar belirlenmiş depoda saklanıyor mu? / Are carton rolls stored in the designated warehouse?', notes: 'Kaynak: 457 soruluk liste, No. 61', status: 'critical' },
+  { id: 251, dept: 'packaging', cat: 'compliance', text: 'Paketleme/metalden arındırılmış alana giriş yetkili personelle sınırlandırılıp kayıt altına alınıyor mu? / Is access to the packing/metal-free area restricted to authorized personnel and logged?', notes: 'Kaynak: 457 soruluk liste, No. 340', status: 'critical' },
+  { id: 252, dept: 'packaging', cat: 'technical', text: 'Koliler üzerine ağırlık ve numara bilgisi yazılıp doğru şekilde etiketleniyor mu? / Are cartons labeled with weight and carton number correctly marked?', notes: 'Kaynak: 457 soruluk liste, No. 341', status: 'critical' },
+  { id: 253, dept: 'packaging', cat: 'csr', text: 'Tedarikçi ambalaj atıklarının iadesi/azaltımı ve yeniden kullanım amaçlı taşınmasında amaç kaydı tutuluyor mu? / Are supplier packaging returns/reduction practiced, with purpose recorded for reuse transport?', notes: 'Kaynak: 457 soruluk liste, No. 432', status: 'critical' },
+
+  // --- SEVKİYAT / SHIPPING (457 soruluk listeden kopyalandı) ---
+  { id: 260, dept: 'shipping', cat: 'compliance', text: 'Depo, Sevkiyat, Giriş ve çıkış alanlarında güvenlik kamerası var mı? / Are there security cameras in the warehouse, shipping, entry, and exit areas?', notes: 'Kaynak: 457 soruluk liste, No. 185', status: 'critical' }
+];
+const AR_DEPT_TEXT = {
+  1: 'هل يتم حفظ تقارير اختبار القماش (ثبات اللون، الانكماش، المتانة)؟',
+  2: 'هل شهادات امتثال الموردين (OEKO-TEX، GOTS، إلخ) محدثة؟',
+  3: 'هل يتم الاحتفاظ بسجلات منشأ القماش وإمكانية التتبع؟',
+  4: 'هل خضع موردو القماش لتدقيق الامتثال الاجتماعي؟',
+  5: 'هل يتم تتبع نسبة استخدام القماش المعاد تدويره/العضوي؟',
+  6: 'هل يتم تزويد عمال مستودع القماش بمعدات رفع ونقل مناسبة؟',
+  7: 'هل توجد تهوية وإضاءة كافية لعمال المستودع؟',
+  8: 'هل مدة استرخاء القماش مطابقة للمعايير؟',
+  9: 'هل يُستخدم نظام لوضع العلامات على لفات القماش وتتبع المخزون؟',
+  10: 'هل يُخزَّن القماش في بيئة يتم التحكم فيها بالرطوبة والحرارة؟',
+  11: 'هل يتم تطبيق مراقبة جودة القماش (نظام النقاط الأربع)؟',
+  12: 'هل يتم فصل دفعات القماش الخاطئة/المعيبة في منطقة حجر صحي؟',
+  20: 'هل يتم تسجيل معدلات أخطاء القص؟',
+  21: 'هل يتم الاحتفاظ بسجلات صيانة مقصات/شفرات القص؟',
+  22: 'هل توجد أهداف لتقليل هدر/نفايات القماش؟',
+  23: 'هل يتم توجيه مخلفات القص لإعادة التدوير؟',
+  24: 'هل يحصل عمال القص على تدريب السلامة للأدوات الحادة؟',
+  25: 'هل تتوفر ظروف عمل مريحة عند طاولات القص؟',
+  26: 'هل تُستخدم قفازات معدنية ومعدات مقاومة للقطع؟',
+  27: 'هل يتم فحص الباترون/الماركر قبل القص؟',
+  28: 'هل يتم قياس تفاوتات فرد القماش؟',
+  29: 'هل واقيات شفرة ماكينة القص تعمل بشكل سليم؟',
+  30: 'هل يتم تطبيق نظام الحزم والترقيم بشكل صحيح؟',
+  40: 'هل تتوفر أوراق بيانات السلامة MSDS للمواد الكيميائية المستخدمة في الطباعة؟',
+  41: 'هل تتوافق مواد الطباعة الكيميائية مع قائمة المواد المقيدة RSL؟',
+  42: 'هل تُفضَّل تقنيات الطباعة المائية/الصديقة للبيئة؟',
+  43: 'هل تتم معالجة مياه الصرف الناتجة عن الطباعة؟',
+  44: 'هل يتم تزويد عمال الطباعة بمعدات الحماية الشخصية (قفازات، أقنعة)؟',
+  45: 'هل يتم قياس التعرض الكيميائي بانتظام؟',
+  46: 'هل يتم فحص محاذاة تسجيل شاشة/قالب الطباعة؟',
+  47: 'هل مطابقة الألوان تفي بالمعيار المطلوب؟',
+  48: 'هل يتم تتبع درجة حرارة ومدة المعالجة بعد الطباعة؟',
+  49: 'هل تُجرى اختبارات ثبات الطباعة (الغسيل، الاحتكاك)؟',
+  60: 'هل سجلات صيانة ماكينة التطريز محدثة؟',
+  61: 'هل يتم تدقيق ورش التطريز من الباطن (إن وجدت)؟',
+  62: 'هل يتم استرداد نفايات خيوط/مواد التطريز؟',
+  63: 'هل توجد فترات راحة لمشغلي التطريز للحد من إجهاد العين واليد؟',
+  64: 'هل تتوفر إضاءة كافية؟',
+  65: 'هل تُحفظ ملفات تصميم التطريز الرقمية بنظام تحكم بالإصدارات؟',
+  66: 'هل يوجد نظام لتتبع/تسجيل كسر الإبر (لمنع التلوث المعدني)؟',
+  67: 'هل يتم فحص إعدادات شد التطريز بانتظام؟',
+  68: 'هل يتم الحصول على موافقة عينة قبل الإنتاج؟',
+  80: 'هل سجلات تدريب الصحة والسلامة المهنية كاملة؟',
+  81: 'هل يتم تدقيق خطوط الخياطة من الباطن؟',
+  82: 'هل ساعات العمل ضمن الحدود القانونية؟',
+  83: 'هل العمل الإضافي يقوم على أساس طوعي؟',
+  84: 'هل بيئة عمل خط الخياطة (الكرسي، ارتفاع الطاولة) مناسبة؟',
+  85: 'هل يتم إبلاغ عمال الخياطة بآلية الشكاوى؟',
+  86: 'هل يتم تطبيق نموذج تتبع كسر الإبر في كل محطة؟',
+  87: 'هل يتم فحص جودة الغرزة (SPI، نوع الغرزة) على الخط؟',
+  88: 'هل يتم تتبع توازن الخط والكفاءة؟',
+  89: 'هل يتم تطبيق مراقبة الجودة أثناء خط الإنتاج؟',
+  100: 'هل يتم تطبيق معايير AQL (مستوى الجودة المقبول)؟',
+  101: 'هل مواصفات الجودة الخاصة بالعميل محفوظة؟',
+  102: 'هل يتم ضمان الشفافية في عمليات مراقبة الجودة (السجلات قابلة للمشاركة)؟',
+  103: 'هل عدد وتدريب موظفي مراقبة الجودة كافٍ؟',
+  104: 'هل يتم إجراء الفحص النهائي للمنتج؟',
+  105: 'هل معايرة أدوات القياس (الشريط، الميزان، إلخ) محدثة؟',
+  106: 'هل نظام ترميز العيوب موحّد؟',
+  107: 'هل يتم الاحتفاظ بأرشيف للعينات المرجعية؟',
+  108: 'هل يتم إجراء فحص كاشف الإبر/المعادن في كل شحنة؟',
+  120: 'هل تتوافق مواد التعبئة مع مواصفات العميل؟',
+  121: 'هل يتم تتبع معدلات إعادة تدوير الكرتون/مواد التعبئة؟',
+  122: 'هل توجد مبادرات لتقليل استخدام البلاستيك؟',
+  123: 'هل تُراعى بيئة العمل المريحة في منطقة التعبئة؟',
+  124: 'هل يعمل نظام الباركود/وضع العلامات بشكل صحيح؟',
+  125: 'هل تمر الكراتين/الأكياس بفحص كاشف المعادن؟',
+  126: 'هل يتم إجراء فحص نهائي قبل الشحن قبل التعبئة؟',
+  127: 'هل تلبي التعبئة الواقية من الرطوبة/التلف المعايير؟',
+  140: 'هل يتم تطبيق معايير أمن سلسلة التوريد C-TPAT؟',
+  141: 'هل مستندات الشحن (الفاتورة، قائمة التعبئة، الشهادات) كاملة؟',
+  142: 'هل توجد جهود لتقليل البصمة الكربونية للوجستيات؟',
+  143: 'هل يستخدم موظفو التحميل/التفريغ معدات السلامة؟',
+  144: 'هل يتم تطبيق إجراء ختم الحاويات/الشاحنات؟',
+  145: 'هل يتم التحقق من الكمية/المنتج قبل الشحن؟',
+  146: 'هل يُستخدم نظام تتبع GPS؟',
+  147: 'هل يتم إجراء مراقبة خروج المستودع (مطابقة الاستلام والصرف)؟',
+  200: 'هل يتم تخزين الأقمشة على منصات نقالة وفي مناطق مستودع محددة؟',
+  201: 'هل تُحفظ كمية تخزين القماش ضمن الحدود القانونية؟',
+  202: 'هل تتوفر ماكينة فحص القماش ويتم استخدامها؟',
+  203: 'هل يتم إجراء فحص LCR للقماش (الطول/العرض/اللفة)؟',
+  204: 'هل يُختبر انكماش القماش باستخدام قالب قياسي 50×50 سم وفق حدود نسبة الانكماش؟',
+  205: 'هل توجد ورقة بيانات تحدد معايير اللصق الحراري (الحرارة-الوقت-الضغط) لكل قماش/لون؟',
+  206: 'هل تتوفر أجهزة استشعار حركة على جميع ماكينات فرد القماش؟',
+  210: 'هل يتم معايرة ماكينة القص CAD/الباترون بانتظام مع الاحتفاظ بسجلات؟',
+  211: 'هل يحدد الماركر (مخطط الفرش) نسبة انكماش القماش واتجاه الخيط الصحيح؟',
+  212: 'هل تُستخدم ماكينات فرد وقص أوتوماتيكية؟',
+  213: 'هل يتم وضع علامات على حزم/ألواح القص بمعلومات الدفعة وتتبعها؟',
+  220: 'هل يتم تنظيم ممرات ومخارج ومواقع ماكينات محطة الصباغة بشكل واضح؟',
+  221: 'هل يوجد إجراء لنقل المواد الكيميائية؟',
+  222: 'هل تم إجراء تحليلات مياه الصرف؟',
+  223: 'هل يتم التحقق من الامتثال لمتطلبات المواد الكيميائية الخالية من PFAS؟',
+  224: 'هل يتم تتبع نسبة اعتماد المواد الكيميائية المستخدمة وفق ZDHC Gateway المستوى 3؟',
+  230: 'هل يتم تحديد أهداف إنتاج يومية/أسبوعية لخط الخياطة مع عقد اجتماع تقييم مخاطر قبل بدء الإنتاج؟',
+  231: 'هل يُحتفظ بالملف الفني الحالي وبطاقة التريم والعينة المعتمدة عند خط الخياطة؟',
+  232: 'هل تم تعيين موظف مخوّل لغرفة مراقبة الإبر؟',
+  233: 'هل يوجد إجراء محدد عند عدم العثور على قطعة الإبرة المكسورة؟',
+  234: 'هل يتم إجراء اختبار الشد (70 نيوتن) بشكل دوري على ماكينات خياطة الأزرار؟',
+  240: 'هل يتوفر صندوق إضاءة معاير (بإضاءة قياسية D65/U30)؟',
+  241: 'هل يتم إجراء فحص وارد للإكسسوارات وفق معيار AQL مع أرشفة التقارير؟',
+  242: 'هل تمر جميع إكسسوارات الموديل الواحد بكاشف المعادن مجتمعة قبل الإنتاج؟',
+  243: 'هل يتم تتبع العملية من الطلب حتى نتيجة الفحص (CPS)؟',
+  244: 'هل تتوفر شهادة معايرة لماكينات اللصق الحراري (كل 6 أشهر على الأقل)؟',
+  245: 'هل يتم إجراء مراقبة الجودة ومراقبة القياس في نهاية الخط والإبلاغ عنها؟',
+  246: 'هل توجد منطقة حجر منفصلة للمنتجات غير المفحوصة والمرفوضة؟',
+  250: 'هل يتم تخزين لفائف الكرتون في المستودع المخصص؟',
+  251: 'هل الوصول إلى منطقة التعبئة/الخالية من المعادن مقتصر على الموظفين المخولين ومسجل؟',
+  252: 'هل يتم وضع الوزن ورقم الكرتون بشكل صحيح على الكراتين؟',
+  253: 'هل تتم ممارسات إعادة/تقليل نفايات تغليف الموردين مع تسجيل الغرض عند نقلها لإعادة الاستخدام؟',
+  260: 'هل توجد كاميرات مراقبة في مناطق المستودع والشحن والدخول والخروج؟',
+};
+
+let productionChecklist = [];
+
+// Kontrol maddesi metnini geçerli dile göre gösterir: Arapça seçiliyse AR_DEPT_TEXT sözlüğüne bakar,
+// aksi halde "Türkçe / English" formatındaki metni geçerli dile göre böler. /
+// Shows the checklist item's text according to the current language: looks up AR_DEPT_TEXT when
+// Arabic is selected, otherwise splits the "Turkish / English" formatted text by current language.
+function deptItemText(item) {
+  if (currentLang === 'ar' && AR_DEPT_TEXT[item.id]) return escHtml(AR_DEPT_TEXT[item.id]);
+  return escHtml(biText(item.text));
+}
+
+let currentDeptKey = null;
+let currentDeptCatFilter = 'all';
 
 // Belirli bir yetki alanında (departmanda) düzenleme hakkı var mı? Yönetici her zaman evet. /
 // Does the current user have edit rights in a given scope (department)? Admin is always yes.
@@ -4047,6 +4784,8 @@ function goHome() {
   closeCustomerAudits();
   closeAuditFindings();
   closeCustomerFindingsChart();
+  closeDepartmentsHub();
+  closeDepartmentChecklist();
   const searchBar = document.getElementById('global-search');
   if (searchBar) searchBar.value = '';
   
@@ -4790,6 +5529,7 @@ let _docUploadTargetId = null;
 
 function _getDocStoreArray(storeKey) {
   if (storeKey === 'cert') return certificatesData;
+  if (storeKey === 'deptitem') return productionChecklist;
   return storeKey === 'company' ? companyProfileDocs : legalDocumentsDocs;
 }
 
@@ -6815,7 +7555,36 @@ function exportReportPDF() {
     </div>
   `));
 
-  // ═══ SAYFA 4 — MÜŞTERİ UYUM SIRALAMASI / CUSTOMER RANKING ═══
+  // ═══ DEPARTMANLAR / PRODUCTION DEPARTMENTS (sitenin CSR modülünden bağımsız, ayrı puanlama) ═══
+  const deptTotal = productionChecklist.length;
+  const deptComp = productionChecklist.filter(x => x.status === 'compliant').length;
+  const deptPct = deptTotal ? Math.round(deptComp / deptTotal * 100) : 0;
+  pages.push(pageShell('🏭', 'Departmanlar', 'Production Departments — CSR modülünden bağımsız ayrı puanlama / Independent scoring, separate from the CSR module', `
+    <div style="display:flex; gap:24px; flex:1; min-height:0;">
+      <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:16px;">
+        ${ringSvg(deptPct, 300, OK, '#FFFFFF')}
+        <div style="font-size:15px; font-weight:700; color:${MUTE};">${deptComp} / ${deptTotal} MADDE TAMAMLANDI / ITEMS COMPLETED</div>
+      </div>
+      <div style="flex:1.3; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; padding:26px; overflow:hidden;">
+        <div style="font-size:18px; font-weight:800; margin-bottom:16px;">DEPARTMAN BAZLI UYUM ORANI / COMPLIANCE BY DEPARTMENT</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          ${PRODUCTION_DEPARTMENTS.map(d => {
+            const items = productionChecklist.filter(x => x.dept === d.key);
+            const t = items.length, c = items.filter(x => x.status === 'compliant').length;
+            const p = t ? Math.round(c / t * 100) : 0;
+            return `<div style="display:flex; align-items:center; gap:14px;">
+              <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${d.label}</div>
+              <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
+                <div style="width:${p}%; height:100%; background:${d.c1};"></div>
+              </div>
+              <div style="width:70px; text-align:right; font-size:14px; font-weight:800; color:${d.c1};">%${p}</div>
+              <div style="width:90px; text-align:right; font-size:12px; color:${MUTE};">${c}/${t}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `));
   pages.push(pageShell('🏆', 'Müşteri Uyum Sıralaması', 'Customer Compliance Ranking — %100 tamamlayanlar en üstte, yeşil / 100% completions on top, in green', `
     <div style="display:flex; flex-wrap:wrap; gap:12px 18px; flex:1; align-content:flex-start; overflow:hidden;">
       ${custData.map(c => {

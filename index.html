@@ -4520,7 +4520,9 @@ function triggerCertPhotoUpload(certId) {
   if (!roleGuard('cert')) return;
   _certPhotoUploadTargetId = certId;
   const input = document.getElementById('cert-photo-file-input');
-  if (input) { input.value = ''; input.click(); }
+  if (!input) { console.error('cert-photo-file-input bulunamadı / cert-photo-file-input element not found in DOM'); alert(t3('Bir hata oluştu (yükleme alanı bulunamadı). Sayfayı yenileyip tekrar deneyin.', 'An error occurred (upload field not found). Please refresh the page and try again.', 'حدث خطأ (لم يتم العثور على حقل الرفع). يرجى تحديث الصفحة والمحاولة مرة أخرى.')); return; }
+  input.value = '';
+  input.click();
 }
 
 // Bir <img> öğesinden JPEG data URL üretir; büyük görselleri depolama alanını (Firestore/localStorage)
@@ -4600,69 +4602,98 @@ function _processUploadedFileToImage(file, maxDim, onDone, onError) {
 }
 
 function handleCertPhotoFileChange(event) {
-  const file = event.target.files && event.target.files[0];
-  const certId = _certPhotoUploadTargetId;
-  if (!file || certId === null) return;
-  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
-  _certPhotoUploadTargetId = null;
-  _processUploadedFileToImage(file, 900,
-    dataUrl => {
-      const cert = certificatesData.find(c => c.id === certId);
-      if (!cert) return;
-      cert.photo = dataUrl;
-      cert.mediaType = isPdf ? 'pdf' : 'image';
-      // ═══ DÜZELTİLDİ ═══ Önceden burada save() İKİ KEZ, birbirinden bağımsız zamanlamalarda
-      // çağrılıyordu (biri küçük önizleme kaydedilir kaydedilmez, biri tam PDF okunduktan sonra) —
-      // bu, aralarında gelen bir bulut senkronizasyon güncellemesiyle çakışıp az önce eklenen
-      // sertifikanın kaybolmasına yol açabiliyordu. Artık TÜM işlemler bitmeden save() ÇAĞRILMIYOR —
-      // Şirket Profili/Yasal Dökümanlar modülünde zaten sorunsuz çalışan aynı desen kullanıldı. /
-      // ═══ FIXED ═══ This used to call save() TWICE at independent times (once right after the
-      // small preview was saved, once again after the full PDF finished reading) — a cloud sync
-      // update landing in between could race with this and cause the just-added certificate to
-      // disappear. Now save() is NOT called until ALL work is finished — using the same pattern
-      // already proven to work correctly in the Company Profile / Legal Documents module.
-      if (isPdf && file.size <= MAX_FULL_PDF_BYTES) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          cert.hasFullPdf = true;
-          _saveDocFileData('cert', certId, 'pdf', e.target.result, () => { save(); openDetailModal('category', 'cert'); });
-        };
-        reader.onerror = () => { save(); openDetailModal('category', 'cert'); };
-        reader.readAsDataURL(file);
-      } else {
-        if (isPdf) delete cert.hasFullPdf;
-        else { delete cert.hasFullPdf; _deleteDocFileData('cert', certId, 'pdf'); }
-        save();
-        openDetailModal('category', 'cert');
-        if (isPdf && file.size > MAX_FULL_PDF_BYTES) {
-          alert(t3(
-            `PDF dosyası çok büyük olduğu için tüm sayfalar saklanamadı (sadece ilk sayfa önizlemesi kaydedildi). PDF dosyalarının ${Math.round(MAX_FULL_PDF_BYTES/1024)} KB altında olması önerilir.`,
-            `The PDF is too large to store all pages (only the first-page preview was saved). PDF files should be under ${Math.round(MAX_FULL_PDF_BYTES/1024)} KB.`,
-            `الملف كبير جدًا لتخزين جميع الصفحات (تم حفظ معاينة الصفحة الأولى فقط). يجب أن تكون ملفات PDF أقل من ${Math.round(MAX_FULL_PDF_BYTES/1024)} كيلوبايت.`
-          ));
+  try {
+    const file = event.target.files && event.target.files[0];
+    const certId = _certPhotoUploadTargetId;
+    console.log('[Sertifika Yükleme] Dosya seçildi / File selected:', file ? file.name : null, 'certId:', certId);
+    if (!file) { console.warn('[Sertifika Yükleme] Dosya seçilmedi / No file selected'); return; }
+    if (certId === null || certId === undefined) { console.error('[Sertifika Yükleme] Hedef sertifika ID bulunamadı / No target certificate ID'); alert(t3('Bir hata oluştu, lütfen tekrar deneyin.', 'An error occurred, please try again.', 'حدث خطأ، يرجى المحاولة مرة أخرى.')); return; }
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+    _certPhotoUploadTargetId = null;
+
+    _processUploadedFileToImage(file, 900,
+      dataUrl => {
+        try {
+          console.log('[Sertifika Yükleme] Önizleme oluşturuldu, kaydediliyor / Preview generated, saving...');
+          const cert = certificatesData.find(c => c.id === certId);
+          if (!cert) { console.error('[Sertifika Yükleme] Sertifika bulunamadı, id:', certId); alert(t3('Sertifika bulunamadı. Sayfa yenilenip tekrar denenecek.', 'Certificate not found. The page will refresh and you can try again.', 'لم يتم العثور على الشهادة. سيتم تحديث الصفحة للمحاولة مرة أخرى.')); openDetailModal('category', 'cert'); return; }
+          cert.photo = dataUrl;
+          cert.mediaType = isPdf ? 'pdf' : 'image';
+
+          // Küçük önizleme HER ZAMAN hemen kaydedilir — tam PDF depolaması (varsa) buna ek, engelleyici
+          // olmayan ikinci bir adımdır. Böylece tam PDF saklama başarısız olsa bile en azından önizleme
+          // kalıcı olur. /
+          // The small preview is ALWAYS saved immediately — full-PDF storage (if applicable) is an
+          // additional, NON-BLOCKING second step. So even if full-PDF storage fails, the preview is
+          // still persisted.
+          if (!isPdf) { delete cert.hasFullPdf; _deleteDocFileData('cert', certId, 'pdf'); }
+          else if (file.size > MAX_FULL_PDF_BYTES) { delete cert.hasFullPdf; }
+
+          save();
+          console.log('[Sertifika Yükleme] Önizleme kaydedildi / Preview saved');
+          openDetailModal('category', 'cert');
+
+          if (isPdf && file.size > MAX_FULL_PDF_BYTES) {
+            alert(t3(
+              `PDF dosyası çok büyük olduğu için tüm sayfalar saklanamadı (sadece ilk sayfa önizlemesi kaydedildi). PDF dosyalarının ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB altında olması önerilir.`,
+              `The PDF is too large to store all pages (only the first-page preview was saved). PDF files should be under ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} MB.`,
+              `الملف كبير جدًا لتخزين جميع الصفحات (تم حفظ معاينة الصفحة الأولى فقط). يجب أن تكون ملفات PDF أقل من ${Math.round(MAX_FULL_PDF_BYTES/1024/1024)} ميغابايت.`
+            ));
+          } else if (isPdf && file.size <= MAX_FULL_PDF_BYTES) {
+            // Tam PDF'i ayrıca (engelleyici olmayan şekilde) sakla / additionally (non-blockingly) store the full PDF
+            const reader = new FileReader();
+            reader.onload = e => {
+              try {
+                console.log('[Sertifika Yükleme] Tam PDF okundu, depolanıyor / Full PDF read, storing...');
+                _saveDocFileData('cert', certId, 'pdf', e.target.result, ok => {
+                  const c2 = certificatesData.find(c => c.id === certId);
+                  if (c2) {
+                    c2.hasFullPdf = !!ok;
+                    if (!ok) console.error('[Sertifika Yükleme] Tam PDF depolama başarısız (önizleme yine de korunuyor) / Full PDF storage failed (preview is still kept)');
+                    save();
+                    openDetailModal('category', 'cert');
+                  }
+                });
+              } catch (e2) { console.error('[Sertifika Yükleme] Tam PDF işleme hatası / Full PDF processing error:', e2); }
+            };
+            reader.onerror = () => console.error('[Sertifika Yükleme] Dosya okuma hatası (tam PDF) / File read error (full PDF)');
+            reader.readAsDataURL(file);
+          }
+        } catch (e3) {
+          console.error('[Sertifika Yükleme] Kaydetme hatası / Save error:', e3);
+          alert(t3('Kaydederken bir hata oluştu: ', 'An error occurred while saving: ', 'حدث خطأ أثناء الحفظ: ') + e3.message);
         }
+      },
+      errType => {
+        console.error('[Sertifika Yükleme] Dosya işleme hatası / File processing error:', errType);
+        if (errType === 'type') alert(t3('Lütfen bir resim dosyası ya da PDF seçin.', 'Please select an image file or a PDF.', 'يرجى اختيار ملف صورة أو PDF.'));
+        else if (errType === 'pdfjs') alert(t3('PDF önizleme bileşeni yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.', 'The PDF preview component failed to load. Please check your connection and try again.', 'تعذر تحميل مكوّن معاينة PDF. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'));
+        else alert(t3('Dosya işlenemedi. Lütfen tekrar deneyin.', 'The file could not be processed. Please try again.', 'تعذرت معالجة الملف. يرجى المحاولة مرة أخرى.'));
       }
-    },
-    errType => {
-      if (errType === 'type') alert(t3('Lütfen bir resim dosyası ya da PDF seçin.', 'Please select an image file or a PDF.', 'يرجى اختيار ملف صورة أو PDF.'));
-      else if (errType === 'pdfjs') alert(t3('PDF önizleme bileşeni yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.', 'The PDF preview component failed to load. Please check your connection and try again.', 'تعذر تحميل مكوّن معاينة PDF. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.'));
-      else alert(t3('Dosya işlenemedi. Lütfen tekrar deneyin.', 'The file could not be processed. Please try again.', 'تعذرت معالجة الملف. يرجى المحاولة مرة أخرى.'));
-    }
-  );
+    );
+  } catch (eOuter) {
+    console.error('[Sertifika Yükleme] Beklenmeyen hata / Unexpected error:', eOuter);
+    alert(t3('Beklenmeyen bir hata oluştu: ', 'An unexpected error occurred: ', 'حدث خطأ غير متوقع: ') + eOuter.message);
+  }
 }
 
 // Yanlış yüklenen bir sertifika fotoğrafını kaldırır / Removes a wrongly uploaded certificate photo
 function deleteCertPhoto(certId) {
-  if (!roleGuard('cert')) return;
-  const cert = certificatesData.find(c => c.id === certId);
-  if (!cert || !cert.photo) return;
-  if (!confirm(t3('Bu sertifika fotoğrafını silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this certificate photo?', 'هل أنت متأكد أنك تريد حذف صورة هذه الشهادة؟'))) return;
-  delete cert.photo;
-  if (cert.hasFullPdf) _deleteDocFileData('cert', certId, 'pdf');
-  delete cert.hasFullPdf;
-  delete cert.mediaType;
-  save();
-  openDetailModal('category', 'cert');
+  try {
+    if (!roleGuard('cert')) return;
+    const cert = certificatesData.find(c => c.id === certId);
+    if (!cert || !cert.photo) return;
+    if (!confirm(t3('Bu sertifika fotoğrafını silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this certificate photo?', 'هل أنت متأكد أنك تريد حذف صورة هذه الشهادة؟'))) return;
+    delete cert.photo;
+    if (cert.hasFullPdf) _deleteDocFileData('cert', certId, 'pdf');
+    delete cert.hasFullPdf;
+    delete cert.mediaType;
+    save();
+    openDetailModal('category', 'cert');
+  } catch (e) {
+    console.error('[Sertifika Silme] Hata / Delete error:', e);
+    alert(t3('Silinirken bir hata oluştu: ', 'An error occurred while deleting: ', 'حدث خطأ أثناء الحذف: ') + e.message);
+  }
 }
 
 function openCertPhotoLightbox(certId) {

@@ -1501,6 +1501,17 @@ function setLanguage(lang) {
   if (openModal && openModal.classList.contains('open') && currentModalType && typeof openDetailModal === 'function') {
     openDetailModal(currentModalType, currentModalValue, currentModalCatFilter, currentModalStatusFilter);
   }
+
+  // Departmanlar bölümünden açık olan bir ekran varsa, onu da yeni dilde yeniden oluşturur /
+  // If a screen from the Departments module is currently open, re-renders it in the new language too
+  const deptHubModal = document.getElementById('departments-hub-modal');
+  if (deptHubModal && deptHubModal.classList.contains('open') && typeof renderDepartmentsHub === 'function') {
+    renderDepartmentsHub();
+  }
+  const deptChecklistModal = document.getElementById('department-checklist-modal');
+  if (deptChecklistModal && deptChecklistModal.classList.contains('open') && currentDeptKey && typeof renderDepartmentChecklist === 'function') {
+    renderDepartmentChecklist(currentDeptKey);
+  }
 }
 
 // Sayfa yüklenirken kaydedilmiş dil tercihini geri yükler (varsayılan: Türkçe) /
@@ -3395,7 +3406,7 @@ function loadUserManagementList() {
           ${DEPARTMENT_SCOPES.map(d => `
             <label style="display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--text); cursor:pointer;">
               <input type="checkbox" data-uid="${u.uid}" data-dept="${d.key}" ${depts.includes(d.key) ? 'checked' : ''} style="width:16px; height:16px; cursor:pointer;">
-              ${d.label}
+              ${t3(d.labelTr, d.labelEn, d.labelAr)}
             </label>`).join('')}
         </div>
         <button class="btn-save" onclick="saveUserDepartments('${u.uid}')" style="font-size:12px;">
@@ -3462,7 +3473,7 @@ function renderDepartmentsHub() {
           <div style="width:100%; height:${barH}px; border-radius:8px 8px 2px 2px; background:linear-gradient(180deg, ${d.c1} 0%, ${d.c2} 100%); box-shadow:0 4px 10px rgba(0,0,0,0.25);"></div>
         </div>
         <div style="font-size:17px; margin-top:8px; line-height:1;">${d.icon}</div>
-        <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.8); text-align:center; margin-top:3px; line-height:1.25; width:74px;">${d.label}</div>
+        <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.8); text-align:center; margin-top:3px; line-height:1.25; width:74px;">${deptLabel(d)}</div>
       </div>`;
     }).join('');
 
@@ -3498,7 +3509,7 @@ function renderDepartmentsHub() {
     <div class="ring-card" onclick="openDepartmentChecklist('${d.key}')" style="--ring-c1:${d.c1}; --ring-c2:${d.c2}; --ring-glow:${d.c1};">
       <div class="ring-card-icon-badge">${d.icon}</div>
       ${buildRingSVG(pct, d.c1, d.c2, t3('UYUM ORANI', 'COMPLIANCE', 'الامتثال'))}
-      <div class="ring-card-title">${d.label}</div>
+      <div class="ring-card-title">${deptLabel(d)}</div>
       <div class="ring-card-count">${total} ${t3('Madde', 'Items', 'بند')}</div>
     </div>`;
   }).join('');
@@ -3542,7 +3553,7 @@ function renderDepartmentChecklist(deptKey) {
   const crit = allItems.filter(x => x.status === 'critical').length;
   const pct = total > 0 ? Math.round(comp / total * 100) : 0;
 
-  document.getElementById('dept-checklist-title').innerText = dept.icon + ' ' + dept.label;
+  document.getElementById('dept-checklist-title').innerText = dept.icon + ' ' + deptLabel(dept);
 
   const kpis = [
     { label: t3('TOPLAM MADDE', 'TOTAL ITEMS', 'إجمالي البنود'), val: total, color: dept.c1 },
@@ -4208,16 +4219,18 @@ let currentUserPending = false;  // Firestore'da kaydı olan ama henüz hiç dep
 // match the 457 audit criteria's "category" field EXACTLY (sustain/csr/hse/env/cd), so which module a
 // department user can edit is determined directly from the data itself.
 const DEPARTMENT_SCOPES = [
-  { key: 'sustain',         label: t3('Sürdürülebilirlik & Enerji', 'Sustainability & Energy', 'الاستدامة والطاقة') },
-  { key: 'csr',             label: t3('Kurum Bilgileri & CSR', 'Legal & CSR', 'المعلومات المؤسسية والمسؤولية الاجتماعية') },
-  { key: 'hse',             label: t3('İş Sağlığı ve Güvenliği', 'HSE & Safety', 'الصحة والسلامة المهنية') },
-  { key: 'env',             label: t3('Çevre ve Kimyasal Yönetimi', 'Environmental & Chemical', 'البيئة وإدارة المواد الكيميائية') },
-  { key: 'cd',              label: t3('Sivil Savunma & Yangın', 'Civil Defence & Fire', 'الدفاع المدني والحريق') },
-  { key: 'cert',            label: t3('Sertifika Portalı', 'Certificate Portal', 'بوابة الشهادات') },
-  { key: 'customer_audits', label: t3('Müşteri Denetimleri', 'Customer Audits', 'تدقيقات العملاء') },
-  { key: 'documents',       label: t3('Şirket Profili & Yasal Dökümanlar', 'Company Profile & Legal Documents', 'ملف الشركة والمستندات القانونية') }
+  { key: 'sustain',         labelTr: 'Sürdürülebilirlik & Enerji', labelEn: 'Sustainability & Energy', labelAr: 'الاستدامة والطاقة' },
+  { key: 'csr',             labelTr: 'Kurum Bilgileri & CSR', labelEn: 'Legal & CSR', labelAr: 'المعلومات المؤسسية والمسؤولية الاجتماعية' },
+  { key: 'hse',             labelTr: 'İş Sağlığı ve Güvenliği', labelEn: 'HSE & Safety', labelAr: 'الصحة والسلامة المهنية' },
+  { key: 'env',             labelTr: 'Çevre ve Kimyasal Yönetimi', labelEn: 'Environmental & Chemical', labelAr: 'البيئة وإدارة المواد الكيميائية' },
+  { key: 'cd',              labelTr: 'Sivil Savunma & Yangın', labelEn: 'Civil Defence & Fire', labelAr: 'الدفاع المدني والحريق' },
+  { key: 'cert',            labelTr: 'Sertifika Portalı', labelEn: 'Certificate Portal', labelAr: 'بوابة الشهادات' },
+  { key: 'customer_audits', labelTr: 'Müşteri Denetimleri', labelEn: 'Customer Audits', labelAr: 'تدقيقات العملاء' },
+  { key: 'documents',       labelTr: 'Şirket Profili & Yasal Dökümanlar', labelEn: 'Company Profile & Legal Documents', labelAr: 'ملف الشركة والمستندات القانونية' }
 ];
-function departmentLabel(key) { const d = DEPARTMENT_SCOPES.find(x => x.key === key); return d ? d.label : key; }
+// ═══ DÜZELTİLDİ ═══ Aynı "sayfa yüklenirken donan dil" hatası burada da vardı — artık dinamik. /
+// ═══ FIXED ═══ Had the same "frozen at page load" language bug — now dynamic.
+function departmentLabel(key) { const d = DEPARTMENT_SCOPES.find(x => x.key === key); return d ? t3(d.labelTr, d.labelEn, d.labelAr) : key; }
 
 // ═══════════════════ ÜRETİM DEPARTMANLARI MODÜLÜ / PRODUCTION DEPARTMENTS MODULE ═══════════════════
 // Bu, sitenin geri kalanından TAMAMEN BAĞIMSIZ, ayrı bir modüldür: kendi verisi, kendi puanlaması,
@@ -4225,15 +4238,22 @@ function departmentLabel(key) { const d = DEPARTMENT_SCOPES.find(x => x.key === 
 // This is a module COMPLETELY INDEPENDENT from the rest of the site: its own data, its own scoring,
 // its own Firestore document. It has no relation whatsoever to the 457-question CSR/compliance system.
 const PRODUCTION_DEPARTMENTS = [
-  { key: 'fabric',     label: t3('Kumaş Depo', 'Fabric Warehouse', 'مستودع القماش'),  icon: '🧶', c1: '#2DD4BF', c2: '#0F766E' },
-  { key: 'cutting',    label: t3('Kesimhane', 'Cutting Room', 'ورشة القص'),          icon: '✂️', c1: '#FB923C', c2: '#C2410C' },
-  { key: 'printing',   label: t3('Baskı', 'Printing', 'الطباعة'),            icon: '🎨', c1: '#C084FC', c2: '#7E22CE' },
-  { key: 'embroidery', label: t3('Nakış', 'Embroidery', 'التطريز'),          icon: '🪡', c1: '#F472B6', c2: '#BE185D' },
-  { key: 'sewing',     label: t3('Dikim', 'Sewing', 'الخياطة'),              icon: '🧵', c1: '#60A5FA', c2: '#1D4ED8' },
-  { key: 'qc',         label: t3('Kalite Kontrol', 'Quality Control', 'مراقبة الجودة'), icon: '🔍', c1: '#FBBF24', c2: '#B45309' },
-  { key: 'packaging',  label: t3('Paketleme', 'Packaging', 'التعبئة'),       icon: '📦', c1: '#4ADE80', c2: '#15803D' },
-  { key: 'shipping',   label: t3('Sevkiyat', 'Shipping', 'الشحن'),           icon: '🚚', c1: '#F87171', c2: '#B91C1C' }
+  { key: 'fabric',     labelTr: 'Kumaş Depo',     labelEn: 'Fabric Warehouse', labelAr: 'مستودع القماش',      icon: '🧶', c1: '#2DD4BF', c2: '#0F766E' },
+  { key: 'cutting',    labelTr: 'Kesimhane',      labelEn: 'Cutting Room',     labelAr: 'ورشة القص',          icon: '✂️', c1: '#FB923C', c2: '#C2410C' },
+  { key: 'printing',   labelTr: 'Baskı',          labelEn: 'Printing',        labelAr: 'الطباعة',            icon: '🎨', c1: '#C084FC', c2: '#7E22CE' },
+  { key: 'embroidery', labelTr: 'Nakış',          labelEn: 'Embroidery',      labelAr: 'التطريز',            icon: '🪡', c1: '#F472B6', c2: '#BE185D' },
+  { key: 'sewing',     labelTr: 'Dikim',          labelEn: 'Sewing',          labelAr: 'الخياطة',            icon: '🧵', c1: '#60A5FA', c2: '#1D4ED8' },
+  { key: 'qc',         labelTr: 'Kalite Kontrol', labelEn: 'Quality Control', labelAr: 'مراقبة الجودة',       icon: '🔍', c1: '#FBBF24', c2: '#B45309' },
+  { key: 'packaging',  labelTr: 'Paketleme',      labelEn: 'Packaging',       labelAr: 'التعبئة',            icon: '📦', c1: '#4ADE80', c2: '#15803D' },
+  { key: 'shipping',   labelTr: 'Sevkiyat',       labelEn: 'Shipping',        labelAr: 'الشحن',              icon: '🚚', c1: '#F87171', c2: '#B91C1C' }
 ];
+// ═══ DÜZELTİLDİ ═══ Önceden "label" alanı t3() ile sayfa yüklenirken (her zaman Türkçe olarak) BİR KEZ
+// hesaplanıp donduruluyordu — dil değiştirildiğinde asla güncellenmiyordu. Artık deptLabel(d) her
+// çağrıldığında GEÇERLİ dile göre yeniden hesaplanır. /
+// ═══ FIXED ═══ The "label" field used to be computed ONCE via t3() at page load (always in
+// Turkish) and frozen — it never updated when the language changed. Now deptLabel(d) recomputes
+// it according to the CURRENT language every time it's called.
+function deptLabel(d) { return t3(d.labelTr, d.labelEn, d.labelAr); }
 // Her kayıt: { id, dept (yukarıdaki key'lerden biri), text, notes, status: 'compliant'|'minor'|'critical' } /
 // Each record: { id, dept (one of the keys above), text, notes, status: 'compliant'|'minor'|'critical' }
 // Her kayıt: { id, dept, cat: 'compliance'|'csr'|'social'|'technical', text, notes, status } /
@@ -7573,7 +7593,7 @@ function exportReportPDF() {
             const t = items.length, c = items.filter(x => x.status === 'compliant').length;
             const p = t ? Math.round(c / t * 100) : 0;
             return `<div style="display:flex; align-items:center; gap:14px;">
-              <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${d.label}</div>
+              <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${deptLabel(d)}</div>
               <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
                 <div style="width:${p}%; height:100%; background:${d.c1};"></div>
               </div>

@@ -19,7 +19,7 @@
    top-right language switcher from shifting when the scrollbar appears or disappears */
 html { overflow-y: scroll; scrollbar-gutter: stable; }
 :root {
-  --bg: #EEF0F3; --white: #ffffff; --text: #0f172a; --muted: #6B7280;
+  --bg: #ffffff; --white: #ffffff; --text: #0f172a; --muted: #6B7280;
   --primary: #4F46E5; --primary-d: #3730A3; --success: #10B981; --success-bg: #f0fdf4;
   --success-deep: #15803D; --success-deep-bg: #f0fdf4;
   --warning: #F59E0B; --warning-bg: #FEFBEB; --danger: #EF4444; --danger-bg: #FEF2F2;
@@ -125,7 +125,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .app-shell { display: flex; align-items: stretch; gap: 0; min-height: 100vh; margin: -16px -12px; }
 
 .side-nav {
-  width: var(--sidebar-w); flex-shrink: 0; background: linear-gradient(165deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); color: #fff;
+  width: var(--sidebar-w); flex-shrink: 0; background: #8e8e8e; color: #fff;
   min-height: 100vh; position: sticky; top: 0; display: flex; flex-direction: column;
   padding: 26px 18px; gap: 8px; box-shadow: 4px 0 20px rgba(20,15,55,0.35); z-index: 5;
   transition: width 0.25s cubic-bezier(0.16,1,0.3,1), padding 0.25s ease;
@@ -182,7 +182,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .side-user-contact-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
 .side-user-contact-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--navy-d); }
 
-.main-content { flex: 1; min-width: 0; padding: 60px 28px 60px 28px; }
+.main-content { flex: 1; min-width: 0; padding: 28px 28px 60px 28px; }
 
 .topbar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
 .dept-banner { text-align: center; margin: 2px 0 18px; }
@@ -218,7 +218,7 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
     display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 1999;
   }
   .mobile-nav-backdrop.active { display: block; }
-  .main-content { padding: 52px 8px 12px 8px; }
+  .main-content { padding: 24px 8px 12px 8px; }
 }
 
 .app-header { background: var(--header); color: #fff; padding: 24px; border-radius: 18px; margin-bottom: 20px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; box-shadow: 0 10px 25px rgba(0,0,0,0.12); position: relative; }
@@ -281,25 +281,25 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .ring-dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
 .ring-card {
   position: relative; overflow: hidden;
-  background: linear-gradient(155deg, #39338F 0%, #463CA8 45%, #5F44AD 100%);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 26px 18px 20px;
+  background: #eef0f3;
+  border: 1px solid rgba(15,23,42,0.06); border-radius: 22px; padding: 26px 18px 20px;
   display: flex; flex-direction: column; align-items: center; cursor: pointer;
-  box-shadow: 0 16px 36px rgba(20,15,55,0.35), 0 4px 12px rgba(20,15,55,0.2);
+  box-shadow: 0 16px 36px rgba(20,15,55,0.1), 0 4px 12px rgba(20,15,55,0.06);
   transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s ease;
   animation: kpiFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) backwards;
 }
 .ring-card::before { content:''; position:absolute; top:-40px; right:-40px; width:130px; height:130px; border-radius:50%; background:var(--ring-glow, #6366F1); opacity:0.18; filter:blur(6px); }
 .ring-card::after { content:''; position:absolute; bottom:-50px; left:-30px; width:110px; height:110px; border-radius:50%; background:var(--ring-glow, #6366F1); opacity:0.12; filter:blur(10px); }
 .ring-card:nth-child(1){animation-delay:.08s}.ring-card:nth-child(2){animation-delay:.14s}.ring-card:nth-child(3){animation-delay:.2s}.ring-card:nth-child(4){animation-delay:.26s}.ring-card:nth-child(5){animation-delay:.32s}.ring-card:nth-child(6){animation-delay:.38s}.ring-card:nth-child(7){animation-delay:.44s}.ring-card:nth-child(8){animation-delay:.5s}
-.ring-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 24px 52px rgba(20,15,55,0.45), 0 6px 16px rgba(20,15,55,0.25); }
+.ring-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 24px 52px rgba(20,15,55,0.16), 0 6px 16px rgba(20,15,55,0.1); }
 .ring-card-download-btn {
   position: absolute; top: 12px; right: 12px; z-index: 3; width: 30px; height: 30px; border-radius: 9px;
-  border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.12); color: #fff; cursor: pointer;
+  border: 1px solid rgba(15,23,42,0.12); background: rgba(15,23,42,0.06); color: var(--text); cursor: pointer;
   display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .2s ease, background .15s ease;
 }
 .ring-card-download-btn svg { width: 15px; height: 15px; }
 .ring-card:hover .ring-card-download-btn, .ring-card-download-btn:focus { opacity: 1; }
-.ring-card-download-btn:hover { background: rgba(255,255,255,0.28); }
+.ring-card-download-btn:hover { background: rgba(15,23,42,0.14); }
 @media (max-width: 640px) { .ring-card-download-btn { opacity: 1; } }
 .doc-card-download-btn {
   position: absolute; top: 8px; right: 8px; z-index: 3; width: 28px; height: 28px; border-radius: 8px;
@@ -314,10 +314,10 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
   background: linear-gradient(135deg, var(--ring-c1, #818CF8), var(--ring-c2, #4F46E5));
   box-shadow: 0 6px 16px rgba(0,0,0,0.35); font-size: 21px; margin-bottom: 12px; position:relative; z-index:1;
 }
-.ring-card-title { font-size: 14px; font-weight: 850; color: #fff; line-height: 1.3; margin-top: 10px; text-align:center; position:relative; z-index:1; }
-.ring-card-sub { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 650; letter-spacing: 0.02em; position:relative; z-index:1; }
-.ring-card-count { font-size: 11.5px; color: #fff; font-weight: 800; background: rgba(255,255,255,0.12); padding: 5px 12px; border-radius: 99px; margin-top: 8px; position:relative; z-index:1; }
-.ring-card-growth { font-size: 10.5px; color: #6EE7B7; font-weight: 800; margin-top: 6px; text-align: center; line-height: 1.3; position:relative; z-index:1; }
+.ring-card-title { font-size: 14px; font-weight: 850; color: var(--text); line-height: 1.3; margin-top: 10px; text-align:center; position:relative; z-index:1; }
+.ring-card-sub { font-size: 11px; color: rgba(15,23,42,0.5); font-weight: 650; letter-spacing: 0.02em; position:relative; z-index:1; }
+.ring-card-count { font-size: 11.5px; color: var(--text); font-weight: 800; background: rgba(15,23,42,0.06); padding: 5px 12px; border-radius: 99px; margin-top: 8px; position:relative; z-index:1; }
+.ring-card-growth { font-size: 10.5px; color: #059669; font-weight: 800; margin-top: 6px; text-align: center; line-height: 1.3; position:relative; z-index:1; }
 .kpi-growth-badge { font-size: 11px; color: var(--success); font-weight: 800; margin-top: 4px; line-height: 1.3; }
 
 @media (max-width: 900px) {
@@ -422,8 +422,8 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 
 .customer-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 16px; }
 .customer-kpi {
-  position: relative; overflow: hidden; background: linear-gradient(155deg, #fff 0%, #fbfcfe 100%);
-  border: 1.5px solid var(--border); border-radius: 16px; padding: 18px 20px 16px; cursor: pointer;
+  position: relative; overflow: hidden; background: #eef0f3;
+  border: 1.5px solid rgba(15,23,42,0.06); border-radius: 16px; padding: 18px 20px 16px; cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
   box-shadow: 0 4px 14px rgba(15,23,42,0.05);
 }
@@ -441,10 +441,10 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .customer-cat-chip-pct { font-size: 16px; font-weight: 900; }
 .customer-cat-chip-label { font-size: 9.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 2px; line-height: 1.2; }
 
-.kpi-card { background: linear-gradient(155deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 26px 24px; box-shadow: 0 12px 32px rgba(20,15,55,0.3), 0 2px 8px rgba(20,15,55,0.15); cursor: pointer; transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), box-shadow 0.28s ease; position: relative; overflow: hidden; min-height: 128px; display: flex; flex-direction: column; justify-content: center; animation: kpiFadeUp 0.65s cubic-bezier(0.16,1,0.3,1) backwards; }
+.kpi-card { background: #eef0f3; border: 1px solid rgba(15,23,42,0.06); border-radius: 18px; padding: 26px 24px; box-shadow: 0 12px 32px rgba(20,15,55,0.08), 0 2px 8px rgba(20,15,55,0.05); cursor: pointer; transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), box-shadow 0.28s ease; position: relative; overflow: hidden; min-height: 128px; display: flex; flex-direction: column; justify-content: center; animation: kpiFadeUp 0.65s cubic-bezier(0.16,1,0.3,1) backwards; }
 .kpi-card::before { content:''; position:absolute; top:-36px; right:-36px; width:120px; height:120px; border-radius:50%; background:var(--kpi-glow, #6366F1); opacity:0.20; filter:blur(6px); pointer-events:none; }
 .kpi-card::after { content:''; position:absolute; bottom:-44px; left:-24px; width:100px; height:100px; border-radius:50%; background:var(--kpi-glow, #6366F1); opacity:0.13; filter:blur(10px); pointer-events:none; }
-.kpi-card:hover { transform: translateY(-4px); box-shadow: 0 20px 46px rgba(20,15,55,0.4), 0 4px 12px rgba(20,15,55,0.2); }
+.kpi-card:hover { transform: translateY(-4px); box-shadow: 0 20px 46px rgba(20,15,55,0.14), 0 4px 12px rgba(20,15,55,0.08); }
 .kpi-card:nth-child(1) { animation-delay: 0.05s; } .kpi-card:nth-child(2) { animation-delay: 0.12s; }
 .kpi-card:nth-child(3) { animation-delay: 0.19s; } .kpi-card:nth-child(4) { animation-delay: 0.26s; }
 .kpi-card:nth-child(5) { animation-delay: 0.33s; }
@@ -460,10 +460,10 @@ body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antial
 .kpi-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; position: relative; z-index: 1; }
 .kpi-card-icon { width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 16px rgba(0,0,0,0.35); }
 .kpi-card-icon svg { width: 22px; height: 22px; stroke-width: 2.2; }
-.kpi-label { font-size: 12.5px; font-weight: 800; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.45; position: relative; z-index: 1; }
-.kpi-val { font-size: 36px; font-weight: 850; margin-top: 8px; line-height: 1; position: relative; z-index: 1; }
+.kpi-label { font-size: 12.5px; font-weight: 800; color: rgba(15,23,42,0.5); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.45; position: relative; z-index: 1; }
+.kpi-val { font-size: 36px; font-weight: 850; margin-top: 8px; line-height: 1; position: relative; z-index: 1; color: var(--text); }
 .kpi-val-pct { font-size: 15px; font-weight: 700; opacity: 0.75; }
-.kpi-filter-tag { position: absolute; top: 10px; right: 10px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); display: none; z-index: 1; }
+.kpi-filter-tag { position: absolute; top: 10px; right: 10px; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: rgba(79,70,229,0.1); color: var(--primary); display: none; z-index: 1; }
 .kpi-card.active-filter .kpi-filter-tag { display: block; background: var(--primary); color: #fff; }
 .kpi-card-bar-wrap { height: 7px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; margin-top: 14px; position: relative; z-index: 1; }
 .kpi-card-bar-fill { height: 100%; border-radius: 99px; transition: width 0.7s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 0 10px currentColor; }
@@ -764,9 +764,13 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">⚖️</span>
         <span data-i18n="nav_legal_docs">Yasal Dökümanlar / Legal Documents</span>
       </button>
-      <button class="side-nav-item" onclick="try{ openProceduresLibrary(); }catch(e){ console.error('Talimat & Prosedürler açma hatası:', e); alert('Hata / Error: ' + e.message); }">
+      <button class="side-nav-item" onclick="try{ openProceduresLibrary('procedures'); }catch(e){ console.error('Talimat & Prosedürler açma hatası:', e); alert('Hata / Error: ' + e.message); }">
         <span class="nav-emoji">📋</span>
         <span data-i18n="nav_procedures">Talimat & Prosedürler / Instructions & Procedures</span>
+      </button>
+      <button class="side-nav-item" onclick="try{ openProceduresLibrary('forms'); }catch(e){ console.error('Formlar açma hatası:', e); alert('Hata / Error: ' + e.message); }">
+        <span class="nav-emoji">📝</span>
+        <span data-i18n="nav_forms">Formlar / Forms</span>
       </button>
       </button>
       <button class="side-nav-item" onclick="openDetailModal('group','sustain,csr')">
@@ -820,7 +824,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
       <input type="file" id="finding-photo-file-input" accept="image/*" style="display:none;" onchange="handleFindingPhotoFileChange(event)">
       <input type="file" id="question-photo-file-input" accept="image/*" style="display:none;" onchange="handleQuestionPhotoFileChange(event)">
       <input type="file" id="doc-file-input" accept="image/*,application/pdf,video/*" style="display:none;" onchange="handleDocFileChange(event)">
-      <input type="file" id="doc-multi-file-input" accept="image/*,application/pdf,video/*" multiple style="display:none;" onchange="handleMultiDocFileChange(event)">
+      <input type="file" id="doc-multi-file-input" accept="image/*,application/pdf,video/*,.doc,.docx,.xls,.xlsx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" multiple style="display:none;" onchange="handleMultiDocFileChange(event)">
       <div class="side-backup-info admin-only-el" id="side-backup-info" style="display:none;"></div>
     </nav>
     <div class="side-nav-footer">
@@ -874,7 +878,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:linear-gradient(135deg, #818CF8, #4F46E5); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
           </div>
-          <div class="kpi-label" data-i18n="kpi_total">Toplam Kritikler / Total Criticals</div><div class="kpi-val" id="kpi-total" style="color:#A5B4FC;">0</div>
+          <div class="kpi-label" data-i18n="kpi_total">Toplam Kritikler / Total Criticals</div><div class="kpi-val" id="kpi-total" style="color:var(--primary);">0</div>
           <div class="kpi-growth-badge" id="kpi-total-growth" style="display:none;"></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-total-bar" style="background:linear-gradient(90deg, #818CF8, #4F46E5); color:#818CF8; width:100%;"></div></div>
         </div>
@@ -883,7 +887,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:linear-gradient(135deg, #2DD4BF, #059669); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"/></svg></div>
           </div>
-          <div class="kpi-label" data-i18n="kpi_completed">Tamamlandı ✅ / Completed ✅</div><div class="kpi-val" id="kpi-comp-val" style="color:#6EE7B7;">0 <span class="kpi-val-pct" id="kpi-comp-pct">(%0)</span></div>
+          <div class="kpi-label" data-i18n="kpi_completed">Tamamlandı ✅ / Completed ✅</div><div class="kpi-val" id="kpi-comp-val" style="color:var(--success);">0 <span class="kpi-val-pct" id="kpi-comp-pct">(%0)</span></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-comp-bar" style="background:linear-gradient(90deg, #2DD4BF, #059669); color:#2DD4BF; width:0%;"></div></div>
         </div>
         <div class="kpi-card yellow" id="kpi-min" style="--kpi-glow:#FBBF24;" onclick="setMasterDashboardFilter('minor', this)">
@@ -891,7 +895,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:linear-gradient(135deg, #FBBF24, #F97316); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           </div>
-          <div class="kpi-label" data-i18n="kpi_in_progress">Devam Ediyor ⏳ / In Progress ⏳</div><div class="kpi-val" id="kpi-min-val" style="color:#FCD34D;">0 <span class="kpi-val-pct" id="kpi-min-pct">(%0)</span></div>
+          <div class="kpi-label" data-i18n="kpi_in_progress">Devam Ediyor ⏳ / In Progress ⏳</div><div class="kpi-val" id="kpi-min-val" style="color:#B45309;">0 <span class="kpi-val-pct" id="kpi-min-pct">(%0)</span></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-min-bar" style="background:linear-gradient(90deg, #FBBF24, #F97316); color:#FBBF24; width:0%;"></div></div>
         </div>
         <div class="kpi-card red" id="kpi-crit" style="--kpi-glow:#F472B6;" onclick="setMasterDashboardFilter('critical', this)">
@@ -899,14 +903,14 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:linear-gradient(135deg, #F472B6, #DB2777); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
           </div>
-          <div class="kpi-label" data-i18n="kpi_not_done">Yapılmadı ❌ / Not Done ❌</div><div class="kpi-val" id="kpi-crit-val" style="color:#FB7185;">0 <span class="kpi-val-pct" id="kpi-crit-pct">(%0)</span></div>
+          <div class="kpi-label" data-i18n="kpi_not_done">Yapılmadı ❌ / Not Done ❌</div><div class="kpi-val" id="kpi-crit-val" style="color:var(--danger);">0 <span class="kpi-val-pct" id="kpi-crit-pct">(%0)</span></div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-crit-bar" style="background:linear-gradient(90deg, #F472B6, #DB2777); color:#F472B6; width:0%;"></div></div>
         </div>
         <div class="kpi-card" style="border-left: 5px solid #14B8A6; --kpi-glow:#14B8A6;" onclick="openOverallSuccessDetail()" title="Detaylar için tıklayın / Click for details">
           <div class="kpi-card-top">
             <div class="kpi-card-icon" style="background:linear-gradient(135deg, #2DD4BF, #0F766E); color:#fff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23"/></svg></div>
           </div>
-          <div class="kpi-label" data-i18n="kpi_overall_success">Genel Durum Başarı Oranı / Overall Success Rate</div><div class="kpi-val" id="kpi-cert-rate" style="color:#5EEAD4;">%0</div>
+          <div class="kpi-label" data-i18n="kpi_overall_success">Genel Durum Başarı Oranı / Overall Success Rate</div><div class="kpi-val" id="kpi-cert-rate" style="color:#0D9488;">%0</div>
           <div class="kpi-card-bar-wrap"><div class="kpi-card-bar-fill" id="kpi-cert-bar" style="background:linear-gradient(90deg, #2DD4BF, #0F766E); color:#2DD4BF; width:0%;"></div></div>
         </div>
       </div>
@@ -1072,6 +1076,9 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     <div class="modal-header">
       <div class="modal-title">🏭 Departmanlar / Departments</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="downloadDepartmentsHubJPG()" title="İndir / Download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+        </button>
         <button class="modal-close" onclick="goHome()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
@@ -1085,8 +1092,10 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         Her üretim departmanının kendi checklist'i ve kendi uyum puanlaması vardır — bu bölüm sitenin CSR/uyum modülünden tamamen bağımsızdır.<br>
         Each production department has its own checklist and its own compliance score — this section is completely independent from the site's CSR/compliance module.
       </div>
-      <div id="departments-hub-summary" style="margin-bottom:18px;"></div>
-      <div id="departments-hub-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;"></div>
+      <div id="departments-hub-capture-area">
+        <div id="departments-hub-summary" style="margin-bottom:18px;"></div>
+        <div id="departments-hub-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:18px;"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1097,6 +1106,9 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     <div class="modal-header">
       <div class="modal-title" id="dept-checklist-title">Departman</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="downloadDeptChecklistKPIJPG()" title="İndir / Download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+        </button>
         <button class="modal-close" onclick="goHome()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
@@ -1195,6 +1207,9 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
     <div class="modal-header">
       <div class="modal-title" data-i18n="cust_audits_title">🕵️ Müşteri Denetimleri / Customer Audits</div>
       <div class="modal-close-group">
+        <button class="modal-close" onclick="downloadAuditsKPIJPG()" title="İndir / Download">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+        </button>
         <button class="modal-close" onclick="goHomeFromCustomerAudits()" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </button>
@@ -1414,6 +1429,7 @@ const UI_TRANSLATIONS = {
   nav_company_profile:  { tr: 'Şirket Profili',               en: 'Company Profile',           ar: 'ملف الشركة' },
   nav_legal_docs:        { tr: 'Yasal Dökümanlar',             en: 'Legal Documents',           ar: 'المستندات القانونية' },
   nav_procedures:        { tr: 'Talimat & Prosedürler',        en: 'Instructions & Procedures', ar: 'التعليمات والإجراءات' },
+  nav_forms:             { tr: 'Formlar',                      en: 'Forms',                     ar: 'النماذج' },
   nav_csr:               { tr: 'CSR & Sürdürülebilirlik',      en: 'CSR & Sustainability',       ar: 'المسؤولية الاجتماعية والاستدامة' },
   nav_hse:               { tr: 'İSG',                          en: 'HSE',                        ar: 'الصحة والسلامة المهنية' },
   nav_env:               { tr: 'Çevre ve Kimya',                en: 'Environment & Chemical',     ar: 'البيئة والكيماويات' },
@@ -3062,6 +3078,87 @@ let legalDocumentsDocs = [];
 // ssg.erogluglobal.com/home/prosedurler-is-akislari (the files themselves aren't stored here, just
 // external links).
 let proceduresDocs = []; // [{ id, name, link, addedAt }]
+let formsDocs = []; // [{ id, name, link, addedAt }] — "Formlar" bölümü, Talimat & Prosedürler'den ayrı / the "Forms" section, separate from Instructions & Procedures
+// ssg.erogluglobal.com/home/prosedurler-is-akislari sayfasındaki 21 belgenin ekran görüntüsünden
+// okunan varsayılan liste. Link alanları şimdilik genel listeleme sayfasına işaret ediyor — gerçek
+// indirme linkleri sonradan "Düzenle" ile tek tek eklenebilir. /
+// Default list read from a screenshot of the 21 documents on
+// ssg.erogluglobal.com/home/prosedurler-is-akislari. The link fields currently point to the general
+// listing page — real per-document download links can be added later one by one via "Edit".
+const PROCEDURES_FALLBACK_LINK = 'https://ssg.erogluglobal.com/home/prosedurler-is-akislari';
+const defaultProceduresDocs = [
+  { id: 1,  name: 'EMS.SA.PRO.04.01. — Yüklenici (Tedarikçi) Seçim Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 2,  name: 'EMS.QA.PRO.02.06. — Uygunsuzluk Bildirim Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 3,  name: 'EMS.QA.PRO.02.05. — Metal Dedektör Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 4,  name: 'EMS.QA.PRO.02.04. — Mühür Yönetim Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 5,  name: 'EMS.QA.PRO.02.03. — Hassas Alan Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 6,  name: 'EMS.QA.PRO.02.02. — Kimyasal Tehlike İletişimi ve Güvenli Kullanımı Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 7,  name: 'EMS.QA.PRO.02.01. — Tüy Lif Atıkları Yönetimi Ana Süreci (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 8,  name: 'EMS.IK.PRO.01.10. — Ayrımcılığın Önlenmesi Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 9,  name: 'EMS.IK.PRO.01.09. — Hamile Çalışanların Sağlıklı ve Güvenli Çalışması Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 10, name: 'EMS.IK.PRO.01.08. — İşe Alım ve İşten Çıkış Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 11, name: 'EMS.IK.PRO.01.07. — Öneri ve Şikayet Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 12, name: 'EMS.IK.PRO.01.06. — Örgütlenme Özgürlüğü Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 13, name: 'EMS.IK.PRO.01.05. — Rüşvet ve Yolsuzlukla Mücadele Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 14, name: 'EMS.IK.PRO.01.04. — Disiplin Değerlendirme ve Uygulama Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 15, name: 'EMS.IK.PRO.01.03. — Gebe ve Emziren İşçi Çalıştırılması Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 16, name: 'EMS.IK.PRO.01.02. — Taciz ve İstismara Karşı Koruma Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 17, name: 'EMS.IK.PRO.01.01. — Çocuk ve Genç İşçi Çalıştırma Ana Süreci (İnsan Kaynakları)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 18, name: 'EMS.ID.PRO.03.04. — Anahtar Güvenliği Ana Süreci (İdari İşler)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 19, name: 'EMS.ID.PRO.03.03. — Kargo İşleyiş Ana Süreci (İdari İşler)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 20, name: 'EMS.ID.PRO.03.02. — Ziyaretçi ve Alt İşveren Araç Girişi ve Çıkışı Ana Süreci (İdari İşler)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 21, name: 'EMS.ID.PRO.03.01. — Güvenlik Hizmetleri Ana Süreci (İdari İşler)', link: PROCEDURES_FALLBACK_LINK }
+];
+// ═══ FORMLAR — ekran görüntülerinden net şekilde okundu; aynı isimli belgeler (Tela Proses Kontrol
+// Formu ve Baskı Nakış Kalite Kontrol Formu iki farklı kodla iki kez geçiyordu) tekrar eklenmedi ═══
+// ═══ FORMS — read clearly from the screenshots; documents with duplicate names (Tela Proses Kontrol
+// Formu and Baskı Nakış Kalite Kontrol Formu each appeared twice under two different codes) were not
+// added twice ═══
+const defaultFormsDocs = [
+  { id: 1,  name: 'EMS.QA.FRM.08.04. — İplik Bölümü Makine Bakım Formu (İplik)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 2,  name: 'EMS.QA.FRM.08.03. — İplik Bölümü Numune Formu (İplik)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 3,  name: 'EMS.QA.FRM.08.02. — İplik Bölümü Sipariş Takip Formu (İplik)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 4,  name: 'EMS.QA.FRM.08.01. — İplik Bölümü Vardiya Rapor Formu (İplik)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 5,  name: 'EMS.QA.KRT.07.01. — Renk Arşiv Kartelası (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 6,  name: 'EMS.QA.FRM.07.15. — Tüp Sanfor Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 7,  name: 'EMS.QA.FRM.07.14. — Tüp Kesme Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 8,  name: 'EMS.QA.FRM.07.13. — Tumbler Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 9,  name: 'EMS.QA.FRM.07.12. — Top Açma Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 10, name: 'EMS.QA.FRM.07.11. — Test Raporu (Revize Edilecek) (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 11, name: 'EMS.QA.FRM.07.10. — Şardon Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 12, name: 'EMS.QA.FRM.07.09. — Ram Üretim Takip Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 13, name: 'EMS.QA.FRM.07.08. — Ram Önü Yıkama Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 14, name: 'EMS.QA.FRM.07.07. — Kurutma Üretim Takip Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 15, name: 'EMS.QA.FRM.07.06. — Kalite Kontrol Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 16, name: 'EMS.QA.FRM.07.05. — Kalite Kontrol Hata Çizelgesi (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 17, name: 'EMS.QA.FRM.07.04. — Fikse Çekmezlik Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 18, name: 'EMS.QA.FRM.07.03. — Gaze Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 19, name: 'EMS.QA.FRM.07.02. — Balon Sıkma Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 20, name: 'EMS.QA.FRM.07.01. — Açık En Sanfor Üretim Formu (Boyahane)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 21, name: 'EMS.QA.FRM.06.01. — Makine Bakım Kartı (Makine Bakım)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 22, name: 'EMS.QA.FRM.05.02. — Kalite Güvence Ölçüm Formu (Ütü Final Kontrol)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 23, name: 'EMS.QA.FRM.05.01. — Bitmiş Ürün Kontrol Hata Dağılımı Takip Formu (Ütü Final Kontrol)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 24, name: 'EMS.SW.FRM.03.03. — Tela Proses Kontrol Formu (Ortak) (Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 25, name: 'EMS.SW.FRM.03.02. — Baskı Nakış Kalite Kontrol Formu (Ortak) (Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 26, name: 'EMS.SW.FRM.03.01. — SW_Dikim Proses Kontrol Formu (Ortak) (Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 27, name: 'EMS.QA.FRM.03.10. — Operasyon Özellikleri Formu (MockUp) (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 28, name: 'EMS.QA.FRM.03.09. — Metalden Arındırılmış Bölge Giriş-Çıkış Formu (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 29, name: 'EMS.QA.FRM.03.07. — Metal Dedektörü Günlük Kalibrasyon Kartı (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 30, name: 'EMS.QA.FRM.03.06. — Metal Dedektör Karantina Kutusu Kayıt Formu (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 31, name: 'EMS.QA.FRM.03.03. — Dikim Cep Hata Analiz Formu (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 32, name: 'EMS.QA.FRM.03.02. — Kırık İğne Takip Formu (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 33, name: 'EMS.QA.FRM.03.01. — Dikim Proses Kontrol Formu (Ortak) (Kalite Güvence / Dikim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 34, name: 'EMS.QA.FRM.02.02. — Kesimhane Tasnif Hata Formu (Kalite Güvence / Kesim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 35, name: 'EMS.QA.FRM.02.01. — Kesimhane Kontrol Formu (Kalite Güvence / Kesim)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 36, name: 'EMS.WH.FRM.01.01. — Kumaş Kabul Formu (Depo)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 37, name: 'EMS.QA.FRM.01.05. — Aksesuar Kalite Kontrol Formu (Kalite Güvence / Aksesuar)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 38, name: 'EMS.QA.FRM.01.04. — Malzeme Kartelası (Trim Card) (Kalite Güvence / Aksesuar)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 39, name: 'EMS.QA.FRM.01.03. — Kumaş Kontrol Formu (Kalite Güvence / Kumaş)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 40, name: 'EMS.QA.FRM.01.02. — Kumaş Test Sonuç Formu (Kalite Güvence / Kumaş)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 41, name: 'EMS.QA.FRM.01.01. — Kumaş Dinlendirme Formu (Kalite Güvence / Kumaş)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 42, name: 'EMS.QA.FRM.00.02. — Risk Analiz Tutanağı (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK },
+  { id: 43, name: 'EMS.QA.FRM.00.01. — Sipariş Sonrası Risk Analiz Tutanağı (Kalite Güvence)', link: PROCEDURES_FALLBACK_LINK }
+];
 let customerStatuses = {}; // { customerKey: { questionId: status } }
 let customerAudits = []; // [{ id, customerKey, date, note, cat6, cat5, major, minor, capStatus, findings: [...] }]
 
@@ -3350,7 +3447,7 @@ function save() {
     // Each document library is kept in its own Firestore document (to stay under the 1MB per-document limit)
     fbDb.collection('ems_csr').doc('companyProfile').set({ companyProfileDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (companyProfile):', e));
     fbDb.collection('ems_csr').doc('legalDocuments').set({ legalDocumentsDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (legalDocuments):', e));
-    fbDb.collection('ems_csr').doc('procedures').set({ proceduresDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (procedures):', e));
+    fbDb.collection('ems_csr').doc('procedures').set({ proceduresDocs, formsDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (procedures):', e));
     fbDb.collection('ems_csr').doc('productionChecklist').set({ productionChecklist, ...meta }).catch(e => console.error('Firestore yazma hatası (productionChecklist):', e));
     writeAutoBackup(); // yerel yedek her koşulda tutulur / local backup is always kept too
     return;
@@ -3363,6 +3460,7 @@ function save() {
     localStorage.setItem('ems_company', JSON.stringify(companyProfileDocs));
     localStorage.setItem('ems_legal', JSON.stringify(legalDocumentsDocs));
     localStorage.setItem('ems_procedures', JSON.stringify(proceduresDocs));
+    localStorage.setItem('ems_forms', JSON.stringify(formsDocs));
     localStorage.setItem('ems_prod_checklist', JSON.stringify(productionChecklist));
     writeAutoBackup();
   } catch(e) { console.error("Local storage save error: ", e); }
@@ -3646,6 +3744,30 @@ function saveUserDepartments(uid) {
 // This module shares NO data or calculations with the site's CSR/compliance system — it lives
 // entirely on its own, in a separate Firestore document (productionChecklist).
 
+// Departmanlar panosundaki özet ve tüm departman grafiklerini tek bir JPG olarak indirir /
+// Downloads the Departments hub's summary and all department charts as a single JPG
+function downloadDepartmentsHubJPG() {
+  const el = document.getElementById('departments-hub-capture-area');
+  downloadElementAsJPG(el, `EMS_Departmanlar_${new Date().toISOString().slice(0,10)}.jpg`, '#ffffff');
+}
+
+// Tek bir departmanın KPI kartlarını (Toplam Madde, Tamamlandı, Devam Ediyor, Yapılmadı, Uyum Oranı)
+// JPG olarak indirir / Downloads a single department's KPI cards (Total Items, Completed, In
+// Progress, Not Done, Compliance Rate) as a JPG
+function downloadDeptChecklistKPIJPG() {
+  const el = document.getElementById('dept-checklist-kpi-row');
+  const titleEl = document.getElementById('dept-checklist-title');
+  const safeTitle = (titleEl && titleEl.innerText ? titleEl.innerText : 'Departman').replace(/[^\wçğıöşüÇĞİÖŞÜ ]+/g, '').replace(/\s+/g, '_');
+  downloadElementAsJPG(el, `EMS_${safeTitle}_${new Date().toISOString().slice(0,10)}.jpg`, '#ffffff');
+}
+
+// Müşteri Denetimleri listesindeki özet KPI kartlarını JPG olarak indirir /
+// Downloads the summary KPI cards on the Customer Audits list as a JPG
+function downloadAuditsKPIJPG() {
+  const el = document.getElementById('audits-kpi-row');
+  downloadElementAsJPG(el, `EMS_Musteri_Denetimleri_${new Date().toISOString().slice(0,10)}.jpg`, '#ffffff');
+}
+
 function openDepartmentsHub() {
   renderDepartmentsHub();
   document.getElementById('departments-hub-modal').classList.add('open');
@@ -3675,32 +3797,32 @@ function renderDepartmentsHub() {
       const barH = Math.max(4, Math.round(140 * p / 100));
       return `
       <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 76px;">
-        <div style="font-size:13px; font-weight:900; color:#fff; margin-bottom:6px;">%${p}</div>
-        <div style="width:48px; height:140px; display:flex; align-items:flex-end; justify-content:center; background:rgba(255,255,255,0.07); border-radius:8px 8px 0 0;">
-          <div style="width:100%; height:${barH}px; border-radius:8px 8px 2px 2px; background:linear-gradient(180deg, ${d.c1} 0%, ${d.c2} 100%); box-shadow:0 4px 10px rgba(0,0,0,0.25);"></div>
+        <div style="font-size:13px; font-weight:900; color:var(--text); margin-bottom:6px;">%${p}</div>
+        <div style="width:48px; height:140px; display:flex; align-items:flex-end; justify-content:center; background:rgba(15,23,42,0.05); border-radius:8px 8px 0 0;">
+          <div style="width:100%; height:${barH}px; border-radius:8px 8px 2px 2px; background:linear-gradient(180deg, ${d.c1} 0%, ${d.c2} 100%); box-shadow:0 4px 10px rgba(0,0,0,0.15);"></div>
         </div>
         <div style="font-size:17px; margin-top:8px; line-height:1;">${d.icon}</div>
-        <div style="font-size:10px; font-weight:700; color:rgba(255,255,255,0.8); text-align:center; margin-top:3px; line-height:1.25; width:74px;">${deptLabel(d)}</div>
+        <div style="font-size:10px; font-weight:700; color:rgba(15,23,42,0.65); text-align:center; margin-top:3px; line-height:1.25; width:74px;">${deptLabel(d)}</div>
       </div>`;
     }).join('');
 
     summaryEl.innerHTML = `
-      <div style="position:relative; background:linear-gradient(155deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); border-radius:20px; padding:26px 30px 22px; box-shadow:0 12px 28px rgba(30,27,75,0.3);">
+      <div style="position:relative; background:#eef0f3; border:1px solid rgba(15,23,42,0.06); border-radius:20px; padding:26px 30px 22px; box-shadow:0 12px 28px rgba(20,15,55,0.08);">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; gap:16px; flex-wrap:wrap;">
           <div>
-            <div style="font-size:15px; font-weight:900; color:#fff; letter-spacing:0.02em;">${t3('GENEL BAŞARI ORANI', 'OVERALL SUCCESS RATE', 'معدل النجاح العام')}</div>
-            <div style="font-size:11.5px; font-weight:600; color:rgba(255,255,255,0.6); margin-top:3px;">${allComp} / ${allTotal} ${t3('Madde Tamamlandı', 'Items Completed', 'بند مكتمل')}</div>
+            <div style="font-size:15px; font-weight:900; color:var(--text); letter-spacing:0.02em;">${t3('GENEL BAŞARI ORANI', 'OVERALL SUCCESS RATE', 'معدل النجاح العام')}</div>
+            <div style="font-size:11.5px; font-weight:600; color:rgba(15,23,42,0.55); margin-top:3px;">${allComp} / ${allTotal} ${t3('Madde Tamamlandı', 'Items Completed', 'بند مكتمل')}</div>
           </div>
           <svg width="86" height="86" viewBox="0 0 86 86" style="flex-shrink:0;">
             <defs>
               <linearGradient id="deptSummaryPieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#A5B4FC"/><stop offset="100%" stop-color="#818CF8"/>
+                <stop offset="0%" stop-color="#818CF8"/><stop offset="100%" stop-color="#4F46E5"/>
               </linearGradient>
             </defs>
-            <circle cx="${PIE_C}" cy="${PIE_C}" r="${PIE_R}" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="13"/>
+            <circle cx="${PIE_C}" cy="${PIE_C}" r="${PIE_R}" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="13"/>
             <circle cx="${PIE_C}" cy="${PIE_C}" r="${PIE_R}" fill="none" stroke="url(#deptSummaryPieGrad)" stroke-width="13" stroke-linecap="round"
               stroke-dasharray="${pieArc.toFixed(2)} ${(PIE_CIRC - pieArc).toFixed(2)}" transform="rotate(-90 ${PIE_C} ${PIE_C})"/>
-            <text x="${PIE_C}" y="${PIE_C + 6}" text-anchor="middle" font-size="19" font-weight="900" fill="#fff">%${allPct}</text>
+            <text x="${PIE_C}" y="${PIE_C + 6}" text-anchor="middle" font-size="19" font-weight="900" fill="#0f172a">%${allPct}</text>
           </svg>
         </div>
         <div style="display:flex; align-items:flex-end; gap:10px; overflow-x:auto; min-width:0; padding-bottom:4px;">${barsHtml}</div>
@@ -4340,7 +4462,9 @@ function initCloudData(onReady) {
 
   // Talimat & Prosedürler — link listesi, ayrı bir belge / Instructions & Procedures — link list, a separate document
   col.doc('procedures').onSnapshot(snap => {
-    proceduresDocs = (snap.exists && Array.isArray(snap.data().proceduresDocs)) ? snap.data().proceduresDocs : [];
+    const data = snap.exists ? snap.data() : {};
+    proceduresDocs = (Array.isArray(data.proceduresDocs) && data.proceduresDocs.length > 0) ? data.proceduresDocs : JSON.parse(JSON.stringify(defaultProceduresDocs));
+    formsDocs = (Array.isArray(data.formsDocs) && data.formsDocs.length > 0) ? data.formsDocs : JSON.parse(JSON.stringify(defaultFormsDocs));
     _cloudDocsLoaded.procedures = true;
     _onCloudDocChange(onReady);
   }, err => console.error('Firestore okuma hatası (procedures):', err));
@@ -5283,9 +5407,7 @@ function openDetailModal(type, value, catFilter, statusFilter) {
   if (descEl) descEl.innerHTML = descText;
   const relatedColHeader = document.getElementById('th-related-col');
   if (relatedColHeader) {
-    relatedColHeader.innerText = (type === 'category' && value === 'cert')
-      ? t3('Fotoğraflar', 'Photos', 'الصور')
-      : t3('İlgili Müşteriler', 'Related Customers', 'العملاء ذوو الصلة');
+    relatedColHeader.innerText = t3('İlgili Müşteriler', 'Related Customers', 'العملاء ذوو الصلة');
   }
 
   let combined = [];
@@ -5427,36 +5549,16 @@ function openDetailModal(type, value, catFilter, statusFilter) {
         } else {
           relatedCustomersHtml = `<span style="color:var(--success); font-size:11px; font-weight:700;">✅ ${t3('Tümü Tamamlandı', 'All Completed', 'اكتمل الكل')}</span>`;
         }
-      } else if (item.type === 'c') {
-        // Sertifika fotoğrafı: küçük önizleme (tıklayınca büyük görünüm açılır) veya yükleme butonu /
-        // Certificate photo: small preview (click to open full view) or an upload button
-        const certObj = certificatesData.find(c => c.id === item.id);
-        if (certObj && (certObj.hasPhoto || certObj.photo)) {
-          const _thumbSrc = certObj.photo || ''; // Eski (gömülü) veri varsa hemen göster; yoksa aşağıda tembel yüklenir / show immediately if legacy embedded data exists; otherwise lazy-loaded below
-          relatedCustomersHtml = `
-            <div style="display:flex; align-items:center; gap:6px;">
-              <img id="cert-thumb-${item.id}" src="${_thumbSrc}" onclick="openDocLightbox('cert', ${item.id})" title="${certObj.hasFullPdf ? t3('Çok sayfalı PDF belgesini görüntülemek için tıklayın', 'Click to view the full multi-page PDF', 'انقر لعرض ملف PDF متعدد الصفحات') : t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12); background:#eef0f4;">
-              ${certObj.hasFullPdf ? `<span style="font-size:9px; font-weight:800; background:var(--primary); color:#fff; padding:2px 5px; border-radius:5px;">📄 ${t3('Çok Sayfalı', 'Multi-page', 'متعدد الصفحات')}</span>` : ''}
-              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              </button>
-              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="deleteCertPhoto(${item.id})" title="${t3('Sil (yanlış yüklemeleri kaldırır)', 'Delete (removes wrong uploads)', 'حذف (يزيل التحميلات الخاطئة)')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--danger);">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
-              </button>
-            </div>`;
-        } else {
-          relatedCustomersHtml = `
-            <button class="editor-only-el" data-scope="cert" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Sertifika fotoğrafı veya PDF yükle', 'Upload certificate photo or PDF', 'رفع صورة الشهادة أو PDF')}" style="display:flex; align-items:center; gap:5px; background:#fafbfd; border:1.5px dashed var(--border-h); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:700;">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-              ${t3('Yükle', 'Upload', 'رفع')}
-            </button>`;
-        }
       }
+      // Not: item.type === 'c' (sertifika) için "İlgili Müşteriler" sütunu boş bırakılır — sertifikanın
+      // fotoğrafı artık tek bir yerde, "Fotoğraf" sütununda gösterilir (önceden burada da ayrıca
+      // gösteriliyordu, bu da aynı işlevin iki kez görünmesine neden oluyordu). /
+      // Note: for item.type === 'c' (certificate) the "Related Customers" column is left empty — the
+      // certificate's photo is now shown in exactly one place, the "Photo" column (previously it was
+      // also shown here, causing the same functionality to appear twice).
 
-      // Soru fotoğrafı (yalnızca item.type === 'q' için) — sertifikaların kendi fotoğraf
-      // arayüzü zaten "İlgili Müşteriler" sütununda var, bu yeni sütun sadece sorular içindir. /
-      // Question photo (only for item.type === 'q') — certificates already have their own
-      // photo UI in the "Related Customers" column; this new column is for questions only.
+      // Soru/Sertifika fotoğrafı — tek "Fotoğraf" sütununda hem sorular hem sertifikalar için /
+      // Question/Certificate photo — a single "Photo" column serving both questions and certificates
       let questionPhotoHtml = '<span style="color:var(--muted); font-size:11px;">—</span>';
       if (item.type === 'q') {
         const qObj = auditQuestions.find(q => q.id === item.id);
@@ -5476,6 +5578,30 @@ function openDetailModal(type, value, catFilter, statusFilter) {
             <button onclick="triggerQuestionPhotoUpload(${item.id})" title="${t3('Fotoğraf Ekle', 'Add Photo', 'إضافة صورة')}" style="display:flex; align-items:center; gap:4px; background:#eef0ff; border:1px dashed var(--primary); color:var(--primary); border-radius:7px; padding:5px 8px; font-size:10.5px; font-weight:700; cursor:pointer; white-space:nowrap;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
               ${t3('Ekle', 'Add', 'إضافة')}
+            </button>`;
+        }
+      } else if (item.type === 'c') {
+        // Sertifika fotoğrafı: küçük önizleme (tıklayınca büyük görünüm açılır) veya yükleme butonu /
+        // Certificate photo: small preview (click to open full view) or an upload button
+        const certObj = certificatesData.find(c => c.id === item.id);
+        if (certObj && (certObj.hasPhoto || certObj.photo)) {
+          const _thumbSrc = certObj.photo || ''; // Eski (gömülü) veri varsa hemen göster; yoksa aşağıda tembel yüklenir / show immediately if legacy embedded data exists; otherwise lazy-loaded below
+          questionPhotoHtml = `
+            <div style="display:flex; align-items:center; gap:6px;">
+              <img id="cert-thumb-${item.id}" src="${_thumbSrc}" onclick="openDocLightbox('cert', ${item.id})" title="${certObj.hasFullPdf ? t3('Çok sayfalı PDF belgesini görüntülemek için tıklayın', 'Click to view the full multi-page PDF', 'انقر لعرض ملف PDF متعدد الصفحات') : t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:44px; height:44px; object-fit:cover; border-radius:8px; border:1.5px solid var(--border-h); cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.12); background:#eef0f4;">
+              ${certObj.hasFullPdf ? `<span style="font-size:9px; font-weight:800; background:var(--primary); color:#fff; padding:2px 5px; border-radius:5px;">📄 ${t3('Çok Sayfalı', 'Multi-page', 'متعدد الصفحات')}</span>` : ''}
+              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--muted);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="editor-only-el" data-scope="cert" data-show-as="inline-flex" onclick="deleteCertPhoto(${item.id})" title="${t3('Sil (yanlış yüklemeleri kaldırır)', 'Delete (removes wrong uploads)', 'حذف (يزيل التحميلات الخاطئة)')}" style="background:none; border:none; cursor:pointer; padding:4px; color:var(--danger);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>`;
+        } else {
+          questionPhotoHtml = `
+            <button class="editor-only-el" data-scope="cert" onclick="triggerCertPhotoUpload(${item.id})" title="${t3('Sertifika fotoğrafı veya PDF yükle', 'Upload certificate photo or PDF', 'رفع صورة الشهادة أو PDF')}" style="display:flex; align-items:center; gap:5px; background:#fafbfd; border:1.5px dashed var(--border-h); border-radius:8px; padding:8px 10px; cursor:pointer; color:var(--muted); font-size:11px; font-weight:700;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px; flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              ${t3('Yükle', 'Upload', 'رفع')}
             </button>`;
         }
       }
@@ -5868,14 +5994,27 @@ function openDocumentLibrary(storeKey) {
 function closeDocumentLibrary() { document.getElementById('document-library-modal').classList.remove('open'); }
 function closeDocumentLibraryBg(e) { if (e.target === document.getElementById('document-library-modal')) closeDocumentLibrary(); }
 
-// ═══════════════════ TALİMAT & PROSEDÜRLER / INSTRUCTIONS & PROCEDURES ═══════════════════
+// ═══════════════════ TALİMAT & PROSEDÜRLER / FORMLAR — INSTRUCTIONS & PROCEDURES / FORMS ═══════════════════
 // ssg.erogluglobal.com/home/prosedurler-is-akislari sitesindeki belgelere link listesi. Bu site
 // otomatik erişime kapalı (robots.txt) olduğundan liste buradan otomatik çekilemiyor — yetkili
-// kullanıcılar her belgeyi isim + link olarak elle ekler. /
-// A link list to documents on ssg.erogluglobal.com/home/prosedurler-is-akislari. That site blocks
-// automated access (robots.txt), so the list can't be auto-imported — authorized users add each
-// document as a name + link manually.
-function openProceduresLibrary() {
+// kullanıcılar her belgeyi isim + link olarak elle ekler. İki ayrı liste (Talimat/Prosedür ve
+// Formlar) aynı modal/fonksiyonları paylaşır, hangisinin açık olduğu currentLinkListKey ile takip
+// edilir. / A link list to documents on ssg.erogluglobal.com/home/prosedurler-is-akislari. That site
+// blocks automated access (robots.txt), so the list can't be auto-imported — authorized users add
+// each document as a name + link manually. Two separate lists (Instructions/Procedures and Forms)
+// share the same modal/functions; which one is open is tracked via currentLinkListKey.
+let currentLinkListKey = 'procedures'; // 'procedures' | 'forms'
+function _getLinkListArray(key) { return key === 'forms' ? formsDocs : proceduresDocs; }
+function _setLinkListArray(key, arr) { if (key === 'forms') formsDocs = arr; else proceduresDocs = arr; }
+
+function openProceduresLibrary(listKey) {
+  currentLinkListKey = listKey === 'forms' ? 'forms' : 'procedures';
+  const titleEl = document.getElementById('procedures-modal-title');
+  if (titleEl) {
+    titleEl.innerHTML = currentLinkListKey === 'forms'
+      ? '📝 ' + t3('Formlar', 'Forms', 'النماذج') + ' / Forms'
+      : '📋 ' + t3('Talimat & Prosedürler', 'Instructions & Procedures', 'التعليمات والإجراءات') + ' / Instructions &amp; Procedures';
+  }
   renderProceduresList();
   document.getElementById('procedures-modal').classList.add('open');
 }
@@ -5885,11 +6024,13 @@ function closeProceduresLibraryBg(e) { if (e.target === document.getElementById(
 function renderProceduresList() {
   const list = document.getElementById('procedures-list');
   if (!list) return;
+  const arr = _getLinkListArray(currentLinkListKey);
+  const isForms = currentLinkListKey === 'forms';
   let html = '';
-  if (proceduresDocs.length === 0) {
-    html += `<div style="text-align:center; color:var(--muted); font-size:13px; font-style:italic; padding:24px 0;">${t3('Henüz talimat/prosedür linki eklenmedi.', 'No instruction/procedure links added yet.', 'لم تتم إضافة أي روابط تعليمات/إجراءات بعد.')}</div>`;
+  if (arr.length === 0) {
+    html += `<div style="text-align:center; color:var(--muted); font-size:13px; font-style:italic; padding:24px 0;">${isForms ? t3('Henüz form linki eklenmedi.', 'No form links added yet.', 'لم تتم إضافة أي روابط نماذج بعد.') : t3('Henüz talimat/prosedür linki eklenmedi.', 'No instruction/procedure links added yet.', 'لم تتم إضافة أي روابط تعليمات/إجراءات بعد.')}</div>`;
   }
-  html += proceduresDocs.map(p => `
+  html += arr.map(p => `
     <div style="display:flex; align-items:center; gap:10px; border:1.5px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:#fff;">
       <div onclick="window.open('${String(p.link).replace(/'/g, "%27")}', '_blank', 'noopener')" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:10px; min-width:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:20px;height:20px; flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -5898,17 +6039,37 @@ function renderProceduresList() {
       <button onclick="window.open('${String(p.link).replace(/'/g, "%27")}', '_blank', 'noopener')" title="${t3('Aç / İndir', 'Open / Download', 'فتح / تنزيل')}" style="background:#eef0ff; border:none; color:var(--primary); border-radius:8px; padding:8px; cursor:pointer; display:flex; flex-shrink:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
       </button>
-      <button class="editor-only-el" data-scope="procedures" onclick="editProcedureLink('${p.id}')" title="${t3('Düzenle', 'Edit', 'تعديل')}" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--muted); flex-shrink:0;">
+      <button class="editor-only-el" data-scope="${isForms ? 'procedures' : 'procedures'}" onclick="editProcedureLink('${p.id}')" title="${t3('Düzenle', 'Edit', 'تعديل')}" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--muted); flex-shrink:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       </button>
       <button class="editor-only-el" data-scope="procedures" onclick="deleteProcedureLink('${p.id}')" title="${t3('Sil', 'Delete', 'حذف')}" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--danger); flex-shrink:0;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
       </button>
     </div>`).join('');
-  html += `<button class="editor-only-el" data-scope="procedures" onclick="addProcedureLink()" style="width:100%; margin-top:6px; border:1.5px dashed var(--primary); background:#f5f5ff; color:var(--primary); border-radius:10px; padding:12px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    ${t3('Yeni Talimat/Prosedür Linki Ekle', 'Add New Instruction/Procedure Link', 'إضافة رابط تعليمات/إجراء جديد')}
-  </button>`;
+  html += `<div class="editor-only-el" data-scope="procedures" style="display:flex; gap:8px; margin-top:6px;">
+    <button onclick="addProcedureLink()" style="flex:1; border:1.5px dashed var(--primary); background:#f5f5ff; color:var(--primary); border-radius:10px; padding:12px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      ${isForms ? t3('Yeni Form Linki Ekle', 'Add New Form Link', 'إضافة رابط نموذج جديد') : t3('Yeni Talimat/Prosedür Linki Ekle', 'Add New Instruction/Procedure Link', 'إضافة رابط تعليمات/إجراء جديد')}
+    </button>
+    <button onclick="toggleBulkAddPanel()" title="${t3('Birden fazla belgeyi tek seferde ekle', 'Add several documents at once', 'إضافة عدة مستندات دفعة واحدة')}" style="border:1.5px solid var(--primary); background:#fff; color:var(--primary); border-radius:10px; padding:12px 16px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      ${t3('Toplu Ekle', 'Bulk Add', 'إضافة جماعية')}
+    </button>
+  </div>
+  <div id="procedures-bulk-panel" class="editor-only-el" data-scope="procedures" style="display:none; margin-top:12px; border:1.5px solid var(--primary); border-radius:12px; padding:16px; background:#f5f5ff;">
+    <div style="font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:8px;">
+      ${t3('Her satıra bir belge yazın, isim ve linki dikey çizgi ( | ) ile ayırın:', 'Write one document per line, separating the name and link with a pipe ( | ):', 'اكتب مستنداً واحداً في كل سطر، وافصل بين الاسم والرابط بخط عمودي ( | ):')}
+    </div>
+    <div style="font-size:11px; color:var(--muted); margin-bottom:10px; font-family:monospace; background:#fff; border-radius:6px; padding:8px 10px;">
+      ${t3('Belge Adı', 'Document Name', 'اسم المستند')} | https://ssg.erogluglobal.com/...<br>
+      ${t3('Belge Adı 2', 'Document Name 2', 'اسم المستند 2')} | https://ssg.erogluglobal.com/...
+    </div>
+    <textarea id="procedures-bulk-textarea" rows="6" placeholder="${t3('Belge Adı | https://...', 'Document Name | https://...', 'اسم المستند | https://...')}" style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-h); font-size:13px; font-family:monospace; resize:vertical; box-sizing:border-box;"></textarea>
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button onclick="submitBulkAddLinks()" style="flex:1; background:var(--primary); border:none; color:#fff; border-radius:8px; padding:10px; font-weight:700; font-size:13px; cursor:pointer;">${t3('Hepsini Ekle', 'Add All', 'إضافة الكل')}</button>
+      <button onclick="toggleBulkAddPanel()" style="background:none; border:1.5px solid var(--border-h); color:var(--muted); border-radius:8px; padding:10px 16px; font-weight:700; font-size:13px; cursor:pointer;">${t3('İptal', 'Cancel', 'إلغاء')}</button>
+    </div>
+  </div>`;
   list.innerHTML = html;
   applyScopedElementVisibility(list);
 }
@@ -5917,6 +6078,56 @@ function renderProceduresList() {
 // Only allows http(s) links — dangerous schemes like "javascript:" are rejected
 function _isSafeHttpUrl(url) {
   return /^https?:\/\//i.test((url || '').trim());
+}
+
+// Toplu ekleme panelini açar/kapatır / Shows/hides the bulk-add panel
+function toggleBulkAddPanel() {
+  if (!roleGuard('procedures')) return;
+  const panel = document.getElementById('procedures-bulk-panel');
+  if (!panel) return;
+  const showing = panel.style.display !== 'none';
+  panel.style.display = showing ? 'none' : 'block';
+  if (!showing) {
+    const ta = document.getElementById('procedures-bulk-textarea');
+    if (ta) { ta.value = ''; ta.focus(); }
+  }
+}
+
+// Metin kutusundaki her satırı ("Belge Adı | Link" biçiminde) ayrı bir kayıt olarak ekler — birden
+// fazla talimat/prosedür/form linkini tek seferde eklemek için. Geçersiz (linksiz veya http(s) ile
+// başlamayan) satırlar atlanır ve kullanıcıya kaç tanesinin eklendiği bildirilir. /
+// Adds each line in the textarea ("Document Name | Link") as a separate entry — for adding several
+// instruction/procedure/form links at once. Invalid lines (no link, or not starting with http(s))
+// are skipped, and the user is told how many were added.
+function submitBulkAddLinks() {
+  if (!roleGuard('procedures')) return;
+  const ta = document.getElementById('procedures-bulk-textarea');
+  if (!ta) return;
+  const lines = ta.value.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length === 0) {
+    alert(t3('Önce en az bir satır girin.', 'Please enter at least one line first.', 'يرجى إدخال سطر واحد على الأقل أولاً.'));
+    return;
+  }
+  const arr = _getLinkListArray(currentLinkListKey);
+  let nextId = arr.length > 0 ? Math.max(...arr.map(p => p.id)) + 1 : 1;
+  let added = 0, skipped = 0;
+  lines.forEach(line => {
+    const parts = line.split('|');
+    if (parts.length < 2) { skipped++; return; }
+    const name = parts[0].trim();
+    const link = parts.slice(1).join('|').trim();
+    if (!name || !_isSafeHttpUrl(link)) { skipped++; return; }
+    arr.push({ id: nextId++, name, link, addedAt: new Date().toISOString() });
+    added++;
+  });
+  if (added > 0) save();
+  toggleBulkAddPanel();
+  renderProceduresList();
+  alert(t3(
+    `${added} belge eklendi.${skipped ? ` ${skipped} satır atlandı (isim ve http(s) linki eksik ya da hatalı).` : ''}`,
+    `${added} documents added.${skipped ? ` ${skipped} line(s) skipped (missing or invalid name/http(s) link).` : ''}`,
+    `تمت إضافة ${added} مستندات.${skipped ? ` تم تخطي ${skipped} سطراً.` : ''}`
+  ));
 }
 
 function addProcedureLink() {
@@ -5928,15 +6139,17 @@ function addProcedureLink() {
     if (link !== null) alert(t3('Lütfen http:// veya https:// ile başlayan geçerli bir bağlantı girin.', 'Please enter a valid link starting with http:// or https://.', 'يرجى إدخال رابط صالح يبدأ بـ http:// أو https://.'));
     return;
   }
-  const newId = proceduresDocs.length > 0 ? Math.max(...proceduresDocs.map(p => p.id)) + 1 : 1;
-  proceduresDocs.push({ id: newId, name: name.trim(), link: link.trim(), addedAt: new Date().toISOString() });
+  const arr = _getLinkListArray(currentLinkListKey);
+  const newId = arr.length > 0 ? Math.max(...arr.map(p => p.id)) + 1 : 1;
+  arr.push({ id: newId, name: name.trim(), link: link.trim(), addedAt: new Date().toISOString() });
   save();
   renderProceduresList();
 }
 
 function editProcedureLink(id) {
   if (!roleGuard('procedures')) return;
-  const p = proceduresDocs.find(x => x.id === Number(id));
+  const arr = _getLinkListArray(currentLinkListKey);
+  const p = arr.find(x => x.id === Number(id));
   if (!p) return;
   const name = prompt(t3('Belge adı:', 'Document name:', 'اسم المستند:'), p.name || '');
   if (name === null) return;
@@ -5955,7 +6168,8 @@ function editProcedureLink(id) {
 function deleteProcedureLink(id) {
   if (!roleGuard('procedures')) return;
   if (!confirm(t3('Bu linki silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this link?', 'هل أنت متأكد أنك تريد حذف هذا الرابط؟'))) return;
-  proceduresDocs = proceduresDocs.filter(x => x.id !== Number(id));
+  const arr = _getLinkListArray(currentLinkListKey).filter(x => x.id !== Number(id));
+  _setLinkListArray(currentLinkListKey, arr);
   save();
   renderProceduresList();
 }
@@ -5969,17 +6183,91 @@ function downloadElementAsJPG(el, filename, bgColor) {
     alert(t3('Görsel oluşturulamadı, sayfayı yenileyip tekrar deneyin.', 'Could not generate the image, please refresh and try again.', 'تعذر إنشاء الصورة، يرجى تحديث الصفحة والمحاولة مرة أخرى.'));
     return;
   }
-  html2canvas(el, { scale: 2, backgroundColor: bgColor || '#ffffff', useCORS: true }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/jpeg', 0.95);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }).catch(err => {
-    console.error('JPG indirme hatası / JPG download error:', err);
-    alert(t3('Görsel indirilemedi.', 'Could not download the image.', 'تعذر تنزيل الصورة.'));
+  // Kart belirme (fade-in) animasyonu bitmeden yakalama yapılırsa, animasyon gecikmesi geç olan
+  // kartlar (örn. departman/bölüm kartları) görüntüde soluk ya da hiç görünmez çıkıyordu. Yakalamadan
+  // hemen önce hedef elemanın ve TÜM alt elemanlarının animasyon/geçişini geçici olarak devre dışı
+  // bırakıp anlık son (görünür) haline sabitliyoruz, ardından orijinal satır-içi stillerine geri
+  // döndürüyoruz. /
+  // If capture happened before the fade-in animation finished, cards with a later animation delay
+  // (e.g. department/section cards) showed up faint or completely missing in the image. Right before
+  // capturing, we temporarily disable animation/transition on the target element and ALL its
+  // descendants and pin them to their final (visible) state, then restore their original inline
+  // styles afterward.
+  const targets = [el, ...el.querySelectorAll('*')];
+  const savedStyles = targets.map(node => ({
+    node,
+    animation: node.style.animation,
+    transition: node.style.transition,
+    opacity: node.style.opacity,
+    transform: node.style.transform
+  }));
+  targets.forEach(node => {
+    node.style.setProperty('animation', 'none', 'important');
+    node.style.setProperty('transition', 'none', 'important');
+    node.style.setProperty('opacity', '1', 'important');
+    node.style.setProperty('transform', 'none', 'important');
   });
+
+  // Hedef eleman genellikle kaydırılabilir bir modal penceresinin (.modal-body) içindedir. Bu
+  // durumda html2canvas yalnızca o an EKRANDA GÖRÜNEN kısmı yakalar, kaydırarak görülebilen alt
+  // kısımlar görüntüde eksik kalır. Yakalamadan önce üst elemanlardaki kaydırma/kırpma ve yükseklik
+  // sınırlarını geçici olarak kaldırıp tüm içeriği açığa çıkarıyoruz. /
+  // The target element usually sits inside a scrollable modal window (.modal-body). In that case
+  // html2canvas only captures whatever is currently ON SCREEN — content further down that requires
+  // scrolling gets left out of the image. Before capturing, we temporarily remove scroll/clipping and
+  // height limits on ancestor elements to expose the full content.
+  const ancestors = [];
+  let node = el.parentElement;
+  while (node && node !== document.body) {
+    const cs = getComputedStyle(node);
+    if (cs.overflow !== 'visible' || cs.overflowY !== 'visible' || cs.maxHeight !== 'none') {
+      ancestors.push({
+        node,
+        overflow: node.style.overflow,
+        overflowY: node.style.overflowY,
+        maxHeight: node.style.maxHeight,
+        height: node.style.height
+      });
+    }
+    node = node.parentElement;
+  }
+  ancestors.forEach(a => {
+    a.node.style.setProperty('overflow', 'visible', 'important');
+    a.node.style.setProperty('overflow-y', 'visible', 'important');
+    a.node.style.setProperty('max-height', 'none', 'important');
+  });
+
+  function restoreStyles() {
+    savedStyles.forEach(s => {
+      s.node.style.animation = s.animation;
+      s.node.style.transition = s.transition;
+      s.node.style.opacity = s.opacity;
+      s.node.style.transform = s.transform;
+    });
+    ancestors.forEach(a => {
+      a.node.style.overflow = a.overflow;
+      a.node.style.overflowY = a.overflowY;
+      a.node.style.maxHeight = a.maxHeight;
+    });
+  }
+
+  // Bir sonraki "frame"e kadar bekleyerek tarayıcının yukarıdaki stili uygulamasını garanti eder /
+  // Wait a frame to guarantee the browser has applied the styles above
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    html2canvas(el, { scale: 2, backgroundColor: bgColor || '#ffffff', useCORS: true }).then(canvas => {
+      restoreStyles();
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }).catch(err => {
+      restoreStyles();
+      console.error('JPG indirme hatası / JPG download error:', err);
+      alert(t3('Görsel indirilemedi.', 'Could not download the image.', 'تعذر تنزيل الصورة.'));
+    });
+  }));
 }
 
 // "🧭 Bölüm Bazlı Dashboard'lar" bölümündeki TÜM halka grafikleri tek bir JPG görseli olarak indirir /
@@ -5990,7 +6278,7 @@ function downloadRingCardJPG(btn) {
   const card = btn.closest('.ring-card');
   const label = btn.dataset.label || 'Grafik';
   const safeLabel = label.replace(/[^\wçğıöşüÇĞİÖŞÜ ]+/g, '').replace(/\s+/g, '_');
-  downloadElementAsJPG(card, `EMS_${safeLabel}_${new Date().toISOString().slice(0,10)}.jpg`, '#1e1b4b');
+  downloadElementAsJPG(card, `EMS_${safeLabel}_${new Date().toISOString().slice(0,10)}.jpg`, '#eef0f3');
 }
 
 // "Genel Durum Başarı Oranı" detay penceresindeki bölüm bazlı sütun grafiklerini JPG olarak indirir /
@@ -6089,7 +6377,8 @@ function renderDocLibraryGrid() {
     html += '<div style="grid-column:1/-1; text-align:center; color:var(--muted); font-size:13px; font-style:italic; padding:8px 0 4px;">' + t3('Henüz belge eklenmedi.', 'No documents added yet.', 'لم تتم إضافة أي مستندات بعد.') + '</div>';
   }
   html += arr.map(doc => {
-    const hasMedia = !!(doc.photo || (doc.mediaType === 'video' && doc.hasVideo) || doc.videoLink);
+    const isOffice = doc.mediaType === 'office' && !!doc.officeFileName;
+    const hasMedia = !!(doc.photo || (doc.mediaType === 'video' && doc.hasVideo) || doc.videoLink || isOffice);
     let thumb;
     if (doc.mediaType === 'video' && doc.hasVideo) {
       thumb = '<div style="width:100%;height:100%;background:#111827;display:flex;align-items:center;justify-content:center;position:relative;">' +
@@ -6098,6 +6387,17 @@ function renderDocLibraryGrid() {
       thumb = '<img src="' + doc.photo + '" style="width:100%;height:100%;object-fit:cover;">' +
         (doc.mediaType === 'pdf' && doc.hasFullPdf ? '<span style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#fff; font-size:9.5px; font-weight:800; padding:3px 7px; border-radius:6px;">📄 ' + t3('Çok Sayfalı', 'Multi-page', 'متعدد الصفحات') + '</span>' : '') +
         (doc.mediaType === 'pdf' && !doc.hasFullPdf ? '<span style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#fff; font-size:9.5px; font-weight:800; padding:3px 7px; border-radius:6px;">📄 PDF (1 ' + t3('sayfa', 'page', 'صفحة') + ')</span>' : '');
+    } else if (isOffice) {
+      // Word/Excel dosyaları görsel önizleme desteklemez; dosya türüne göre renkli bir ikon
+      // gösterilir, tıklayınca doğrudan orijinal dosya indirilir /
+      // Word/Excel files don't support a visual preview; a colored icon is shown based on file
+      // type, and clicking downloads the original file directly
+      const isExcel = ['xls', 'xlsx'].includes(doc.officeExt);
+      const officeColor = isExcel ? '#15803d' : '#1d4ed8';
+      const officeLabel = isExcel ? 'XLS' : 'DOC';
+      thumb = '<div style="width:100%;height:100%;background:' + officeColor + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" style="width:36px;height:36px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' +
+        '<span style="color:#fff; font-size:11px; font-weight:800; letter-spacing:.03em;">' + officeLabel + '</span></div>';
     } else if (doc.videoLink) {
       // Büyük video dosyaları Firestore'a yüklenemeyeceğinden (boyut sınırı), bunun yerine harici bir
       // bağlantı (YouTube, Google Drive vb.) saklanır — dosya değil / Large video files can't be
@@ -6110,10 +6410,14 @@ function renderDocLibraryGrid() {
       thumb = '<svg viewBox="0 0 24 24" fill="none" stroke="#c7cbd1" stroke-width="1.5" style="width:38px;height:38px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
     }
     const isLinkOnly = !doc.photo && !(doc.mediaType === 'video' && doc.hasVideo) && !!doc.videoLink;
-    const clickAttr = isLinkOnly
-      ? ' onclick="window.open(\'' + String(doc.videoLink).replace(/'/g, '%27').replace(/"/g, '%22') + '\', \'_blank\', \'noopener\')"'
-      : (hasMedia ? ' onclick="openDocLightbox(\'' + storeKey + '\',' + doc.id + ')"' : '');
-    const downloadBtn = (hasMedia && doc.photo) ? '<button type="button" class="doc-card-download-btn" onclick="event.stopPropagation(); downloadDocPhotoJPG(\'' + storeKey + '\',' + doc.id + ')" title="' + t3('JPG Olarak İndir', 'Download as JPG', 'تنزيل كـ JPG') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg></button>' : '';
+    const clickAttr = isOffice
+      ? ' onclick="downloadOfficeFile(\'' + storeKey + '\',' + doc.id + ')"'
+      : (isLinkOnly
+        ? ' onclick="window.open(\'' + String(doc.videoLink).replace(/'/g, '%27').replace(/"/g, '%22') + '\', \'_blank\', \'noopener\')"'
+        : (hasMedia ? ' onclick="openDocLightbox(\'' + storeKey + '\',' + doc.id + ')"' : ''));
+    const downloadBtn = isOffice
+      ? '<button type="button" class="doc-card-download-btn" onclick="event.stopPropagation(); downloadOfficeFile(\'' + storeKey + '\',' + doc.id + ')" title="' + t3('İndir', 'Download', 'تنزيل') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg></button>'
+      : ((hasMedia && doc.photo) ? '<button type="button" class="doc-card-download-btn" onclick="event.stopPropagation(); downloadDocPhotoJPG(\'' + storeKey + '\',' + doc.id + ')" title="' + t3('JPG Olarak İndir', 'Download as JPG', 'تنزيل كـ JPG') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg></button>' : '');
     return '<div style="border:1.5px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:8px; background:#fff;">' +
       '<div style="position:relative; width:100%; aspect-ratio:4/3; border-radius:10px; overflow:hidden; background:#f4f5f7; display:flex; align-items:center; justify-content:center; cursor:' + (hasMedia ? 'pointer' : 'default') + ';"' + clickAttr + '>' + thumb + downloadBtn + '</div>' +
       '<div style="font-weight:800; font-size:13px; color:var(--text); word-break:break-word;">' + escHtml(doc.name || t3('İsimsiz Belge', 'Untitled Document', 'مستند بدون عنوان')) + '</div>' +
@@ -6130,7 +6434,7 @@ function renderDocLibraryGrid() {
 
   html += '<div class="editor-only-el" data-scope="documents" onclick="addDocEntry(\'' + storeKey + '\')" style="border:1.5px dashed var(--border-h); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--muted); background:#fafbfd;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Yeni Belge Ekle', 'Add New Document', 'إضافة مستند جديد') + '</div></div>';
 
-  html += '<div class="editor-only-el" data-scope="documents" onclick="triggerMultiDocUpload(\'' + storeKey + '\')" style="border:1.5px dashed var(--primary); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--primary); background:#f5f5ff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/><line x1="12" y1="3" x2="12" y2="3"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Çoklu Dosya Ekle', 'Add Multiple Files', 'إضافة ملفات متعددة') + '<br><span style="font-weight:600; font-size:10px;">' + t3('(her dosya ayrı bir belge olur)', '(each file becomes a document)', '(كل ملف يصبح مستنداً منفصلاً)') + '</span></div></div>';
+  html += '<div class="editor-only-el" data-scope="documents" onclick="triggerMultiDocUpload(\'' + storeKey + '\')" style="border:1.5px dashed var(--primary); border-radius:14px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; min-height:170px; color:var(--primary); background:#f5f5ff;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:26px;height:26px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/><line x1="12" y1="3" x2="12" y2="3"/></svg><div style="font-size:12px; font-weight:800; text-align:center;">' + t3('Çoklu Dosya Ekle', 'Add Multiple Files', 'إضافة ملفات متعددة') + '<br><span style="font-weight:600; font-size:10px;">' + t3('(Word, PDF, Excel — her dosya ayrı bir belge olur)', '(Word, PDF, Excel — each file becomes a document)', '(Word، PDF، Excel — كل ملف يصبح مستنداً منفصلاً)') + '</span></div></div>';
 
   grid.innerHTML = html;
   applyScopedElementVisibility(grid);
@@ -6164,6 +6468,32 @@ function editDocMeta(storeKey, id) {
 }
 
 // Büyük video dosyaları Firestore'un boyut sınırını aştığından, dosya yüklemek yerine harici bir
+// Word/Excel dosyasını, orijinal adı ve uzantısıyla (JPG'ye dönüştürmeden) indirir — bu dosyalar
+// görsel bir belge değil, orijinal ofis dosyası olarak saklanır. /
+// Downloads a Word/Excel file with its original name and extension (no JPG conversion) — these
+// files are stored as the original office file, not a visual document.
+function downloadOfficeFile(storeKey, id) {
+  const arr = _getDocStoreArray(storeKey) || [];
+  const doc = arr.find(d => d.id === id);
+  if (!doc || !doc.officeFileName) {
+    alert(t3('İndirilecek dosya bulunamadı.', 'No file available to download.', 'لا يوجد ملف متاح للتنزيل.'));
+    return;
+  }
+  _loadDocFileData(storeKey, id, 'officefile', dataUrl => {
+    if (!dataUrl) {
+      alert(t3('Dosya indirilemedi.', 'Could not download the file.', 'تعذر تنزيل الملف.'));
+      return;
+    }
+    const link = document.createElement('a');
+    link.download = doc.officeFileName;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+}
+
+// Büyük video dosyaları Firestore'a yüklenemeyeceğinden, dosya yüklemek yerine harici bir
 // bağlantı (YouTube, Google Drive, WeTransfer vb.) saklanır. Sadece http(s) bağlantılarına izin
 // verilir — "javascript:" gibi tehlikeli şemalar engellenir. /
 // Since large video files exceed Firestore's size limit, an external link (YouTube, Google Drive,
@@ -6213,12 +6543,14 @@ function deleteDocFile(storeKey, id) {
   if (!roleGuard('documents')) return;
   const arr = _getDocStoreArray(storeKey);
   const doc = arr.find(d => d.id === id);
-  if (!doc || !doc.photo) return;
+  if (!doc || (!doc.photo && !doc.officeFileName)) return;
   if (!confirm(t3('Bu dosyayı silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this file?', 'هل أنت متأكد أنك تريد حذف هذا الملف؟'))) return;
   doc.photo = null;
-  delete doc.hasFullPdf; delete doc.hasVideo;
+  delete doc.hasFullPdf; delete doc.hasVideo; delete doc.officeFileName; delete doc.officeExt;
+  if (doc.mediaType === 'office') delete doc.mediaType;
   _deleteDocFileData(storeKey, id, 'pdf');
   _deleteDocFileData(storeKey, id, 'video');
+  _deleteDocFileData(storeKey, id, 'officefile');
   save();
   renderDocLibraryGrid();
 }
@@ -6375,6 +6707,26 @@ function handleMultiDocFileChange(event) {
     const rawName = (file.name || '').replace(/\.[^/.]+$/, ''); // uzantıyı kaldır / strip extension
     const entry = { id: nextId++, name: rawName || t3('İsimsiz Belge', 'Untitled Document', 'مستند بدون عنوان'), description: '', photo: null };
     arr.push(entry);
+    const ext = (file.name || '').split('.').pop().toLowerCase();
+    const isOfficeFile = ['doc', 'docx', 'xls', 'xlsx'].includes(ext);
+    if (isOfficeFile) {
+      // Word/Excel dosyalarının görsel önizlemesi oluşturulamaz; orijinal dosya olduğu gibi
+      // (adı ve uzantısıyla) saklanır ve indirilebilir hale getirilir /
+      // Word/Excel files can't be rendered as an image preview; the original file is stored
+      // as-is (with its name and extension) and made downloadable
+      return new Promise(resolve => {
+        if (file.size > MAX_FULL_PDF_BYTES) { failed++; resolve(); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+          entry.mediaType = 'office';
+          entry.officeExt = ext;
+          entry.officeFileName = file.name;
+          _saveDocFileData(storeKey, entry.id, 'officefile', e.target.result, () => { succeeded++; resolve(); });
+        };
+        reader.onerror = () => { failed++; resolve(); };
+        reader.readAsDataURL(file);
+      });
+    }
     if (file.type.startsWith('video/')) {
       return new Promise(resolve => {
         if (file.size > MAX_VIDEO_BYTES) { failed++; resolve(); return; }
@@ -6775,14 +7127,14 @@ function buildRingSVG(pct, color, colorDark, subLabel) {
         <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="${dark}" flood-opacity="0.5"/>
       </filter>
     </defs>
-    <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="17"/>
+    <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="17"/>
     <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="url(#${gid})" stroke-width="17" stroke-linecap="round"
       stroke-dasharray="${circ}" stroke-dashoffset="${offset}" transform="rotate(-90 ${pc} ${pc})"
       filter="url(#shadow${gid})"
       style="transition: stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1);"/>
     <circle cx="${pc}" cy="${pc}" r="${r - 24}" fill="url(#${gid})" opacity="0.14"/>
-    <text x="${pc}" y="${pc - (subLabel ? 4 : -6)}" text-anchor="middle" font-size="38" font-weight="900" fill="#fff" font-family="'Plus Jakarta Sans', sans-serif">%${safePct}</text>
-    ${subLabel ? `<text x="${pc}" y="${pc + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="rgba(255,255,255,0.65)" font-family="'Plus Jakarta Sans', sans-serif">${subLabel}</text>` : ''}
+    <text x="${pc}" y="${pc - (subLabel ? 4 : -6)}" text-anchor="middle" font-size="38" font-weight="900" fill="#0f172a" font-family="'Plus Jakarta Sans', sans-serif">%${safePct}</text>
+    ${subLabel ? `<text x="${pc}" y="${pc + 22}" text-anchor="middle" font-size="12" font-weight="700" fill="rgba(15,23,42,0.55)" font-family="'Plus Jakarta Sans', sans-serif">${subLabel}</text>` : ''}
   </svg>`;
 }
 
@@ -6860,9 +7212,6 @@ function renderHomeSectionDashboards() {
 
   grid.innerHTML = sections.map(s => `
     <div class="ring-card" onclick="${s.onclick}" style="--ring-c1:${s.color}; --ring-c2:${s.dark}; --ring-glow:${s.color};">
-      <button type="button" class="ring-card-download-btn" onclick="event.stopPropagation(); downloadRingCardJPG(this)" data-label="${String(s.label).replace(/"/g,'&quot;')}" title="${t3('JPG Olarak İndir', 'Download as JPG', 'تنزيل كـ JPG')}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
-      </button>
       <div class="ring-card-icon-badge">${s.icon}</div>
       ${buildRingSVG(s.pct, s.color, s.dark, t3('UYUM ORANI', 'COMPLIANCE', 'الامتثال'))}
       <div class="ring-card-title">${s.label}</div>
@@ -6908,96 +7257,36 @@ function build3DBarLarge(pct) {
 // Draws a 3D-LOOKING, single-color bar chart for each section — the bar's color follows the
 // 100%=turquoise / 51-99%=orange / <=50%=red threshold, with a bold percentage label above it.
 function renderComplianceBars(bars, fixedWidth) {
-  // Referans "dashboard" görselindeki gibi: koyu lacivert/mor panel zemini, canlı gradyanlı (teal→yeşil,
-  // amber→turuncu, pembe→bordo) halka grafikler, ortada büyük % yazısı, yanında numaralı rozet ve
-  // Yapıldı/Devam Ediyor/Tamamlanmadı dökümü. /
-  // Like the reference dashboard image: a dark navy/purple panel background, vivid gradient ring
-  // charts (teal→green, amber→orange, pink→crimson), a large % in the center, a numbered badge next
-  // to it, and a Done/In Progress/Not Completed breakdown.
-  const STATUS_DEFS = [
-    { key: 'compliant', label: t3('Yapıldı', 'Done', 'تم الإنجاز'), c1: '#2DD4BF', c2: '#059669' },
-    { key: 'minor',      label: t3('Devam Ediyor', 'In Progress', 'قيد التنفيذ'), c1: '#FBBF24', c2: '#F97316' },
-    { key: 'critical',   label: t3('Tamamlanmadı', 'Not Completed', 'لم يكتمل'), c1: '#F472B6', c2: '#DB2777' }
-  ];
-  const RING = 176, STROKE = 26;
-  const r = RING / 2 - STROKE / 2 - 2, pc = RING / 2, circ = 2 * Math.PI * r;
+  // "🧭 Bölüm Bazlı Dashboard'lar" (anasayfa) ile BİREBİR AYNI kart tasarımı: .ring-card sınıfı ve
+  // buildRingSVG() yeniden kullanılır — ikon rozeti, gri izli tek renkli halka, ortada büyük %,
+  // altında başlık ve sayı rozeti. /
+  // The EXACT SAME card design as "🧭 Section Dashboards" (homepage): reuses the .ring-card class and
+  // buildRingSVG() — icon badge, single-color ring with a grey track, large % in the center, title
+  // and a count pill below.
   const clickHint = t3('Listeyi görmek için tıklayın', 'Click to view the list', 'انقر لعرض القائمة');
+  const ICONS = { sustain: '🌱', csr: '📋', hse: '🦺', env: '🌍', cd: '🛡️', all: '🏆' };
 
-  const legendHtml = `
-    <div style="display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap;
-      margin-bottom:22px; padding:14px 24px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:14px;">
-      ${STATUS_DEFS.map(sd => `
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="width:18px; height:18px; border-radius:6px; flex-shrink:0;
-            background:linear-gradient(135deg, ${sd.c1}, ${sd.c2}); box-shadow:0 3px 8px rgba(0,0,0,0.35);"></span>
-          <span style="font-size:14px; font-weight:800; color:#fff;">${sd.label}</span>
-        </div>`).join('')}
-    </div>`;
-
-  const rowsHtml = bars.map((b, idx) => {
+  const cardsHtml = bars.map(b => {
     const pct = b.pct || 0;
-    const vals = { compliant: b.comp || 0, minor: b.min || 0, critical: b.crit || 0 };
-    const total = (vals.compliant + vals.minor + vals.critical) || (b.t || 1) || 1;
+    const comp = b.comp || 0, min = b.min || 0, crit = b.crit || 0;
+    const total = (comp + min + crit) || b.t || 1;
     const clickable = b.clickType !== undefined;
     const clickCatArg = b.clickCat ? `'${b.clickCat}'` : 'null';
-    const gid = 'gcb' + idx;
-
-    let offset = 0;
-    const arcs = STATUS_DEFS.map(sd => {
-      const val = vals[sd.key];
-      const len = circ * (val / total);
-      const dashoffset = (-offset).toFixed(2);
-      offset += len;
-      if (len <= 0.001) return '';
-      const onclick = clickable ? `onclick="openBarStatusList('${b.clickType}','${b.clickValue}',${clickCatArg},'${sd.key}')" title="${clickHint}" style="cursor:pointer;"` : '';
-      return `<circle ${onclick} cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="url(#${gid}-${sd.key})" stroke-width="${STROKE}"
-        stroke-linecap="round" stroke-dasharray="${len.toFixed(2)} ${(circ - len).toFixed(2)}" stroke-dashoffset="${dashoffset}"
-        transform="rotate(-90 ${pc} ${pc})"/>`;
-    }).join('');
-
-    const defs = STATUS_DEFS.map(sd => `
-      <linearGradient id="${gid}-${sd.key}" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="${sd.c1}"/><stop offset="100%" stop-color="${sd.c2}"/>
-      </linearGradient>`).join('');
-
-    const ringSvg = `
-      <svg width="${RING}" height="${RING}" viewBox="0 0 ${RING} ${RING}" style="flex-shrink:0;">
-        <defs>${defs}</defs>
-        <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="${STROKE}"/>
-        ${arcs}
-        <text x="${pc}" y="${pc + RING * 0.045}" text-anchor="middle" font-size="${RING * 0.22}" font-weight="900" fill="#fff">%${pct}</text>
-      </svg>`;
-
-    const numStr = String(idx + 1).padStart(2, '0');
-    const catClickable = clickable
-      ? `onclick="openBarStatusList('${b.clickType}','${b.clickValue}',${clickCatArg},'all')" title="${clickHint}" style="cursor:pointer;"`
-      : '';
-
+    const onclickAttr = clickable
+      ? ` onclick="openBarStatusList('${b.clickType}','${b.clickValue}',${clickCatArg},'all')" title="${clickHint}"`
+      : ' style="cursor:default;"';
+    const icon = b.icon || ICONS[b.key] || '📊';
     return `
-    <div style="display:flex; align-items:center; gap:26px; background:rgba(255,255,255,0.05);
-      border:1px solid rgba(255,255,255,0.10); border-radius:20px; padding:20px 26px;">
-      ${ringSvg}
-      <div ${catClickable} style="display:flex; align-items:center; gap:18px; min-width:0; flex:1;">
-        <div style="font-size:38px; font-weight:900; color:rgba(255,255,255,0.28); line-height:1; flex-shrink:0;">${numStr}</div>
-        <div style="min-width:0;">
-          <div style="font-size:17px; font-weight:900; color:#fff; line-height:1.3;">${b.label}</div>
-          <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.55); margin-bottom:8px;">${b.sub}</div>
-          <div style="font-size:12.5px; font-weight:700; color:rgba(255,255,255,0.85); line-height:1.7;">
-            🟢 ${STATUS_DEFS[0].label}: ${vals.compliant} &nbsp;·&nbsp;
-            🟡 ${STATUS_DEFS[1].label}: ${vals.minor} &nbsp;·&nbsp;
-            🔴 ${STATUS_DEFS[2].label}: ${vals.critical} &nbsp;·&nbsp; ${total} ${t3('Kriter', 'Criteria', 'معيار')}
-          </div>
-        </div>
-      </div>
+    <div class="ring-card"${onclickAttr} style="--ring-c1:${b.color}; --ring-c2:${b.dark}; --ring-glow:${b.color};">
+      <div class="ring-card-icon-badge">${icon}</div>
+      ${buildRingSVG(pct, b.color, b.dark, t3('UYUM ORANI', 'COMPLIANCE', 'الامتثال'))}
+      <div class="ring-card-title">${b.label}</div>
+      ${b.sub ? `<div class="ring-card-sub">${b.sub}</div>` : ''}
+      <div class="ring-card-count">${comp}/${total} ${t3('Tamamlandı', 'Completed', 'مكتمل')}</div>
     </div>`;
   }).join('');
 
-  return `
-    <div style="background:linear-gradient(135deg, #39338F 0%, #463CA8 45%, #5F44AD 100%);
-      border-radius:24px; padding:28px 24px; box-shadow:0 14px 34px rgba(30,27,75,0.35);">
-      ${legendHtml}
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(420px, 1fr)); gap:18px;">${rowsHtml}</div>
-    </div>`;
+  return `<div class="ring-dashboard-grid" style="grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));">${cardsHtml}</div>`;
 }
 
 
@@ -7056,9 +7345,9 @@ function openOverallSuccessDetail(scope) {
     titleText = scope.titleText || t3('Modül Uyum Oranı', 'Module Compliance Rate', 'معدل امتثال الوحدة');
 
     if (scope.isCertView) {
-      // Sertifika Portalı: sertifika isimleri yazılmaz — bunun yerine koyu panel üzerinde 3 canlı
-      // gradyanlı, TIKLANABİLİR halka grafik: Alındı / Devam Ediyor / Başvuru Yapılmadı. /
-      // Certificate Portal: certificate names are not written out — instead, on a dark panel,
+      // Sertifika Portalı: sertifika isimleri yazılmaz — bunun yerine açık zeminli panel üzerinde 3
+      // canlı gradyanlı, TIKLANABİLİR halka grafik: Alındı / Devam Ediyor / Başvuru Yapılmadı. /
+      // Certificate Portal: certificate names are not written out — instead, on a light panel,
       // 3 vivid gradient, CLICKABLE ring charts: Received / In Progress / Not Applied.
       const certTotal = (compQ + minQ + critQ) || 1;
       const groups = [
@@ -7079,22 +7368,48 @@ function openOverallSuccessDetail(scope) {
             <defs><linearGradient id="${gid}" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="${g.c1}"/><stop offset="100%" stop-color="${g.c2}"/>
             </linearGradient></defs>
-            <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="${STROKE}"/>
+            <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="${STROKE}"/>
             <circle cx="${pc}" cy="${pc}" r="${r}" fill="none" stroke="url(#${gid})" stroke-width="${STROKE}" stroke-linecap="round"
               stroke-dasharray="${len.toFixed(2)} ${(circ - len).toFixed(2)}" transform="rotate(-90 ${pc} ${pc})"/>
-            <text x="${pc}" y="${pc + RING * 0.05}" text-anchor="middle" font-size="${RING * 0.22}" font-weight="900" fill="#fff">%${gPct}</text>
+            <text x="${pc}" y="${pc + RING * 0.05}" text-anchor="middle" font-size="${RING * 0.22}" font-weight="900" fill="#0f172a">%${gPct}</text>
           </svg>
-          <div style="font-size:22px; font-weight:900; color:#fff; margin-top:14px;">${g.val}</div>
-          <div style="font-size:13.5px; font-weight:800; color:rgba(255,255,255,0.8); margin-top:4px; text-align:center;">${g.label}</div>
+          <div style="font-size:22px; font-weight:900; color:var(--text); margin-top:14px;">${g.val}</div>
+          <div style="font-size:13.5px; font-weight:800; color:rgba(15,23,42,0.65); margin-top:4px; text-align:center;">${g.label}</div>
         </div>`;
       }).join('');
       barsHtml = `
-        <div style="background:linear-gradient(135deg, #39338F 0%, #463CA8 45%, #5F44AD 100%);
-          border-radius:24px; padding:32px 26px 26px; box-shadow:0 14px 34px rgba(30,27,75,0.35); max-width:760px; margin:0 auto;">
+        <div style="background:#eef0f3; border:1px solid rgba(15,23,42,0.06);
+          border-radius:24px; padding:32px 26px 26px; box-shadow:0 14px 34px rgba(20,15,55,0.08); max-width:760px; margin:0 auto;">
           <div style="display:flex; align-items:flex-start; justify-content:center; gap:36px; flex-wrap:wrap;">${certCols}</div>
-          <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.14); width:100%; text-align:center;
-            font-size:13px; font-weight:700; color:rgba(255,255,255,0.65);">${certTotal} ${t3('Sertifika', 'Certificates', 'شهادة')}</div>
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(15,23,42,0.08); width:100%; text-align:center;
+            font-size:13px; font-weight:700; color:rgba(15,23,42,0.55);">${certTotal} ${t3('Sertifika', 'Certificates', 'شهادة')}</div>
         </div>`;
+    } else if (scope.type === 'category' && scope.value === 'env') {
+      // "4. Çevre ve Kimyasal Yönetimi" kategorisi, veri modelinde ayrı bir alt etiket olmadığından
+      // soru metni/kapsamındaki anahtar kelimelere göre (kimyasal/chemical/ZDHC/MSDS/SDS/CLP) iki ayrı
+      // dashboard'a bölünür: Çevre ve Kimyasal Yönetimi. /
+      // Since the data model has no separate sub-tag, the "4. Environment & Chemical Management"
+      // category is split into two separate dashboards — Environment and Chemical Management —
+      // based on keywords (kimyasal/chemical/ZDHC/MSDS/SDS/CLP) found in each question's text/scope.
+      const chemKeywords = ['kimyasal', 'chemical', 'chem-', 'chem ', 'msds', 'sds', 'zdhc', 'clp'];
+      const isChemicalItem = (item) => {
+        const hay = ((item.text || '') + ' ' + (item.scope || '')).toLowerCase();
+        return chemKeywords.some(k => hay.includes(k));
+      };
+      const chemItems = scope.items.filter(isChemicalItem);
+      const envItems = scope.items.filter(i => !isChemicalItem(i));
+      const mkSubBar = (label, sub, color, dark, items, icon) => {
+        const t = items.length;
+        const comp = items.filter(i => i.status === 'compliant').length;
+        const min = items.filter(i => i.status === 'minor').length;
+        const crit = items.filter(i => i.status === 'critical').length;
+        return { label, sub, color, dark, icon, t, comp, min, crit, pct: t ? Math.round(comp / t * 100) : 0 };
+      };
+      const bars = [
+        mkSubBar(t3('Çevre', 'Environment', 'البيئة'), t3('Genel Çevre Yönetimi', 'General Environmental Mgmt.', 'الإدارة البيئية العامة'), '#22D3EE', '#0891B2', envItems, '🌍'),
+        mkSubBar(t3('Kimyasal Yönetimi', 'Chemical Management', 'إدارة المواد الكيميائية'), t3('Kimyasal Güvenlik & ZDHC', 'Chemical Safety & ZDHC', 'السلامة الكيميائية'), '#FBBF24', '#B45309', chemItems, '🧪')
+      ];
+      barsHtml = renderComplianceBars(bars);
     } else {
       // Kapsamdaki her benzersiz kategori için ayrı çubuk / A separate bar for each unique category present in scope
       const presentCats = [...new Set(scope.items.map(i => i.rawCat))];
@@ -7567,20 +7882,20 @@ function openCustomerFindingsChart(customerKey) {
       <stop offset="0%" stop-color="${b.c1}"/><stop offset="100%" stop-color="${b.c2}"/>
     </linearGradient>`).join('');
   document.getElementById('cf-bars').innerHTML = `
-    <div style="background:linear-gradient(135deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); border-radius:22px; padding:26px 28px;
-      display:flex; flex-wrap:wrap; align-items:center; gap:32px; justify-content:center; box-shadow:0 12px 28px rgba(30,27,75,0.3);">
+    <div style="background:#eef0f3; border:1px solid rgba(15,23,42,0.06); border-radius:22px; padding:26px 28px;
+      display:flex; flex-wrap:wrap; align-items:center; gap:32px; justify-content:center; box-shadow:0 12px 28px rgba(20,15,55,0.08);">
       <svg width="${PIE_SIZE}" height="${PIE_SIZE}" viewBox="0 0 ${PIE_SIZE} ${PIE_SIZE}">
         <defs>${pieDefs}</defs>
-        <circle cx="${pc}" cy="${pc}" r="${pr}" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="${PIE_SIZE * 0.235}"/>
+        <circle cx="${pc}" cy="${pc}" r="${pr}" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="${PIE_SIZE * 0.235}"/>
         ${pieArcs}
-        <text x="${pc}" y="${pc + PIE_SIZE * 0.045}" text-anchor="middle" font-size="${PIE_SIZE * 0.19}" font-weight="900" fill="#fff">${catTotal}</text>
+        <text x="${pc}" y="${pc + PIE_SIZE * 0.045}" text-anchor="middle" font-size="${PIE_SIZE * 0.19}" font-weight="900" fill="#0f172a">${catTotal}</text>
       </svg>
       <div style="display:flex; flex-direction:column; gap:12px; min-width:180px;">
-        ${bars.map((b, idx) => `<div style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; color:#fff;">
-          <span style="width:14px; height:14px; border-radius:4px; background:linear-gradient(135deg, ${b.c1}, ${b.c2}); flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.3);"></span>
+        ${bars.map((b, idx) => `<div style="display:flex; align-items:center; gap:10px; font-size:14px; font-weight:700; color:var(--text);">
+          <span style="width:14px; height:14px; border-radius:4px; background:linear-gradient(135deg, ${b.c1}, ${b.c2}); flex-shrink:0; box-shadow:0 2px 6px rgba(0,0,0,0.15);"></span>
           <span style="flex:1;">${b.label}</span>
-          <span style="font-weight:900; color:${b.c1};">${b.val}</span>
-          <span style="font-size:11.5px; font-weight:700; color:rgba(255,255,255,0.5); min-width:34px; text-align:right;">%${Math.round(b.val / catTotal * 100)}</span>
+          <span style="font-weight:900; color:${b.c2};">${b.val}</span>
+          <span style="font-size:11.5px; font-weight:700; color:rgba(15,23,42,0.45); min-width:34px; text-align:right;">%${Math.round(b.val / catTotal * 100)}</span>
         </div>`).join('')}
       </div>
     </div>
@@ -8128,26 +8443,26 @@ function exportCustomerPPTX() {
   function chunk(arr, size) { const out=[]; for (let i=0;i<arr.length;i+=size) out.push(arr.slice(i,i+size)); return out; }
 
   // Kapak / Cover
-  let cover = newSlide('39338F', true);
+  let cover = newSlide('FFFFFF', false);
   cover.addShape('ellipse', { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fill: { color: hexColor } });
   cover.addText(c.init, { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fontSize: 22, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle' });
-  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 8.2, h: 0.7, fontSize: 34, bold: true, color: 'FFFFFF' });
-  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.6, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: 'F472B6' });
-  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: 'A5B4FC' });
-  cover.addText("© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.", { x: 0.8, y: 6.9, w: 11, h: 0.4, fontSize: 9, color: '8280C4' });
+  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 8.2, h: 0.7, fontSize: 34, bold: true, color: '0F172A' });
+  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.6, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: 'DB2777' });
+  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: '4F46E5' });
+  cover.addText("© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.", { x: 0.8, y: 6.9, w: 11, h: 0.4, fontSize: 9, color: '94A3B8' });
 
   // Özet / Summary
-  let sSum = newSlide('39338F', true);
-  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 11, h: 0.5, fontSize: 18, bold: true, color: 'FFFFFF' });
+  let sSum = newSlide('FFFFFF', false);
+  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 11, h: 0.5, fontSize: 18, bold: true, color: '0F172A' });
   const kpiCards = [
-    { icon:'📄', label:`Toplam / Total: ${s.total}`, color:'818CF8' },
-    { icon:'✅', label:`Tamamlandı / Completed: ${s.comp}`, color:'2DD4BF' },
-    { icon:'⏳', label:`Devam Ediyor / In Progress: ${s.min}`, color:'FBBF24' },
-    { icon:'❌', label:`Yapılmadı / Not Done: ${s.crit}`, color:'F472B6' }
+    { icon:'📄', label:`Toplam / Total: ${s.total}`, color:'4F46E5' },
+    { icon:'✅', label:`Tamamlandı / Completed: ${s.comp}`, color:'059669' },
+    { icon:'⏳', label:`Devam Ediyor / In Progress: ${s.min}`, color:'D97706' },
+    { icon:'❌', label:`Yapılmadı / Not Done: ${s.crit}`, color:'DB2777' }
   ];
   kpiCards.forEach((k,i) => {
     const x = 0.5 + i*3.0;
-    sSum.addShape('roundRect', { x:x, y:1.1, w:2.8, h:1.15, fill:{color:'463CA8'}, line:{color:k.color,width:1}, rectRadius:0.1 });
+    sSum.addShape('roundRect', { x:x, y:1.1, w:2.8, h:1.15, fill:{color:'EEF0F3'}, line:{color:k.color,width:1}, rectRadius:0.1 });
     sSum.addText(k.icon, { x:x+0.15, y:1.28, w:0.55, h:0.55, fontSize:22, align:'center', valign:'middle' });
     sSum.addText(k.label, { x:x+0.8, y:1.1, w:1.9, h:1.15, fontSize:12, bold:true, color:k.color, valign:'middle' });
   });
@@ -8174,7 +8489,7 @@ function exportCustomerPPTX() {
   const statusColor = { compliant: '2DD4BF', minor: 'FBBF24', critical: 'F472B6' };
   const chunks = chunk(rows, 12);
   chunks.forEach((ch, idx) => {
-    let sl = newSlide('39338F', true);
+    let sl = newSlide('FFFFFF', false);
     sl.addText(`${c.name.toUpperCase()} — KRİTER DETAYI / CRITERIA DETAIL (${idx+1}/${chunks.length})`, { x:0.4, y:0.25, w:11.0, h:0.4, fontSize:14, bold:true, color:hexColor });
     let tRows = [[
       { text:"No", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
@@ -8203,9 +8518,9 @@ function exportReportPDF() {
     return;
   }
 
-  // ═══ KOYU MARKA TEMASI (site ile birebir aynı) / DARK BRAND THEME (matches the site) ═══
-  const BG = '#39338F', CARD = '#463CA8', BORDER = 'rgba(255,255,255,0.16)', NAVY = '#FFFFFF', RED = '#FF0000',
-        GOLD = '#E8C878', INK = '#F1F5F9', MUTE = 'rgba(241,245,249,0.62)', OK = '#2DD4BF', WARN = '#FBBF24', BAD = '#F472B6';
+  // ═══ AÇIK MARKA TEMASI (site ile birebir aynı) / LIGHT BRAND THEME (matches the site) ═══
+  const BG = '#ffffff', CARD = '#eef0f3', BORDER = 'rgba(15,23,42,0.08)', NAVY = '#0f172a', RED = '#FF0000',
+        GOLD = '#B45309', INK = '#0f172a', MUTE = 'rgba(15,23,42,0.55)', OK = '#059669', WARN = '#D97706', BAD = '#DB2777';
   const PAGE_W = 1600, PAGE_H = 900;
   // EMS logosu — sol menüdeki ile aynı görsel, her rapor sayfasının üst köşesinde gösterilir /
   // EMS logo — the same image as in the sidebar, shown in the top corner of every report page
@@ -8342,7 +8657,7 @@ function exportReportPDF() {
         </div>
       </div>
       <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
-        ${ringSvg(overallPct, 380, OK, '#FFFFFF')}
+        ${ringSvg(overallPct, 380, OK, INK)}
         <div style="font-size:18px; font-weight:800;">GENEL BAŞARI ORANI / OVERALL SUCCESS RATE</div>
       </div>
     </div>
@@ -8359,7 +8674,7 @@ function exportReportPDF() {
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;">
         <div style="font-size:18px; font-weight:800; margin-bottom:16px;">DURUM DAĞILIMI / STATUS DISTRIBUTION</div>
-        ${ringSvg(overallPct, 300, OK, '#FFFFFF')}
+        ${ringSvg(overallPct, 300, OK, INK)}
       </div>
       <div style="flex:1.4; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; padding:28px;">
         <div style="font-size:18px; font-weight:800; margin-bottom:18px;">MODÜL BAZLI DAĞILIM / MODULE BREAKDOWN</div>
@@ -8378,7 +8693,7 @@ function exportReportPDF() {
   pages.push(pageShell('🏅', 'Sertifika Portalı', 'Certificate Portal', `
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px;">
-        ${ringSvg(certPct, 320, GOLD, '#FFFFFF')}
+        ${ringSvg(certPct, 320, GOLD, INK)}
         <div style="display:flex; gap:26px; font-size:16px; font-weight:700;">
           <div style="color:${OK};">✅ Alındı/Received: ${certComp}</div>
           <div style="color:${WARN};">⏳ Devam/Ongoing: ${certMin}</div>
@@ -8405,7 +8720,7 @@ function exportReportPDF() {
   pages.push(pageShell('🏭', 'Departmanlar', 'Production Departments — CSR modülünden bağımsız ayrı puanlama / Independent scoring, separate from the CSR module', `
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:16px;">
-        ${ringSvg(deptPct, 300, OK, '#FFFFFF')}
+        ${ringSvg(deptPct, 300, OK, INK)}
         <div style="font-size:15px; font-weight:700; color:${MUTE};">${deptComp} / ${deptTotal} MADDE TAMAMLANDI / ITEMS COMPLETED</div>
       </div>
       <div style="flex:1.3; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; padding:26px; overflow:hidden;">
@@ -8417,7 +8732,7 @@ function exportReportPDF() {
             const p = t ? Math.round(c / t * 100) : 0;
             return `<div style="display:flex; align-items:center; gap:14px;">
               <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${deptLabel(d)}</div>
-              <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
+              <div style="flex:1; height:14px; background:rgba(15,23,42,0.08); border-radius:99px; overflow:hidden;">
                 <div style="width:${p}%; height:100%; background:${d.c1};"></div>
               </div>
               <div style="width:70px; text-align:right; font-size:14px; font-weight:800; color:${d.c1};">%${p}</div>
@@ -8484,7 +8799,7 @@ function exportReportPDF() {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#39338F', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#ffffff', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');
@@ -8537,7 +8852,7 @@ function exportGenericTablePDF(opts) {
   const kpiCards = kpiRowEl ? Array.from(kpiRowEl.querySelectorAll('.customer-kpi')).map(card => ({
     label: (card.querySelector('.customer-kpi-label') || {}).innerText || '',
     val: (card.querySelector('.customer-kpi-val') || {}).innerText || '',
-    color: card.style.color || '#818CF8'
+    color: card.style.color || '#4F46E5'
   })) : [];
 
   // Her satırdan hücreleri genel amaçlı olarak çıkarır: içinde <select> varsa seçili seçeneğin metnini
@@ -8570,8 +8885,8 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; align-items:flex-start; justify-content:space-between; padding:26px 40px 14px;">
         <div>
-          <div style="font-size:26px; font-weight:900; color:#fff; line-height:1.25;">${esc(titleText)}</div>
-          <div style="font-size:12px; font-weight:600; color:rgba(255,255,255,0.55); margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
+          <div style="font-size:26px; font-weight:900; color:#0f172a; line-height:1.25;">${esc(titleText)}</div>
+          <div style="font-size:12px; font-weight:600; color:rgba(15,23,42,0.55); margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
         </div>
         ${logoSrc ? `<img src="${logoSrc}" style="height:60px; width:auto;">` : ''}
       </div>`;
@@ -8582,8 +8897,8 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; gap:14px; padding:0 40px 18px;">
         ${kpiCards.map(k => `
-          <div style="flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:14px 18px;">
-            <div style="font-size:10.5px; font-weight:800; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
+          <div style="flex:1; background:#eef0f3; border:1px solid rgba(15,23,42,0.08); border-radius:14px; padding:14px 18px;">
+            <div style="font-size:10.5px; font-weight:800; color:rgba(15,23,42,0.5); text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
             <div style="font-size:24px; font-weight:900; color:${k.color}; margin-top:4px;">${esc(k.val)}</div>
           </div>`).join('')}
       </div>`;
@@ -8616,7 +8931,7 @@ function exportGenericTablePDF(opts) {
   const totalPages = chunks.length;
 
   const pages = chunks.map((pageRows, idx) => `
-    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #39338F 0%, #463CA8 45%, #5F44AD 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
+    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:#ffffff; font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
       ${pageHeader(idx + 1, totalPages)}
       ${idx === 0 ? kpiStrip() : ''}
       ${tableForRows(pageRows)}
@@ -8633,7 +8948,7 @@ function exportGenericTablePDF(opts) {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#39338F', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#ffffff', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');
@@ -8955,7 +9270,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="procedures-modal" class="modal-overlay" onclick="closeProceduresLibraryBg(event)">
   <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(760px, 96vw);">
     <div class="modal-header">
-      <div class="modal-title">📋 Talimat & Prosedürler / Instructions &amp; Procedures</div>
+      <div class="modal-title" id="procedures-modal-title">📋 Talimat & Prosedürler / Instructions &amp; Procedures</div>
       <div class="modal-close-group">
         <button class="modal-close" onclick="closeProceduresLibrary()" data-i18n-attr="title:btn_back" title="Geri / Back">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>

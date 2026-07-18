@@ -484,15 +484,16 @@ td { padding: 12px 11px; font-size: 14px; border-bottom: 1.5px solid var(--borde
 td:nth-child(2), td:nth-child(3) { min-width: 160px; max-width: 300px; white-space: normal; line-height: 1.4; }
 /* Açılan modal genişliğine göre "Tüm Kriterler & Evraklar" tablosunun sütunlarını orantılı dağıt /
    Distribute the "All Criteria & Documents" table's columns proportionally to the open modal's width */
-#modal-table-wrap table { table-layout: fixed; min-width: 860px; }
+#modal-table-wrap table { table-layout: fixed; min-width: 980px; }
 #modal-table-wrap table th { white-space: normal; line-height: 1.3; padding: 10px 6px; vertical-align: bottom; word-break: break-word; }
 #modal-table-wrap table td { padding: 10px 6px; }
-#modal-table-wrap table th:nth-child(1), #modal-table-wrap table td:nth-child(1) { width: 4%; min-width: 32px; }
-#modal-table-wrap table th:nth-child(2), #modal-table-wrap table td:nth-child(2) { width: 10%; min-width: 90px; }
-#modal-table-wrap table th:nth-child(3), #modal-table-wrap table td:nth-child(3) { width: 27%; min-width: 190px; max-width: none; }
-#modal-table-wrap table th:nth-child(4), #modal-table-wrap table td:nth-child(4) { width: 22%; min-width: 150px; max-width: none; }
-#modal-table-wrap table th:nth-child(5), #modal-table-wrap table td:nth-child(5) { width: 15%; min-width: 120px; }
-#modal-table-wrap table th:nth-child(6), #modal-table-wrap table td:nth-child(6) { width: 22%; min-width: 170px; }
+#modal-table-wrap table th:nth-child(1), #modal-table-wrap table td:nth-child(1) { width: 3%; min-width: 32px; }
+#modal-table-wrap table th:nth-child(2), #modal-table-wrap table td:nth-child(2) { width: 9%; min-width: 85px; }
+#modal-table-wrap table th:nth-child(3), #modal-table-wrap table td:nth-child(3) { width: 22%; min-width: 180px; max-width: none; }
+#modal-table-wrap table th:nth-child(4), #modal-table-wrap table td:nth-child(4) { width: 17%; min-width: 140px; max-width: none; }
+#modal-table-wrap table th:nth-child(5), #modal-table-wrap table td:nth-child(5) { width: 12%; min-width: 110px; }
+#modal-table-wrap table th:nth-child(6), #modal-table-wrap table td:nth-child(6) { width: 12%; min-width: 110px; }
+#modal-table-wrap table th:nth-child(7), #modal-table-wrap table td:nth-child(7) { width: 25%; min-width: 210px; }
 tr:hover td { background: #fafbfd; }
 tr.hidden-row { display: none !important; }
 
@@ -796,6 +797,11 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">👥</span>
         <span data-i18n="nav_user_management">Kullanıcı Yönetimi / User Management</span>
       </button>
+      <button class="side-nav-item admin-only-el" onclick="renderPendingApprovalsModal(); document.getElementById('pending-approvals-modal').classList.add('open');" style="display:none;">
+        <span class="nav-emoji">🔔</span>
+        <span data-i18n="nav_pending_approvals">Onay Bekleyen Değişiklikler / Pending Approvals</span>
+        <span id="pending-approvals-badge" style="display:none; margin-left:auto; background:var(--danger); color:#fff; font-size:10.5px; font-weight:800; border-radius:10px; padding:2px 7px;"></span>
+      </button>
       <button class="side-nav-item admin-only-el" onclick="exportBackup()" style="display:none;">
         <span class="nav-emoji">💾</span>
         <span data-i18n="nav_backup">Yedekle / Backup Data</span>
@@ -808,6 +814,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
       <input type="file" id="cert-photo-file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleCertPhotoFileChange(event)">
       <input type="file" id="dept-item-photo-file-input" accept="image/*,application/pdf" style="display:none;" onchange="handleDeptItemPhotoFileChange(event)">
       <input type="file" id="finding-photo-file-input" accept="image/*" style="display:none;" onchange="handleFindingPhotoFileChange(event)">
+      <input type="file" id="question-photo-file-input" accept="image/*" style="display:none;" onchange="handleQuestionPhotoFileChange(event)">
       <input type="file" id="doc-file-input" accept="image/*,application/pdf,video/*" style="display:none;" onchange="handleDocFileChange(event)">
       <input type="file" id="doc-multi-file-input" accept="image/*,application/pdf,video/*" multiple style="display:none;" onchange="handleMultiDocFileChange(event)">
       <div class="side-backup-info admin-only-el" id="side-backup-info" style="display:none;"></div>
@@ -902,10 +909,6 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
 
       <div class="page-section-title">
         <span data-i18n="section_dashboards">🧭 Bölüm Bazlı Dashboard'lar / Section Dashboards</span>
-        <button type="button" class="section-download-btn" style="margin-left:auto;" onclick="downloadAllChartsJPG()" title="Tüm Grafikleri İndir / Download All Charts">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
-          <span data-i18n="btn_download_charts">Tüm Grafikleri İndir / Download All Charts</span>
-        </button>
       </div>
       <div class="ring-dashboard-grid" id="ring-dashboard-grid"></div>
 
@@ -949,6 +952,7 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
               <th data-i18n="th_criteria">Kriter &amp; Evrak Başlığı / Standart / Criteria &amp; Document Title / Standard</th>
               <th data-i18n="th_details">Detaylar &amp; Notlar / Details &amp; Notes</th>
               <th id="th-related-col" data-i18n="th_related_default">İlgili Müşteriler / Related Customers</th>
+              <th data-i18n="th_question_photo">Fotoğraf / Photo</th>
               <th data-i18n="th_action_status">İşlem / Durum / Action / Status</th>
             </tr>
           </thead>
@@ -1415,6 +1419,7 @@ const UI_TRANSLATIONS = {
   nav_restore:           { tr: 'Geri Yükle',                    en: 'Restore Data',               ar: 'استعادة البيانات' },
   nav_departments:       { tr: 'Departmanlar',                    en: 'Departments',                ar: 'الأقسام' },
   nav_user_management:  { tr: 'Kullanıcı Yönetimi',              en: 'User Management',             ar: 'إدارة المستخدمين' },
+  nav_pending_approvals: { tr: 'Onay Bekleyen Değişiklikler',    en: 'Pending Approvals',           ar: 'التغييرات المعلقة' },
   side_contact:          { tr: 'İletişim',                        en: 'Contact',                     ar: 'اتصل بنا' },
   side_logout:           { tr: 'Çıkış',                           en: 'Log Out',                     ar: 'تسجيل الخروج' },
   nav_admin_login:       { tr: 'Personel Girişi',                en: 'Staff Login',                ar: 'دخول الموظفين' },
@@ -1456,11 +1461,11 @@ const UI_TRANSLATIONS = {
   sidebar_toggle_title:   { tr: 'Menüyü Daralt/Genişlet',              en: 'Collapse/Expand Menu',             ar: 'طي/توسيع القائمة' },
   side_user_role:         { tr: 'Kalite Güvence Müdürü',               en: 'QA Manager',                      ar: 'مدير ضمان الجودة' },
   section_dashboards:     { tr: '🧭 Bölüm Bazlı Dashboard\'lar',        en: '🧭 Section Dashboards',            ar: '🧭 لوحات معلومات الأقسام' },
-  btn_download_charts:    { tr: 'Tüm Grafikleri İndir',               en: 'Download All Charts',             ar: 'تحميل جميع الرسوم البيانية' },
   section_success_rates:  { tr: 'BÖLÜM BAZLI BAŞARI ORANLARI',         en: 'SECTION-BY-SECTION SUCCESS RATES', ar: 'معدلات النجاح حسب القسم' },
   awaiting_audit_title:   { tr: '🕐 Denetim Bekliyor',                 en: '🕐 Awaiting Audit',                 ar: '🕐 بانتظار التدقيق' },
   awaiting_audit_desc:    { tr: 'Bu firma için henüz bir denetim kaydı veya kriter değerlendirmesi girilmedi. Veri girildiğinde uyumluluk panosu burada görüntülenecektir.', en: 'No audit record or criteria assessment has been entered for this company yet. Once data is entered, the compliance dashboard will appear here.', ar: 'لم يتم إدخال أي سجل تدقيق أو تقييم للمعايير لهذه الشركة بعد. بمجرد إدخال البيانات، ستظهر لوحة الامتثال هنا.' },
   th_related_default:     { tr: 'İlgili Müşteriler',                   en: 'Related Customers',                ar: 'العملاء ذوو الصلة' },
+  th_question_photo:      { tr: 'Fotoğraf',                            en: 'Photo',                            ar: 'الصورة' },
   cust_picker_title:      { tr: '🏢 Müşteri Portalı — Denetim Panosu Seçin', en: '🏢 Customer Portal — Select Audit Dashboard', ar: '🏢 بوابة العملاء — اختر لوحة التدقيق' },
   cust_picker_desc:       { tr: 'Her marka aynı 457 denetim kriterini kullanır; ancak her müşterinin kendi bağımsız denetim sonucu ve uyumluluk panosu vardır. Bir müşteri seçerek o markaya özel kriter listesi ve güncel dashboard\'u görüntüleyin.',
                              en: 'Every brand shares the same 457 audit criteria, but each customer has its own independent audit results and compliance dashboard. Select a customer to view its dedicated criteria list and live dashboard.',
@@ -3049,6 +3054,18 @@ let legalDocumentsDocs = [];
 let customerStatuses = {}; // { customerKey: { questionId: status } }
 let customerAudits = []; // [{ id, customerKey, date, note, cat6, cat5, major, minor, capStatus, findings: [...] }]
 
+// ═══ ONAY MEKANİZMASI ═══ Departman kullanıcılarının "Tamamlandı/Devam Ediyor/Yapılmadı" durum
+// değişiklikleri (sorular, sertifikalar, departman kontrol maddeleri) doğrudan ana veriye yazılmaz —
+// admin onaylayana kadar bu ayrı listede bekler. Admin, hiçbir departman kullanıcısı bunu görmeden
+// giriş yaptığında bekleyenleri tek tek onaylar/reddeder. Ana veri belgelerine ASLA admin onayı
+// dışında yazılmaz, bu yüzden veri bütünlüğü riske girmez. /
+// ═══ APPROVAL WORKFLOW ═══ Department users' "Completed/In Progress/Not Done" status changes
+// (questions, certificates, department checklist items) are NOT written directly to the main data —
+// they wait in this separate list until admin approves. Admin approves/rejects them one by one on
+// login, without department users ever seeing the pending state. The main data documents are NEVER
+// written to outside of admin approval, so data integrity is never at risk.
+let pendingApprovals = []; // [{ id, kind, itemId, extraKey, label, oldValue, newValue, requestedBy, requestedByName, requestedAt }]
+
 const nextAuditFindings = [
   { no: 1, category: "CAT 6", findingEn: "No fire fighting license.", findingTr: "Yangınla mücadele (itfaiye) lisansı bulunmamaktadır.", caEn: "Fire fighting license should be obtained from the civil defense.", caTr: "Yangınla mücadele lisansı Sivil Savunma'dan temin edilmelidir.", status: "open" },
   { no: 2, category: "CAT 6", findingEn: "Fire alarm system is not functioning.", findingTr: "Yangın alarm sistemi çalışmamaktadır.", caEn: "Fire alarm system should be functional and centralized throughout the whole facility.", caTr: "Yangın alarm sistemi çalışır durumda olmalı ve tüm tesis genelinde merkezi bir yapıda kurulmalıdır.", status: "open" },
@@ -3338,8 +3355,142 @@ function save() {
   } catch(e) { console.error("Local storage save error: ", e); }
 }
 
-// ═══════════════════ OTOMATİK / PERİYODİK YEDEKLEME ("CRON JOB" BENZERİ) ═══════════════════
-// AUTOMATIC / PERIODIC BACKUP (CRON-JOB-LIKE, CLIENT-SIDE)
+// ═══════════════════ ONAY MEKANİZMASI YARDIMCI FONKSİYONLARI / APPROVAL WORKFLOW HELPERS ═══════════════════
+
+// Bekleyen onay listesini (küçük, ayrı bir belge) kaydeder — ana veriye asla dokunmaz. /
+// Saves the pending-approvals list (a small, separate document) — never touches the main data.
+function savePendingApprovals() {
+  if (!FIREBASE_ENABLED || !fbDb) {
+    try { localStorage.setItem('ems_pending_approvals', JSON.stringify(pendingApprovals)); } catch(e) {}
+    return;
+  }
+  fbDb.collection('ems_csr').doc('pendingApprovals').set({
+    items: pendingApprovals,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(e => console.error('Firestore yazma hatası (pendingApprovals):', e));
+}
+
+// Departman kullanıcısının bir durum değişikliğini onay kuyruğuna ekler. Kullanıcı bunu fark etmez —
+// ekranında değişiklik zaten uygulanmış görünür (yerel/optimistik), ancak gerçek veri admin
+// onaylayana kadar değişmez. /
+// Adds a department user's status change to the approval queue. The user doesn't notice anything —
+// their screen already shows the change applied (local/optimistic), but the real data doesn't
+// change until admin approves.
+function requestApproval(kind, itemId, extraKey, label, oldValue, newValue) {
+  const entry = {
+    id: 'appr_' + Date.now() + '_' + Math.floor(Math.random() * 100000),
+    kind, itemId, extraKey: extraKey || null,
+    label: label || '',
+    oldValue, newValue,
+    requestedBy: (typeof fbAuth !== 'undefined' && fbAuth && fbAuth.currentUser) ? fbAuth.currentUser.email : '',
+    requestedByName: currentUserName || '',
+    requestedAt: new Date().toISOString()
+  };
+  pendingApprovals.push(entry);
+  savePendingApprovals();
+}
+
+// Onaylanan bir değişikliği GERÇEK veriye yazar (yalnızca admin onayından çağrılır) ve save() ile
+// buluta kaydeder. / Writes an approved change into the REAL data (only called from admin approval)
+// and persists it via save().
+function applyApprovedChange(kind, itemId, extraKey, newValue) {
+  if (kind === 'question') {
+    const q = auditQuestions.find(x => x.id === itemId);
+    if (q) q.status = newValue;
+  } else if (kind === 'cert') {
+    const c = certificatesData.find(x => x.id === itemId);
+    if (c) c.status = newValue;
+  } else if (kind === 'deptitem') {
+    const item = productionChecklist.find(x => x.id === itemId);
+    if (item) item.status = newValue;
+  }
+  save();
+  calcMetrics();
+  applyFilter();
+  if (typeof renderHomeSectionDashboards === 'function') renderHomeSectionDashboards();
+  if (typeof renderDepartmentChecklist === 'function' && currentDeptKey) renderDepartmentChecklist(currentDeptKey);
+}
+
+// Admin girişte (veya bekleyenler listesi canlı güncellendiğinde) bekleyen onay varsa pencereyi
+// otomatik açar / Automatically opens the window on admin login (or whenever the pending list
+// updates live) if there are pending approvals.
+let _pendingApprovalsModalShown = false;
+function updatePendingApprovalsBadge() {
+  const badge = document.getElementById('pending-approvals-badge');
+  if (!badge) return;
+  if (currentUserRole === 'admin' && pendingApprovals.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.innerText = pendingApprovals.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+function maybeShowPendingApprovalsModal() {
+  if (currentUserRole !== 'admin') return;
+  updatePendingApprovalsBadge();
+  if (pendingApprovals.length === 0) { _pendingApprovalsModalShown = false; return; }
+  renderPendingApprovalsModal();
+  if (!_pendingApprovalsModalShown) {
+    document.getElementById('pending-approvals-modal').classList.add('open');
+    _pendingApprovalsModalShown = true;
+  }
+}
+
+function closePendingApprovalsModal() {
+  document.getElementById('pending-approvals-modal').classList.remove('open');
+  _pendingApprovalsModalShown = false;
+}
+
+const _approvalStatusLabel = (st) => st === 'compliant' ? t3('Tamamlandı', 'Completed', 'مكتمل') : (st === 'minor' ? t3('Devam Ediyor', 'In Progress', 'قيد التنفيذ') : t3('Yapılmadı', 'Not Done', 'لم يتم'));
+const _approvalKindLabel = (k) => k === 'question' ? t3('Soru / Kriter', 'Question / Criteria', 'سؤال / معيار') : (k === 'cert' ? t3('Sertifika', 'Certificate', 'شهادة') : t3('Departman Maddesi', 'Department Item', 'بند القسم'));
+
+function renderPendingApprovalsModal() {
+  const list = document.getElementById('pending-approvals-list');
+  if (!list) return;
+  if (pendingApprovals.length === 0) {
+    list.innerHTML = `<div style="text-align:center; color:var(--muted); padding:30px; font-style:italic;">✅ ${t3('Bekleyen değişiklik yok.', 'No pending changes.', 'لا توجد تغييرات معلقة.')}</div>`;
+    return;
+  }
+  list.innerHTML = pendingApprovals.map(p => {
+    const dateStr = new Date(p.requestedAt).toLocaleString('tr-TR');
+    return `<div style="border:1.5px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; background:#fafbfd;">
+      <div style="font-size:11px; font-weight:800; color:var(--primary); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">${_approvalKindLabel(p.kind)}</div>
+      <div style="font-weight:700; font-size:14px; color:var(--text); margin-bottom:8px;">${escHtml(p.label)}</div>
+      <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; margin-bottom:8px;">
+        <span style="padding:4px 9px; border-radius:6px; background:var(--danger-bg); color:var(--danger); font-weight:700;">${_approvalStatusLabel(p.oldValue)}</span>
+        <span style="color:var(--muted);">→</span>
+        <span style="padding:4px 9px; border-radius:6px; background:var(--success-bg); color:var(--success); font-weight:700;">${_approvalStatusLabel(p.newValue)}</span>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-bottom:10px;">${escHtml(p.requestedByName || p.requestedBy || '—')} — ${dateStr}</div>
+      <div style="display:flex; gap:8px;">
+        <button onclick="approvePendingChange('${p.id}')" style="flex:1; background:var(--success); border:none; color:#fff; border-radius:8px; padding:9px; font-weight:700; font-size:12.5px; cursor:pointer;">✓ ${t3('Onayla', 'Approve', 'موافقة')}</button>
+        <button onclick="rejectPendingChange('${p.id}')" style="flex:1; background:none; border:1.5px solid var(--danger); color:var(--danger); border-radius:8px; padding:9px; font-weight:700; font-size:12.5px; cursor:pointer;">✕ ${t3('Reddet', 'Reject', 'رفض')}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function approvePendingChange(id) {
+  if (currentUserRole !== 'admin') return;
+  const p = pendingApprovals.find(x => x.id === id);
+  if (!p) return;
+  applyApprovedChange(p.kind, p.itemId, p.extraKey, p.newValue);
+  pendingApprovals = pendingApprovals.filter(x => x.id !== id);
+  savePendingApprovals();
+  renderPendingApprovalsModal();
+  updatePendingApprovalsBadge();
+}
+
+function rejectPendingChange(id) {
+  if (currentUserRole !== 'admin') return;
+  if (!confirm(t3('Bu değişikliği reddetmek istediğinizden emin misiniz?', 'Are you sure you want to reject this change?', 'هل أنت متأكد أنك تريد رفض هذا التغيير؟'))) return;
+  pendingApprovals = pendingApprovals.filter(x => x.id !== id);
+  savePendingApprovals();
+  renderPendingApprovalsModal();
+  updatePendingApprovalsBadge();
+}
+
+
 // Bu, sunucusuz tek dosyalık bir uygulama olduğundan gerçek bir sunucu cron job'ı çalıştırılamaz;
 // bunun yerine tarayıcı hafızasında dönüşümlü (rotasyonlu) otomatik yedekler tutulur: her kayıtta
 // ve ayrıca uygulama açıkken periyodik olarak (5 dakikada bir). Son 30 otomatik yedek saklanır;
@@ -3704,9 +3855,18 @@ function addDeptChecklistItem() {
 }
 
 function changeDeptItemStatus(id, sel) {
-  if (!roleGuard()) return;
   const item = productionChecklist.find(x => x.id === id);
-  if (item) { item.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); renderDepartmentChecklist(currentDeptKey); }
+  if (!roleGuard(item ? item.dept : undefined)) return;
+  if (!item) return;
+  const oldValue = item.status;
+  const newValue = sel.value;
+  item.status = newValue; sel.className = 'status-sel ' + newValue;
+  renderDepartmentChecklist(currentDeptKey);
+  if (currentUserRole === 'admin') {
+    save();
+  } else {
+    requestApproval('deptitem', id, item.dept, biText(item.text), oldValue, newValue);
+  }
 }
 
 function deleteDeptItem(id) {
@@ -4095,7 +4255,7 @@ function loadLocal() {
 // Her belge için gerçek-zamanlı dinleyici kurar; biri değişince TÜM tarayıcılarda
 // anında güncellenir. / Sets up a real-time listener per document; when one
 // changes, every open browser updates instantly.
-let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false, productionChecklist: false };
+let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false, productionChecklist: false, pendingApprovals: false };
 let _cloudFirstRenderDone = false;
 let _anyCloudDocDefaulted = false; // Bu oturumda herhangi bir kritik belge boş/eksik görünüp varsayılana düştü mü? / Did any critical document appear empty/missing and fall back to defaults this session?
 
@@ -4176,6 +4336,15 @@ function initCloudData(onReady) {
     _cloudDocsLoaded.productionChecklist = true;
     _onCloudDocChange(onReady);
   }, err => console.error('Firestore okuma hatası (productionChecklist):', err));
+
+  // Onay bekleyen değişiklikler — ana veriden tamamen ayrı, küçük bir belge /
+  // Pending approvals — a small document, entirely separate from the main data
+  col.doc('pendingApprovals').onSnapshot(snap => {
+    pendingApprovals = (snap.exists && Array.isArray(snap.data().items)) ? snap.data().items : [];
+    _cloudDocsLoaded.pendingApprovals = true;
+    _onCloudDocChange(onReady);
+    if (currentUserRole === 'admin' && _cloudFirstRenderDone) maybeShowPendingApprovalsModal();
+  }, err => console.error('Firestore okuma hatası (pendingApprovals):', err));
 }
 
 function _onCloudDocChange(onReady) {
@@ -4193,6 +4362,7 @@ function _onCloudDocChange(onReady) {
   if (!_cloudFirstRenderDone && Object.values(_cloudDocsLoaded).every(Boolean)) {
     _cloudFirstRenderDone = true;
     migrateCertPhotosToChunkedStorage();
+    if (currentUserRole === 'admin') maybeShowPendingApprovalsModal();
     if (onReady) onReady();
   } else if (_cloudFirstRenderDone) {
     // Sonraki her canlı güncellemede ekranı tazele / refresh the screen on every subsequent live update
@@ -4668,6 +4838,7 @@ function applyRolePermissions() {
   document.querySelectorAll('.admin-only-el').forEach(el => { el.style.display = isAdmin ? '' : 'none'; });
   document.body.classList.toggle('viewer-mode', !isAdmin);
   document.body.classList.toggle('no-edit-access', !isAdmin && currentUserDepartments.length === 0);
+  if (typeof updatePendingApprovalsBadge === 'function') updatePendingApprovalsBadge();
   const nameEl = document.querySelector('.side-user-name');
   const roleEl = document.querySelector('.side-user-role');
   if (nameEl && currentUserName) nameEl.innerText = currentUserName;
@@ -5213,7 +5384,7 @@ function openDetailModal(type, value, catFilter, statusFilter) {
 
   let tbodyHtml = '';
   if (filtered.length === 0) {
-    tbodyHtml = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:36px;font-style:italic;">🔎 ${t3('Sonuç bulunamadı.', 'No criteria or documents found.', 'لم يتم العثور على نتائج.')}</td></tr>`;
+    tbodyHtml = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:36px;font-style:italic;">🔎 ${t3('Sonuç bulunamadı.', 'No criteria or documents found.', 'لم يتم العثور على نتائج.')}</td></tr>`;
   } else {
     filtered.forEach((item, idx) => {
       const sc = item.status === 'compliant' ? 'compliant' : (item.status === 'minor' ? 'minor' : 'critical');
@@ -5261,6 +5432,33 @@ function openDetailModal(type, value, catFilter, statusFilter) {
         }
       }
 
+      // Soru fotoğrafı (yalnızca item.type === 'q' için) — sertifikaların kendi fotoğraf
+      // arayüzü zaten "İlgili Müşteriler" sütununda var, bu yeni sütun sadece sorular içindir. /
+      // Question photo (only for item.type === 'q') — certificates already have their own
+      // photo UI in the "Related Customers" column; this new column is for questions only.
+      let questionPhotoHtml = '<span style="color:var(--muted); font-size:11px;">—</span>';
+      if (item.type === 'q') {
+        const qObj = auditQuestions.find(q => q.id === item.id);
+        if (qObj && qObj.hasPhoto) {
+          questionPhotoHtml = `
+            <div style="display:flex; align-items:center; gap:4px;">
+              <img id="q-thumb-${item.id}" src="" onclick="openQuestionPhotoLightbox(${item.id})" title="${t3('Büyütmek için tıklayın', 'Click to enlarge', 'انقر للتكبير')}" style="width:38px; height:38px; object-fit:cover; border-radius:6px; border:1.5px solid var(--border-h); cursor:pointer; background:#eef0f4;">
+              <button onclick="triggerQuestionPhotoUpload(${item.id})" title="${t3('Değiştir', 'Replace', 'استبدال')}" style="background:none; border:none; cursor:pointer; padding:3px; color:var(--muted);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button onclick="deleteQuestionPhoto(${item.id})" title="${t3('Sil', 'Delete', 'حذف')}" style="background:none; border:none; cursor:pointer; padding:3px; color:var(--danger);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>`;
+        } else {
+          questionPhotoHtml = `
+            <button onclick="triggerQuestionPhotoUpload(${item.id})" title="${t3('Fotoğraf Ekle', 'Add Photo', 'إضافة صورة')}" style="display:flex; align-items:center; gap:4px; background:#eef0ff; border:1px dashed var(--primary); color:var(--primary); border-radius:7px; padding:5px 8px; font-size:10.5px; font-weight:700; cursor:pointer; white-space:nowrap;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              ${t3('Ekle', 'Add', 'إضافة')}
+            </button>`;
+        }
+      }
+
       tbodyHtml += `<tr>
         <td><strong>${idx + 1}</strong></td>
         <td><span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted);">${item.category}</span></td>
@@ -5271,6 +5469,7 @@ function openDetailModal(type, value, catFilter, statusFilter) {
           ? `<input type="text" id="cert-scope-${item.id}" value="${(item.scope || '').replace(/"/g, '&quot;')}" style="width:100%; min-width:180px; padding:6px 8px; border-radius:6px; border:1px solid var(--border-h); font-size:12px;" title="${t3('Format: Türkçe / English', 'Format: Türkçe / English', 'التنسيق: Türkçe / English')}">`
           : (localizedItemScope(item) || '')}</td>
         <td>${relatedCustomersHtml}</td>
+        <td>${questionPhotoHtml}</td>
         <td style="white-space: nowrap;">
           <div style="display:flex; gap:6px; align-items:center;">
             <select class="status-sel ${sc}" onchange="${changeCallback}; openDetailModal('${type}', '${value}');" style="min-width:140px;">
@@ -5318,6 +5517,18 @@ function openDetailModal(type, value, catFilter, statusFilter) {
       }
     });
   }
+  // Soru fotoğrafı küçük resimlerini tembel (lazy) olarak yükle / Lazy-load question photo thumbnails
+  filtered.forEach(item => {
+    if (item.type === 'q') {
+      const qObj = auditQuestions.find(q => q.id === item.id);
+      if (qObj && qObj.hasPhoto) {
+        _loadDocFileData('question', item.id, 'photo', dataUrl => {
+          const el = document.getElementById('q-thumb-' + item.id);
+          if (el && dataUrl) el.src = dataUrl;
+        });
+      }
+    }
+  });
 }
 
 function saveQuestionModal(cat) {
@@ -5660,11 +5871,6 @@ function downloadElementAsJPG(el, filename, bgColor) {
 
 // "🧭 Bölüm Bazlı Dashboard'lar" bölümündeki TÜM halka grafikleri tek bir JPG görseli olarak indirir /
 // Downloads ALL ring/donut charts in the "Section Dashboards" area as a single JPG image.
-function downloadAllChartsJPG() {
-  const grid = document.getElementById('ring-dashboard-grid');
-  downloadElementAsJPG(grid, `EMS_Tum_Grafikler_${new Date().toISOString().slice(0,10)}.jpg`, '#EEF0F3');
-}
-
 // Tek bir bölüm kartındaki (Müşteriler, Sertifikalar, İSG, vb.) halka grafiği JPG olarak indirir /
 // Downloads a single section card's (Customers, Certificates, HSE, etc.) ring chart as a JPG.
 function downloadRingCardJPG(btn) {
@@ -6836,12 +7042,33 @@ function closeOverallSuccessDetailBg(e) { if (e.target === document.getElementBy
 function changeQ(id, sel) {
   const q = auditQuestions.find(x => x.id === id);
   if (!roleGuard(q ? q.category : undefined)) return;
-  if (q) { q.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); calcMetrics(); applyFilter(); }
+  if (!q) return;
+  const oldValue = q.status;
+  const newValue = sel.value;
+  q.status = newValue; sel.className = 'status-sel ' + newValue;
+  calcMetrics(); applyFilter();
+  if (currentUserRole === 'admin') {
+    save();
+  } else {
+    // Ekranda değişiklik hemen görünür (yukarıda uygulandı) ama admin onaylayana kadar buluta
+    // yazılmaz / The change is visible on screen right away (applied above) but isn't written to
+    // the cloud until admin approves it
+    requestApproval('question', id, null, biText(q.text), oldValue, newValue);
+  }
 }
 function changeC(id, sel) {
   if (!roleGuard('cert')) return;
   const c = certificatesData.find(x => x.id === id);
-  if (c) { c.status = sel.value; sel.className = 'status-sel ' + sel.value; save(); calcMetrics(); applyFilter(); }
+  if (!c) return;
+  const oldValue = c.status;
+  const newValue = sel.value;
+  c.status = newValue; sel.className = 'status-sel ' + newValue;
+  calcMetrics(); applyFilter();
+  if (currentUserRole === 'admin') {
+    save();
+  } else {
+    requestApproval('cert', id, null, biText(c.name), oldValue, newValue);
+  }
 }
 
 // ═══════════════════ SERTİFİKA YARDIMCI FONKSİYONLARI / CERTIFICATE HELPERS ═══════════════════
@@ -7631,6 +7858,108 @@ function downloadFindingPhotoJPG(auditId, findingNo) {
       ctx.drawImage(img, 0, 0);
       const link = document.createElement('a');
       link.download = `Bulgu_${findingNo}_Fotograf_${new Date().toISOString().slice(0,10)}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    img.onerror = () => alert(t3('Fotoğraf indirilemedi.', 'Could not download the photo.', 'تعذر تنزيل الصورة.'));
+    img.src = dataUrl;
+  });
+}
+
+// ═══════════════════ SORU FOTOĞRAFI / QUESTION PHOTO (Tüm Sorular / All Questions) ═══════════════════
+// Aynı parçalı depolama altyapısını kullanır; her soru zaten benzersiz bir id'ye sahip olduğundan
+// (auditQuestions), ek bir bileşik anahtara gerek yoktur. /
+// Uses the same chunked storage infrastructure; since each question already has a unique id
+// (auditQuestions), no composite key is needed.
+let _questionPhotoUploadTargetId = null;
+
+function triggerQuestionPhotoUpload(questionId) {
+  const q = auditQuestions.find(x => x.id === questionId);
+  if (!q || !roleGuard(q.category)) return;
+  _questionPhotoUploadTargetId = questionId;
+  const input = document.getElementById('question-photo-file-input');
+  if (input) { input.value = ''; input.click(); }
+}
+
+function handleQuestionPhotoFileChange(event) {
+  const file = event.target.files && event.target.files[0];
+  const questionId = _questionPhotoUploadTargetId;
+  _questionPhotoUploadTargetId = null;
+  if (!file || questionId === null) return;
+  const q = auditQuestions.find(x => x.id === questionId);
+  if (!q) { alert(t3('Kriter bulunamadı.', 'Criteria not found.', 'لم يتم العثور على المعيار.')); return; }
+  _processUploadedFileToImage(file, 900,
+    dataUrl => {
+      _saveDocFileData('question', questionId, 'photo', dataUrl, ok => {
+        q.hasPhoto = !!ok;
+        if (!ok) { alert(t3('Fotoğraf kaydedilemedi.', 'Could not save the photo.', 'تعذر حفظ الصورة.')); return; }
+        save();
+        openDetailModal(currentModalType, currentModalValue, currentModalCatFilter, currentModalStatusFilter);
+      });
+    },
+    () => alert(t3('Fotoğraf işlenemedi. Lütfen tekrar deneyin.', 'The photo could not be processed. Please try again.', 'تعذرت معالجة الصورة.'))
+  );
+}
+
+function deleteQuestionPhoto(questionId) {
+  const q = auditQuestions.find(x => x.id === questionId);
+  if (!q || !roleGuard(q.category)) return;
+  if (!q.hasPhoto) return;
+  if (!confirm(t3('Bu fotoğrafı silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this photo?', 'هل أنت متأكد أنك تريد حذف هذه الصورة؟'))) return;
+  _deleteDocFileData('question', questionId, 'photo');
+  delete q.hasPhoto;
+  save();
+  openDetailModal(currentModalType, currentModalValue, currentModalCatFilter, currentModalStatusFilter);
+}
+
+// Soru fotoğrafını büyük görünümde açar (mevcut sertifika/belge/bulgu lightbox penceresini yeniden
+// kullanır) ve içine bir indirme butonu ekler / Opens the question photo in the enlarged lightbox
+// (reuses the existing certificate/document/finding lightbox) with a download button.
+function openQuestionPhotoLightbox(questionId) {
+  _loadDocFileData('question', questionId, 'photo', dataUrl => {
+    if (!dataUrl) { alert(t3('Fotoğraf yüklenemedi.', 'Could not load the photo.', 'تعذر تحميل الصورة.')); return; }
+    const q = auditQuestions.find(x => x.id === questionId);
+    const imgEl = document.getElementById('cert-photo-lightbox-img');
+    const containerEl = document.getElementById('cert-photo-lightbox-container');
+    function fitToImage() {
+      const naturalW = imgEl.naturalWidth || 600, naturalH = imgEl.naturalHeight || 800;
+      const maxW = Math.min(window.innerWidth * 0.94, 920);
+      const maxH = window.innerHeight * 0.82;
+      const scale = Math.min(1, maxW / naturalW, maxH / naturalH);
+      const w = Math.max(220, Math.round(naturalW * scale));
+      const h = Math.round(naturalH * scale);
+      imgEl.style.width = w + 'px';
+      imgEl.style.height = h + 'px';
+      if (containerEl) containerEl.style.width = w + 'px';
+    }
+    imgEl.onload = fitToImage;
+    imgEl.src = dataUrl;
+    if (imgEl.complete) fitToImage();
+    document.getElementById('cert-photo-lightbox-title').innerText = q ? localizedItemText(q) : t3('Kriter Fotoğrafı', 'Criteria Photo', 'صورة المعيار');
+    const dlBtn = document.getElementById('cert-photo-lightbox-download-btn');
+    if (dlBtn) { dlBtn.style.display = 'flex'; dlBtn.onclick = () => downloadQuestionPhotoJPG(questionId); }
+    document.getElementById('cert-photo-lightbox').classList.add('open');
+  });
+}
+
+// Açık olan soru fotoğrafını garanti geçerli bir .jpg dosyası olarak indirir /
+// Downloads the currently open question photo as a guaranteed-valid .jpg file
+function downloadQuestionPhotoJPG(questionId) {
+  _loadDocFileData('question', questionId, 'photo', dataUrl => {
+    if (!dataUrl) { alert(t3('Fotoğraf indirilemedi.', 'Could not download the photo.', 'تعذر تنزيل الصورة.')); return; }
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const link = document.createElement('a');
+      link.download = `Kriter_${questionId}_Fotograf_${new Date().toISOString().slice(0,10)}.jpg`;
       link.href = canvas.toDataURL('image/jpeg', 0.95);
       document.body.appendChild(link);
       link.click();
@@ -8505,6 +8834,27 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-body">
       <div id="doc-library-desc" style="font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.55;"></div>
       <div id="doc-library-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Onay Bekleyen Değişiklikler (yalnızca admin) / Pending Approvals (admin only) -->
+<div id="pending-approvals-modal" class="modal-overlay">
+  <div class="modal-container" onclick="event.stopPropagation()" style="width:min(720px, 94vw); max-width:94vw;">
+    <div class="modal-header">
+      <div class="modal-title">🔔 Onay Bekleyen Değişiklikler / Pending Approvals</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="closePendingApprovalsModal()" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.55;">
+        Departman kullanıcılarının yaptığı durum değişiklikleri burada birikir ve siz onaylayana kadar canlı veriye yansımaz. Her birini tek tek onaylayabilir veya reddedebilirsiniz. /
+        Status changes made by department users collect here and don't affect live data until you approve them. You can approve or reject each one individually.
+      </div>
+      <div id="pending-approvals-list"></div>
     </div>
   </div>
 </div>

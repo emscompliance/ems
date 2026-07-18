@@ -764,6 +764,10 @@ html[dir="rtl"] .sidebar-toggle-btn { right: auto; left: -14px; }
         <span class="nav-emoji">⚖️</span>
         <span data-i18n="nav_legal_docs">Yasal Dökümanlar / Legal Documents</span>
       </button>
+      <button class="side-nav-item" onclick="try{ openProceduresLibrary(); }catch(e){ console.error('Talimat & Prosedürler açma hatası:', e); alert('Hata / Error: ' + e.message); }">
+        <span class="nav-emoji">📋</span>
+        <span data-i18n="nav_procedures">Talimat & Prosedürler / Instructions & Procedures</span>
+      </button>
       </button>
       <button class="side-nav-item" onclick="openDetailModal('group','sustain,csr')">
         <span class="nav-emoji">🌱</span>
@@ -1409,6 +1413,7 @@ const UI_TRANSLATIONS = {
   nav_certificates:     { tr: 'Sertifikalar',                en: 'Certificates',              ar: 'الشهادات' },
   nav_company_profile:  { tr: 'Şirket Profili',               en: 'Company Profile',           ar: 'ملف الشركة' },
   nav_legal_docs:        { tr: 'Yasal Dökümanlar',             en: 'Legal Documents',           ar: 'المستندات القانونية' },
+  nav_procedures:        { tr: 'Talimat & Prosedürler',        en: 'Instructions & Procedures', ar: 'التعليمات والإجراءات' },
   nav_csr:               { tr: 'CSR & Sürdürülebilirlik',      en: 'CSR & Sustainability',       ar: 'المسؤولية الاجتماعية والاستدامة' },
   nav_hse:               { tr: 'İSG',                          en: 'HSE',                        ar: 'الصحة والسلامة المهنية' },
   nav_env:               { tr: 'Çevre ve Kimya',                en: 'Environment & Chemical',     ar: 'البيئة والكيماويات' },
@@ -3051,6 +3056,12 @@ let certificatesData = [];
 // that use the same photo/PDF upload infrastructure as certificates.
 let companyProfileDocs = [];
 let legalDocumentsDocs = [];
+// Talimat & Prosedürler: ssg.erogluglobal.com/home/prosedurler-is-akislari sitesinde barındırılan
+// belgelere link listesi (dosyaların kendisi burada saklanmaz, sadece harici bağlantı) /
+// Instructions & Procedures: a list of links to documents hosted on
+// ssg.erogluglobal.com/home/prosedurler-is-akislari (the files themselves aren't stored here, just
+// external links).
+let proceduresDocs = []; // [{ id, name, link, addedAt }]
 let customerStatuses = {}; // { customerKey: { questionId: status } }
 let customerAudits = []; // [{ id, customerKey, date, note, cat6, cat5, major, minor, capStatus, findings: [...] }]
 
@@ -3339,6 +3350,7 @@ function save() {
     // Each document library is kept in its own Firestore document (to stay under the 1MB per-document limit)
     fbDb.collection('ems_csr').doc('companyProfile').set({ companyProfileDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (companyProfile):', e));
     fbDb.collection('ems_csr').doc('legalDocuments').set({ legalDocumentsDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (legalDocuments):', e));
+    fbDb.collection('ems_csr').doc('procedures').set({ proceduresDocs, ...meta }).catch(e => console.error('Firestore yazma hatası (procedures):', e));
     fbDb.collection('ems_csr').doc('productionChecklist').set({ productionChecklist, ...meta }).catch(e => console.error('Firestore yazma hatası (productionChecklist):', e));
     writeAutoBackup(); // yerel yedek her koşulda tutulur / local backup is always kept too
     return;
@@ -3350,6 +3362,7 @@ function save() {
     localStorage.setItem('ems_audits', JSON.stringify(customerAudits));
     localStorage.setItem('ems_company', JSON.stringify(companyProfileDocs));
     localStorage.setItem('ems_legal', JSON.stringify(legalDocumentsDocs));
+    localStorage.setItem('ems_procedures', JSON.stringify(proceduresDocs));
     localStorage.setItem('ems_prod_checklist', JSON.stringify(productionChecklist));
     writeAutoBackup();
   } catch(e) { console.error("Local storage save error: ", e); }
@@ -4255,7 +4268,7 @@ function loadLocal() {
 // Her belge için gerçek-zamanlı dinleyici kurar; biri değişince TÜM tarayıcılarda
 // anında güncellenir. / Sets up a real-time listener per document; when one
 // changes, every open browser updates instantly.
-let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false, productionChecklist: false, pendingApprovals: false };
+let _cloudDocsLoaded = { questions: false, certificates: false, customerStatuses: false, customerAudits: false, companyProfile: false, legalDocuments: false, productionChecklist: false, pendingApprovals: false, procedures: false };
 let _cloudFirstRenderDone = false;
 let _anyCloudDocDefaulted = false; // Bu oturumda herhangi bir kritik belge boş/eksik görünüp varsayılana düştü mü? / Did any critical document appear empty/missing and fall back to defaults this session?
 
@@ -4324,6 +4337,13 @@ function initCloudData(onReady) {
     _cloudDocsLoaded.legalDocuments = true;
     _onCloudDocChange(onReady);
   }, err => console.error('Firestore okuma hatası (legalDocuments):', err));
+
+  // Talimat & Prosedürler — link listesi, ayrı bir belge / Instructions & Procedures — link list, a separate document
+  col.doc('procedures').onSnapshot(snap => {
+    proceduresDocs = (snap.exists && Array.isArray(snap.data().proceduresDocs)) ? snap.data().proceduresDocs : [];
+    _cloudDocsLoaded.procedures = true;
+    _onCloudDocChange(onReady);
+  }, err => console.error('Firestore okuma hatası (procedures):', err));
 
   // Üretim Departmanları modülü — sitenin geri kalanından tamamen bağımsız ayrı bir belge /
   // Production Departments module — a completely separate document, independent from the rest of the site
@@ -4439,7 +4459,8 @@ const DEPARTMENT_SCOPES = [
   { key: 'cd',              labelTr: 'Sivil Savunma & Yangın', labelEn: 'Civil Defence & Fire', labelAr: 'الدفاع المدني والحريق' },
   { key: 'cert',            labelTr: 'Sertifika Portalı', labelEn: 'Certificate Portal', labelAr: 'بوابة الشهادات' },
   { key: 'customer_audits', labelTr: 'Müşteri Denetimleri', labelEn: 'Customer Audits', labelAr: 'تدقيقات العملاء' },
-  { key: 'documents',       labelTr: 'Şirket Profili & Yasal Dökümanlar', labelEn: 'Company Profile & Legal Documents', labelAr: 'ملف الشركة والمستندات القانونية' }
+  { key: 'documents',       labelTr: 'Şirket Profili & Yasal Dökümanlar', labelEn: 'Company Profile & Legal Documents', labelAr: 'ملف الشركة والمستندات القانونية' },
+  { key: 'procedures',      labelTr: 'Talimat & Prosedürler', labelEn: 'Instructions & Procedures', labelAr: 'التعليمات والإجراءات' }
 ];
 // ═══ DÜZELTİLDİ ═══ Aynı "sayfa yüklenirken donan dil" hatası burada da vardı — artık dinamik. /
 // ═══ FIXED ═══ Had the same "frozen at page load" language bug — now dynamic.
@@ -5846,6 +5867,98 @@ function openDocumentLibrary(storeKey) {
 }
 function closeDocumentLibrary() { document.getElementById('document-library-modal').classList.remove('open'); }
 function closeDocumentLibraryBg(e) { if (e.target === document.getElementById('document-library-modal')) closeDocumentLibrary(); }
+
+// ═══════════════════ TALİMAT & PROSEDÜRLER / INSTRUCTIONS & PROCEDURES ═══════════════════
+// ssg.erogluglobal.com/home/prosedurler-is-akislari sitesindeki belgelere link listesi. Bu site
+// otomatik erişime kapalı (robots.txt) olduğundan liste buradan otomatik çekilemiyor — yetkili
+// kullanıcılar her belgeyi isim + link olarak elle ekler. /
+// A link list to documents on ssg.erogluglobal.com/home/prosedurler-is-akislari. That site blocks
+// automated access (robots.txt), so the list can't be auto-imported — authorized users add each
+// document as a name + link manually.
+function openProceduresLibrary() {
+  renderProceduresList();
+  document.getElementById('procedures-modal').classList.add('open');
+}
+function closeProceduresLibrary() { document.getElementById('procedures-modal').classList.remove('open'); }
+function closeProceduresLibraryBg(e) { if (e.target === document.getElementById('procedures-modal')) closeProceduresLibrary(); }
+
+function renderProceduresList() {
+  const list = document.getElementById('procedures-list');
+  if (!list) return;
+  let html = '';
+  if (proceduresDocs.length === 0) {
+    html += `<div style="text-align:center; color:var(--muted); font-size:13px; font-style:italic; padding:24px 0;">${t3('Henüz talimat/prosedür linki eklenmedi.', 'No instruction/procedure links added yet.', 'لم تتم إضافة أي روابط تعليمات/إجراءات بعد.')}</div>`;
+  }
+  html += proceduresDocs.map(p => `
+    <div style="display:flex; align-items:center; gap:10px; border:1.5px solid var(--border); border-radius:10px; padding:12px 14px; margin-bottom:10px; background:#fff;">
+      <div onclick="window.open('${String(p.link).replace(/'/g, "%27")}', '_blank', 'noopener')" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:10px; min-width:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:20px;height:20px; flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span style="font-weight:700; font-size:13.5px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escHtml(p.name || t3('İsimsiz Belge', 'Untitled Document', 'مستند بدون عنوان'))}</span>
+      </div>
+      <button onclick="window.open('${String(p.link).replace(/'/g, "%27")}', '_blank', 'noopener')" title="${t3('Aç / İndir', 'Open / Download', 'فتح / تنزيل')}" style="background:#eef0ff; border:none; color:var(--primary); border-radius:8px; padding:8px; cursor:pointer; display:flex; flex-shrink:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+      </button>
+      <button class="editor-only-el" data-scope="procedures" onclick="editProcedureLink('${p.id}')" title="${t3('Düzenle', 'Edit', 'تعديل')}" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--muted); flex-shrink:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+      <button class="editor-only-el" data-scope="procedures" onclick="deleteProcedureLink('${p.id}')" title="${t3('Sil', 'Delete', 'حذف')}" style="background:none; border:1px solid var(--border-h); border-radius:8px; padding:8px; cursor:pointer; color:var(--danger); flex-shrink:0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"/></svg>
+      </button>
+    </div>`).join('');
+  html += `<button class="editor-only-el" data-scope="procedures" onclick="addProcedureLink()" style="width:100%; margin-top:6px; border:1.5px dashed var(--primary); background:#f5f5ff; color:var(--primary); border-radius:10px; padding:12px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    ${t3('Yeni Talimat/Prosedür Linki Ekle', 'Add New Instruction/Procedure Link', 'إضافة رابط تعليمات/إجراء جديد')}
+  </button>`;
+  list.innerHTML = html;
+  applyScopedElementVisibility(list);
+}
+
+// Sadece http(s) bağlantılarına izin verir — "javascript:" gibi tehlikeli şemalar engellenir /
+// Only allows http(s) links — dangerous schemes like "javascript:" are rejected
+function _isSafeHttpUrl(url) {
+  return /^https?:\/\//i.test((url || '').trim());
+}
+
+function addProcedureLink() {
+  if (!roleGuard('procedures')) return;
+  const name = prompt(t3('Belge adı:', 'Document name:', 'اسم المستند:'));
+  if (!name || !name.trim()) return;
+  const link = prompt(t3('Belge linki (ssg.erogluglobal.com üzerindeki dosya bağlantısı, http:// veya https:// ile başlamalı):', 'Document link (the file link on ssg.erogluglobal.com, must start with http:// or https://):', 'رابط المستند (يجب أن يبدأ بـ http:// أو https://):'));
+  if (!link || !_isSafeHttpUrl(link)) {
+    if (link !== null) alert(t3('Lütfen http:// veya https:// ile başlayan geçerli bir bağlantı girin.', 'Please enter a valid link starting with http:// or https://.', 'يرجى إدخال رابط صالح يبدأ بـ http:// أو https://.'));
+    return;
+  }
+  const newId = proceduresDocs.length > 0 ? Math.max(...proceduresDocs.map(p => p.id)) + 1 : 1;
+  proceduresDocs.push({ id: newId, name: name.trim(), link: link.trim(), addedAt: new Date().toISOString() });
+  save();
+  renderProceduresList();
+}
+
+function editProcedureLink(id) {
+  if (!roleGuard('procedures')) return;
+  const p = proceduresDocs.find(x => x.id === Number(id));
+  if (!p) return;
+  const name = prompt(t3('Belge adı:', 'Document name:', 'اسم المستند:'), p.name || '');
+  if (name === null) return;
+  const link = prompt(t3('Belge linki:', 'Document link:', 'رابط المستند:'), p.link || '');
+  if (link === null) return;
+  if (!_isSafeHttpUrl(link)) {
+    alert(t3('Lütfen http:// veya https:// ile başlayan geçerli bir bağlantı girin.', 'Please enter a valid link starting with http:// or https://.', 'يرجى إدخال رابط صالح يبدأ بـ http:// أو https://.'));
+    return;
+  }
+  p.name = name.trim();
+  p.link = link.trim();
+  save();
+  renderProceduresList();
+}
+
+function deleteProcedureLink(id) {
+  if (!roleGuard('procedures')) return;
+  if (!confirm(t3('Bu linki silmek istediğinizden emin misiniz?', 'Are you sure you want to delete this link?', 'هل أنت متأكد أنك تريد حذف هذا الرابط؟'))) return;
+  proceduresDocs = proceduresDocs.filter(x => x.id !== Number(id));
+  save();
+  renderProceduresList();
+}
 
 // ═══════════════════ GRAFİĞİ JPG OLARAK İNDİRME YARDIMCISI / DOWNLOAD CHART AS JPG HELPER ═══════════════════
 // html2canvas kullanarak verilen elemanı JPG görseline dönüştürüp indirir (Excel/CSV değil,
@@ -8834,6 +8947,33 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-body">
       <div id="doc-library-desc" style="font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.55;"></div>
       <div id="doc-library-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Talimat & Prosedürler / Instructions & Procedures -->
+<div id="procedures-modal" class="modal-overlay" onclick="closeProceduresLibraryBg(event)">
+  <div class="modal-container" onclick="event.stopPropagation()" style="max-width:min(760px, 96vw);">
+    <div class="modal-header">
+      <div class="modal-title">📋 Talimat & Prosedürler / Instructions &amp; Procedures</div>
+      <div class="modal-close-group">
+        <button class="modal-close" onclick="closeProceduresLibrary()" data-i18n-attr="title:btn_back" title="Geri / Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeProceduresLibrary(); goHome();" data-i18n-attr="title:btn_home" title="Anasayfa / Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
+        <button class="modal-close" onclick="closeProceduresLibrary()" data-i18n-attr="title:btn_close" title="Kapat / Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.55;">
+        Her satır, harici olarak barındırılan bir talimat/prosedür belgesine bağlantı verir (dosyanın kendisi burada saklanmaz). Bir satıra tıklamak belgeyi yeni sekmede açar; kaynak sunucu dosyayı doğrudan indirme olarak sunuyorsa tarayıcı otomatik indirir. /
+        Each row links to an externally hosted instruction/procedure document (the file itself isn't stored here). Clicking a row opens the document in a new tab; if the source server serves it as a direct download, the browser downloads it automatically.
+      </div>
+      <div id="procedures-list"></div>
     </div>
   </div>
 </div>

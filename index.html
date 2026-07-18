@@ -8443,26 +8443,26 @@ function exportCustomerPPTX() {
   function chunk(arr, size) { const out=[]; for (let i=0;i<arr.length;i+=size) out.push(arr.slice(i,i+size)); return out; }
 
   // Kapak / Cover
-  let cover = newSlide('FFFFFF', false);
+  let cover = newSlide('1E1B4B', true);
   cover.addShape('ellipse', { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fill: { color: hexColor } });
   cover.addText(c.init, { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fontSize: 22, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle' });
-  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 8.2, h: 0.7, fontSize: 34, bold: true, color: '0F172A' });
-  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.6, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: 'DB2777' });
-  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: '4F46E5' });
-  cover.addText("© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.", { x: 0.8, y: 6.9, w: 11, h: 0.4, fontSize: 9, color: '94A3B8' });
+  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 8.2, h: 0.7, fontSize: 34, bold: true, color: 'FFFFFF' });
+  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.6, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: 'F472B6' });
+  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: 'A5B4FC' });
+  cover.addText("© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.", { x: 0.8, y: 6.9, w: 11, h: 0.4, fontSize: 9, color: '8280C4' });
 
   // Özet / Summary
-  let sSum = newSlide('FFFFFF', false);
-  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 11, h: 0.5, fontSize: 18, bold: true, color: '0F172A' });
+  let sSum = newSlide('1E1B4B', true);
+  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 11, h: 0.5, fontSize: 18, bold: true, color: 'FFFFFF' });
   const kpiCards = [
-    { icon:'📄', label:`Toplam / Total: ${s.total}`, color:'4F46E5' },
-    { icon:'✅', label:`Tamamlandı / Completed: ${s.comp}`, color:'059669' },
-    { icon:'⏳', label:`Devam Ediyor / In Progress: ${s.min}`, color:'D97706' },
-    { icon:'❌', label:`Yapılmadı / Not Done: ${s.crit}`, color:'DB2777' }
+    { icon:'📄', label:`Toplam / Total: ${s.total}`, color:'818CF8' },
+    { icon:'✅', label:`Tamamlandı / Completed: ${s.comp}`, color:'2DD4BF' },
+    { icon:'⏳', label:`Devam Ediyor / In Progress: ${s.min}`, color:'FBBF24' },
+    { icon:'❌', label:`Yapılmadı / Not Done: ${s.crit}`, color:'F472B6' }
   ];
   kpiCards.forEach((k,i) => {
     const x = 0.5 + i*3.0;
-    sSum.addShape('roundRect', { x:x, y:1.1, w:2.8, h:1.15, fill:{color:'EEF0F3'}, line:{color:k.color,width:1}, rectRadius:0.1 });
+    sSum.addShape('roundRect', { x:x, y:1.1, w:2.8, h:1.15, fill:{color:'312E6F'}, line:{color:k.color,width:1}, rectRadius:0.1 });
     sSum.addText(k.icon, { x:x+0.15, y:1.28, w:0.55, h:0.55, fontSize:22, align:'center', valign:'middle' });
     sSum.addText(k.label, { x:x+0.8, y:1.1, w:1.9, h:1.15, fontSize:12, bold:true, color:k.color, valign:'middle' });
   });
@@ -8489,7 +8489,7 @@ function exportCustomerPPTX() {
   const statusColor = { compliant: '2DD4BF', minor: 'FBBF24', critical: 'F472B6' };
   const chunks = chunk(rows, 12);
   chunks.forEach((ch, idx) => {
-    let sl = newSlide('FFFFFF', false);
+    let sl = newSlide('1E1B4B', true);
     sl.addText(`${c.name.toUpperCase()} — KRİTER DETAYI / CRITERIA DETAIL (${idx+1}/${chunks.length})`, { x:0.4, y:0.25, w:11.0, h:0.4, fontSize:14, bold:true, color:hexColor });
     let tRows = [[
       { text:"No", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
@@ -8518,9 +8518,12 @@ function exportReportPDF() {
     return;
   }
 
-  // ═══ AÇIK MARKA TEMASI (site ile birebir aynı) / LIGHT BRAND THEME (matches the site) ═══
-  const BG = '#ffffff', CARD = '#eef0f3', BORDER = 'rgba(15,23,42,0.08)', NAVY = '#0f172a', RED = '#FF0000',
-        GOLD = '#B45309', INK = '#0f172a', MUTE = 'rgba(15,23,42,0.55)', OK = '#059669', WARN = '#D97706', BAD = '#DB2777';
+  // ═══ KOYU MARKA TEMASI — rapor, canlı siteden BİLİNÇLİ olarak farklı, koyu ve şık bir tasarım
+  // kullanır; çünkü EMS logosu açık gri/beyaz renkte olduğundan beyaz zeminde kayboluyordu. /
+  // DARK BRAND THEME — the report DELIBERATELY uses a dark, premium look distinct from the light
+  // web app, because the EMS logo is light grey/white and disappeared on a white background.
+  const BG = '#1e1b4b', CARD = '#312e6f', BORDER = 'rgba(255,255,255,0.14)', NAVY = '#FFFFFF', RED = '#FF3B5C',
+        GOLD = '#FBBF24', INK = '#F8FAFC', MUTE = 'rgba(248,250,252,0.6)', OK = '#2DD4BF', WARN = '#FBBF24', BAD = '#F472B6';
   const PAGE_W = 1600, PAGE_H = 900;
   // EMS logosu — sol menüdeki ile aynı görsel, her rapor sayfasının üst köşesinde gösterilir /
   // EMS logo — the same image as in the sidebar, shown in the top corner of every report page
@@ -8593,11 +8596,18 @@ function exportReportPDF() {
   const reportDate = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // ═══ YARDIMCILAR (sade, düz akış — mutlak konumlandırma YOK) / HELPERS (plain flow — NO absolute positioning) ═══
-  function ringSvg(pct, size, color, dark) {
+  function ringSvg(pct, size, color, dark, gradEnd) {
     const r = size / 2 - 20, c = size / 2, circ = 2 * Math.PI * r, off = circ * (1 - Math.max(0, Math.min(100, pct)) / 100);
-    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;">
+    const gid = 'rpg' + Math.round(Math.random() * 1e6);
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block; overflow:visible;">
+      <defs>
+        <linearGradient id="${gid}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${color}"/><stop offset="100%" stop-color="${gradEnd || color}"/>
+        </linearGradient>
+      </defs>
+      <circle cx="${c}" cy="${c}" r="${r + 16}" fill="${color}" opacity="0.16"/>
       <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${BORDER}" stroke-width="26"/>
-      <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="26" stroke-linecap="round"
+      <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="url(#${gid})" stroke-width="26" stroke-linecap="round"
         stroke-dasharray="${circ}" stroke-dashoffset="${off}" transform="rotate(-90 ${c} ${c})"/>
       <text x="${c}" y="${c + size * 0.05}" text-anchor="middle" font-size="${Math.round(size * 0.24)}" font-weight="900" fill="${dark}">%${pct}</text>
     </svg>`;
@@ -8620,7 +8630,7 @@ function exportReportPDF() {
     </div>`;
   }
   function pageShell(icon, title, subtitle, bodyHtml) {
-    return `<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:${BG}; font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column;">
+    return `<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="height:12px; background:${RED};"></div>
       <div style="flex:1; padding:44px 64px; display:flex; flex-direction:column; min-height:0; position:relative;">
         ${LOGO_SRC ? `<img src="${LOGO_SRC}" style="position:absolute; top:32px; right:56px; height:88px; width:auto;">` : ''}
@@ -8657,7 +8667,7 @@ function exportReportPDF() {
         </div>
       </div>
       <div style="display:flex; flex-direction:column; align-items:center; gap:14px;">
-        ${ringSvg(overallPct, 380, OK, INK)}
+        ${ringSvg(overallPct, 380, OK, INK, '#059669')}
         <div style="font-size:18px; font-weight:800;">GENEL BAŞARI ORANI / OVERALL SUCCESS RATE</div>
       </div>
     </div>
@@ -8674,7 +8684,7 @@ function exportReportPDF() {
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px;">
         <div style="font-size:18px; font-weight:800; margin-bottom:16px;">DURUM DAĞILIMI / STATUS DISTRIBUTION</div>
-        ${ringSvg(overallPct, 300, OK, INK)}
+        ${ringSvg(overallPct, 300, OK, INK, '#059669')}
       </div>
       <div style="flex:1.4; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; padding:28px;">
         <div style="font-size:18px; font-weight:800; margin-bottom:18px;">MODÜL BAZLI DAĞILIM / MODULE BREAKDOWN</div>
@@ -8693,7 +8703,7 @@ function exportReportPDF() {
   pages.push(pageShell('🏅', 'Sertifika Portalı', 'Certificate Portal', `
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:20px;">
-        ${ringSvg(certPct, 320, GOLD, INK)}
+        ${ringSvg(certPct, 320, GOLD, INK, '#F97316')}
         <div style="display:flex; gap:26px; font-size:16px; font-weight:700;">
           <div style="color:${OK};">✅ Alındı/Received: ${certComp}</div>
           <div style="color:${WARN};">⏳ Devam/Ongoing: ${certMin}</div>
@@ -8720,7 +8730,7 @@ function exportReportPDF() {
   pages.push(pageShell('🏭', 'Departmanlar', 'Production Departments — CSR modülünden bağımsız ayrı puanlama / Independent scoring, separate from the CSR module', `
     <div style="display:flex; gap:24px; flex:1; min-height:0;">
       <div style="flex:1; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:16px;">
-        ${ringSvg(deptPct, 300, OK, INK)}
+        ${ringSvg(deptPct, 300, OK, INK, '#059669')}
         <div style="font-size:15px; font-weight:700; color:${MUTE};">${deptComp} / ${deptTotal} MADDE TAMAMLANDI / ITEMS COMPLETED</div>
       </div>
       <div style="flex:1.3; background:${CARD}; border:2px solid ${BORDER}; border-radius:16px; padding:26px; overflow:hidden;">
@@ -8732,7 +8742,7 @@ function exportReportPDF() {
             const p = t ? Math.round(c / t * 100) : 0;
             return `<div style="display:flex; align-items:center; gap:14px;">
               <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${deptLabel(d)}</div>
-              <div style="flex:1; height:14px; background:rgba(15,23,42,0.08); border-radius:99px; overflow:hidden;">
+              <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
                 <div style="width:${p}%; height:100%; background:${d.c1};"></div>
               </div>
               <div style="width:70px; text-align:right; font-size:14px; font-weight:800; color:${d.c1};">%${p}</div>
@@ -8779,7 +8789,7 @@ function exportReportPDF() {
   }
 
   // ═══ SAYFA — KAPANIŞ / CLOSING ═══
-  pages.push(`<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:${BG}; font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative;">
+  pages.push(`<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative;">
     <div style="height:12px; width:100%; background:${RED}; position:absolute; top:0;"></div>
     ${LOGO_SRC ? `<img src="${LOGO_SRC}" style="position:absolute; top:32px; right:56px; height:88px; width:auto;">` : ''}
     <div style="font-size:64px;">🙏</div>
@@ -8799,7 +8809,7 @@ function exportReportPDF() {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#ffffff', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#1e1b4b', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');
@@ -8885,8 +8895,8 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; align-items:flex-start; justify-content:space-between; padding:26px 40px 14px;">
         <div>
-          <div style="font-size:26px; font-weight:900; color:#0f172a; line-height:1.25;">${esc(titleText)}</div>
-          <div style="font-size:12px; font-weight:600; color:rgba(15,23,42,0.55); margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
+          <div style="font-size:26px; font-weight:900; color:#F8FAFC; line-height:1.25;">${esc(titleText)}</div>
+          <div style="font-size:12px; font-weight:600; color:rgba(248,250,252,0.6); margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
         </div>
         ${logoSrc ? `<img src="${logoSrc}" style="height:60px; width:auto;">` : ''}
       </div>`;
@@ -8897,8 +8907,8 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; gap:14px; padding:0 40px 18px;">
         ${kpiCards.map(k => `
-          <div style="flex:1; background:#eef0f3; border:1px solid rgba(15,23,42,0.08); border-radius:14px; padding:14px 18px;">
-            <div style="font-size:10.5px; font-weight:800; color:rgba(15,23,42,0.5); text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
+          <div style="flex:1; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:14px 18px;">
+            <div style="font-size:10.5px; font-weight:800; color:rgba(248,250,252,0.55); text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
             <div style="font-size:24px; font-weight:900; color:${k.color}; margin-top:4px;">${esc(k.val)}</div>
           </div>`).join('')}
       </div>`;
@@ -8931,7 +8941,7 @@ function exportGenericTablePDF(opts) {
   const totalPages = chunks.length;
 
   const pages = chunks.map((pageRows, idx) => `
-    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:#ffffff; font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
+    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
       ${pageHeader(idx + 1, totalPages)}
       ${idx === 0 ? kpiStrip() : ''}
       ${tableForRows(pageRows)}
@@ -8948,7 +8958,7 @@ function exportGenericTablePDF(opts) {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#ffffff', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#1e1b4b', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');

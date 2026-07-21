@@ -11244,9 +11244,9 @@ function importBackup(event) {
         return;
       }
       if (!confirm(t3(
-        'Mevcut tüm veriler bu yedek dosyasındaki verilerle değiştirilecek. Devam etmeden önce isterseniz önce mevcut verilerinizi yedekleyin.\n\nDevam etmek istiyor musunuz?',
-        'All current data will be replaced with the data in this backup file. You may want to back up your current data first.\n\nDo you want to continue?',
-        'سيتم استبدال جميع البيانات الحالية بالبيانات الموجودة في ملف النسخ الاحتياطي هذا. قد ترغب في نسخ بياناتك الحالية احتياطيًا أولاً.\n\nهل تريد المتابعة؟'
+        'Bu yedek dosyasında BULUNAN veriler (sorular, sertifikalar, müşteri denetimleri vb.) mevcut verilerin üzerine yazılacak. Dosyada BULUNMAYAN alanlara (örn. yeni bir özellik yedekten sonra eklendiyse) hiç dokunulmayacak, olduğu gibi kalacak.\n\nDevam etmek istiyor musunuz?',
+        'The data PRESENT in this backup file (questions, certificates, customer audits, etc.) will overwrite the current data. Any field NOT present in the file (e.g. if a newer feature was added after this backup) will be left completely untouched.\n\nDo you want to continue?',
+        'ستُستبدل البيانات الموجودة في ملف النسخ الاحتياطي هذا (الأسئلة، الشهادات، تدقيقات العملاء، إلخ) بالبيانات الحالية. أي حقل غير موجود في الملف لن يُمس إطلاقًا.\n\nهل تريد المتابعة؟'
       ))) {
         event.target.value = '';
         return;
@@ -11255,11 +11255,22 @@ function importBackup(event) {
       certificatesData = data.certificatesData;
       customerStatuses = data.customerStatuses || {};
       customerAudits = data.customerAudits || [];
-      companyProfileDocs = data.companyProfileDocs || [];
-      legalDocumentsDocs = data.legalDocumentsDocs || [];
-      topManagementReportsDocs = data.topManagementReportsDocs || [];
-      trainingVideosDocs = data.trainingVideosDocs || [];
-      dailyAuditRecords = data.dailyAuditRecords || [];
+      // ═══ DÜZELTİLDİ ═══ Eski bir yedek dosyası (yeni özelliklerden — Günlük İç Denetim, Eğitim
+      // Videoları, Üst Yönetim Raporları vb. — ÖNCEKİ bir tarihten) yüklendiğinde, bu alanlar dosyada
+      // hiç bulunmaz. Önceden bu durumda kod bu verileri SESSİZCE BOŞ DİZİYE çeviriyordu — yani eski
+      // bir yedek geri yüklendiğinde yeni özelliklerdeki tüm gerçek veriler silinirdi. Artık bir alan
+      // dosyada YOKSA, o alana HİÇ DOKUNULMAZ; sadece dosyada GERÇEKTEN bulunan alanlar güncellenir. /
+      // ═══ FIXED ═══ When an OLDER backup file (from BEFORE newer features existed — Daily Internal
+      // Audit, Training Videos, Top Management Reports, etc.) is restored, these fields simply don't
+      // exist in that file. Previously, the code would SILENTLY RESET these to an empty array in that
+      // case — meaning restoring an old backup would wipe out all real data in the newer features. Now,
+      // if a field is ABSENT from the file, it is NOT touched at all; only fields that are ACTUALLY
+      // present in the file get updated.
+      if (Array.isArray(data.companyProfileDocs)) companyProfileDocs = data.companyProfileDocs;
+      if (Array.isArray(data.legalDocumentsDocs)) legalDocumentsDocs = data.legalDocumentsDocs;
+      if (Array.isArray(data.topManagementReportsDocs)) topManagementReportsDocs = data.topManagementReportsDocs;
+      if (Array.isArray(data.trainingVideosDocs)) trainingVideosDocs = data.trainingVideosDocs;
+      if (Array.isArray(data.dailyAuditRecords)) dailyAuditRecords = data.dailyAuditRecords;
       if (Array.isArray(data.dailyAuditEmailPool) && data.dailyAuditEmailPool.length > 0) dailyAuditEmailPool = data.dailyAuditEmailPool;
       if (Array.isArray(data.dailyAuditInspectorNames)) dailyAuditInspectorNames = data.dailyAuditInspectorNames;
       if (Array.isArray(data.productionChecklist)) productionChecklist = data.productionChecklist;

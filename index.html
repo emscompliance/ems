@@ -11103,12 +11103,12 @@ function exportReportPDF() {
     return;
   }
 
-  // ═══ KOYU MARKA TEMASI — rapor, canlı siteden BİLİNÇLİ olarak farklı, koyu ve şık bir tasarım
-  // kullanır; çünkü EMS logosu açık gri/beyaz renkte olduğundan beyaz zeminde kayboluyordu. /
-  // DARK BRAND THEME — the report DELIBERATELY uses a dark, premium look distinct from the light
-  // web app, because the EMS logo is light grey/white and disappeared on a white background.
-  const BG = '#1e1b4b', CARD = '#312e6f', BORDER = 'rgba(255,255,255,0.14)', NAVY = '#FFFFFF', RED = '#FF3B5C',
-        GOLD = '#FBBF24', INK = '#F8FAFC', MUTE = 'rgba(248,250,252,0.6)', OK = '#2DD4BF', WARN = '#FBBF24', BAD = '#F472B6';
+  // ═══ AÇIK TEMA — sitenin kendi renk paletiyle BİREBİR aynı; koyu lacivert/mor tema kaldırıldı.
+  // Logo açık renkli olduğundan sadece logonun arkasına küçük koyu bir "çip" konur. /
+  // LIGHT THEME — uses the exact same palette as the web app itself; the old dark navy/purple theme
+  // has been removed. Since the logo is light-colored, only a small dark chip sits behind it.
+  const BG = '#FFFFFF', CARD = '#EEF0F3', BORDER = '#E5E8ED', NAVY = '#4F46E5', RED = '#4F46E5',
+        GOLD = '#F59E0B', INK = '#0F172A', MUTE = '#6B7280', OK = '#10B981', WARN = '#F59E0B', BAD = '#EF4444';
   const PAGE_W = 1600, PAGE_H = 900;
   // EMS logosu — sol menüdeki ile aynı görsel, her rapor sayfasının üst köşesinde gösterilir /
   // EMS logo — the same image as in the sidebar, shown in the top corner of every report page
@@ -11215,14 +11215,14 @@ function exportReportPDF() {
     </div>`;
   }
   function pageShell(icon, title, subtitle, bodyHtml) {
-    return `<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column;">
+    return `<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:${BG}; font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column;">
       <div style="height:12px; background:${RED};"></div>
       <div style="flex:1; padding:44px 64px; display:flex; flex-direction:column; min-height:0; position:relative;">
-        ${LOGO_SRC ? `<img src="${LOGO_SRC}" style="position:absolute; top:32px; right:56px; height:88px; width:auto;">` : ''}
+        ${LOGO_SRC ? `<div style="position:absolute; top:32px; right:56px; background:#0F172A; border-radius:14px; padding:10px 18px; display:flex; align-items:center;"><img src="${LOGO_SRC}" style="height:64px; width:auto;"></div>` : ''}
         <div style="display:flex; align-items:center; gap:22px;">
           <div style="font-size:56px; line-height:1;">${icon}</div>
           <div>
-            <div style="font-size:38px; font-weight:900; color:${NAVY}; line-height:1.15;">${title}</div>
+            <div style="font-size:38px; font-weight:900; color:${INK}; line-height:1.15;">${title}</div>
             ${subtitle ? `<div style="font-size:16px; color:${MUTE}; margin-top:6px; font-weight:600;">${subtitle}</div>` : ''}
           </div>
         </div>
@@ -11327,7 +11327,7 @@ function exportReportPDF() {
             const p = t ? Math.round(c / t * 100) : 0;
             return `<div style="display:flex; align-items:center; gap:14px;">
               <div style="width:170px; font-size:14px; font-weight:700;">${d.icon} ${deptLabel(d)}</div>
-              <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
+              <div style="flex:1; height:14px; background:${BORDER}; border-radius:99px; overflow:hidden;">
                 <div style="width:${p}%; height:100%; background:${d.c1};"></div>
               </div>
               <div style="width:70px; text-align:right; font-size:14px; font-weight:800; color:${d.c1};">%${p}</div>
@@ -11406,7 +11406,7 @@ function exportReportPDF() {
               const p = latest ? latest.score : 0;
               return `<div style="display:flex; align-items:center; gap:14px;">
                 <div style="width:190px; font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.icon} ${dailyAuditDeptLabel(d)}</div>
-                <div style="flex:1; height:14px; background:rgba(255,255,255,0.12); border-radius:99px; overflow:hidden;">
+                <div style="flex:1; height:14px; background:${BORDER}; border-radius:99px; overflow:hidden;">
                   <div style="width:${p}%; height:100%; background:${d.c1};"></div>
                 </div>
                 <div style="width:60px; text-align:right; font-size:14px; font-weight:800; color:${latest ? d.c1 : MUTE};">${latest ? '%' + p : '—'}</div>
@@ -11420,11 +11420,11 @@ function exportReportPDF() {
   }
 
   // ═══ SAYFA — KAPANIŞ / CLOSING ═══
-  pages.push(`<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative;">
+  pages.push(`<div style="width:${PAGE_W}px; height:${PAGE_H}px; background:${BG}; font-family:'Plus Jakarta Sans',Arial,sans-serif; color:${INK}; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; position:relative;">
     <div style="height:12px; width:100%; background:${RED}; position:absolute; top:0;"></div>
-    ${LOGO_SRC ? `<img src="${LOGO_SRC}" style="position:absolute; top:32px; right:56px; height:88px; width:auto;">` : ''}
+    ${LOGO_SRC ? `<div style="position:absolute; top:32px; right:56px; background:#0F172A; border-radius:14px; padding:10px 18px; display:flex; align-items:center;"><img src="${LOGO_SRC}" style="height:64px; width:auto;"></div>` : ''}
     <div style="font-size:64px;">🙏</div>
-    <div style="font-size:46px; font-weight:900; color:${NAVY};">Teşekkürler / Thank You</div>
+    <div style="font-size:46px; font-weight:900; color:${INK};">Teşekkürler / Thank You</div>
     <div style="font-size:18px; font-weight:700; color:${GOLD};">CSR & Sustainability and HSE Department</div>
     <div style="font-size:15px; color:${MUTE}; margin-top:20px;">Abdullah Baydoğan — QA Manager · abdullah.baydogan@eroglums.com</div>
   </div>`);
@@ -11440,7 +11440,7 @@ function exportReportPDF() {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#1e1b4b', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#FFFFFF', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');
@@ -11468,9 +11468,9 @@ function exportReportPDF() {
 // filter, and the "All Criteria" view all reuse this SAME modal, so one button covers all of them.
 function exportGenericTablePDF(opts) {
   // Ortak, yeniden kullanılabilir PDF dışa aktarma çekirdeği — herhangi bir KPI şeridi + tablo
-  // ikilisini (mevcut filtreye göre) koyu temalı, çok sayfalı bir PDF'e dönüştürür. /
+  // ikilisini (mevcut filtreye göre) sitenin kendi AÇIK temasıyla, çok sayfalı bir PDF'e dönüştürür. /
   // Shared, reusable PDF export core — turns any KPI-strip + table pair (respecting whatever
-  // filter is currently applied) into a dark-themed, multi-page PDF.
+  // filter is currently applied) into a multi-page PDF using the web app's own LIGHT theme.
   const jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
   if (typeof html2canvas === 'undefined' || !jsPDFLib) {
     alert(t3('PDF kütüphanesi yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.', 'The PDF library failed to load. Please check your internet connection and try again.', 'فشل تحميل مكتبة PDF.'));
@@ -11489,7 +11489,7 @@ function exportGenericTablePDF(opts) {
     return;
   }
 
-  const STATUS_COLORS = { compliant: '#2DD4BF', minor: '#FBBF24', critical: '#F472B6', closed: '#2DD4BF', in_progress: '#FBBF24', open: '#F472B6' };
+  const STATUS_COLORS = { compliant: '#10B981', minor: '#F59E0B', critical: '#EF4444', closed: '#10B981', in_progress: '#F59E0B', open: '#EF4444' };
   const kpiCards = kpiRowEl ? Array.from(kpiRowEl.querySelectorAll('.customer-kpi')).map(card => ({
     label: (card.querySelector('.customer-kpi-label') || {}).innerText || '',
     val: (card.querySelector('.customer-kpi-val') || {}).innerText || '',
@@ -11526,10 +11526,10 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; align-items:flex-start; justify-content:space-between; padding:26px 40px 14px;">
         <div>
-          <div style="font-size:26px; font-weight:900; color:#F8FAFC; line-height:1.25;">${esc(titleText)}</div>
-          <div style="font-size:12px; font-weight:600; color:rgba(248,250,252,0.6); margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
+          <div style="font-size:26px; font-weight:900; color:#0F172A; line-height:1.25;">${esc(titleText)}</div>
+          <div style="font-size:12px; font-weight:600; color:#6B7280; margin-top:4px;">EMS Eroğlu Manufacturing Studio · ${new Date().toLocaleDateString('tr-TR')} · ${t3('Sayfa', 'Page', 'صفحة')} ${pageNum}/${totalPages}</div>
         </div>
-        ${logoSrc ? `<img src="${logoSrc}" style="height:60px; width:auto;">` : ''}
+        ${logoSrc ? `<div style="background:#0F172A; border-radius:12px; padding:8px 14px; display:flex; align-items:center;"><img src="${logoSrc}" style="height:44px; width:auto;"></div>` : ''}
       </div>`;
   }
 
@@ -11538,8 +11538,8 @@ function exportGenericTablePDF(opts) {
     return `
       <div style="display:flex; gap:14px; padding:0 40px 18px;">
         ${kpiCards.map(k => `
-          <div style="flex:1; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:14px 18px;">
-            <div style="font-size:10.5px; font-weight:800; color:rgba(248,250,252,0.55); text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
+          <div style="flex:1; background:#EEF0F3; border:1px solid #E5E8ED; border-radius:14px; padding:14px 18px;">
+            <div style="font-size:10.5px; font-weight:800; color:#6B7280; text-transform:uppercase; letter-spacing:0.04em;">${esc(k.label)}</div>
             <div style="font-size:24px; font-weight:900; color:${k.color}; margin-top:4px;">${esc(k.val)}</div>
           </div>`).join('')}
       </div>`;
@@ -11547,7 +11547,7 @@ function exportGenericTablePDF(opts) {
 
   function tableForRows(pageRows) {
     return `
-      <div style="margin:0 40px; background:#fff; border-radius:16px; overflow:hidden; flex:1;">
+      <div style="margin:0 40px; background:#fff; border:1.5px solid #E5E8ED; border-radius:16px; overflow:hidden; flex:1;">
         <table style="width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed;">
           <thead>
             <tr style="background:#F1F5F9;">
@@ -11572,7 +11572,7 @@ function exportGenericTablePDF(opts) {
   const totalPages = chunks.length;
 
   const pages = chunks.map((pageRows, idx) => `
-    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:linear-gradient(155deg, #1e1b4b 0%, #312e81 55%, #4c1d95 100%); font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
+    <div style="width:${PAGE_W}px; height:${PAGE_H}px; background:#FFFFFF; font-family:'Plus Jakarta Sans',Arial,sans-serif; box-sizing:border-box; display:flex; flex-direction:column;">
       ${pageHeader(idx + 1, totalPages)}
       ${idx === 0 ? kpiStrip() : ''}
       ${tableForRows(pageRows)}
@@ -11589,7 +11589,7 @@ function exportGenericTablePDF(opts) {
     chain = chain.then(() => {
       holder.innerHTML = html;
       return new Promise(res => setTimeout(res, 30)).then(() =>
-        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#1e1b4b', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
+        html2canvas(holder.firstElementChild, { scale: 2, backgroundColor: '#FFFFFF', useCORS: true, width: PAGE_W, height: PAGE_H, windowWidth: PAGE_W, windowHeight: PAGE_H })
       ).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 0.93);
         if (idx > 0) doc.addPage([PAGE_W, PAGE_H], 'landscape');

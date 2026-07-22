@@ -10984,84 +10984,112 @@ function _exportCustomerPPTXImpl() {
   const statuses = customerStatuses[currentCustomerKey] || {};
   const hexColor = (c.color || '#4F46E5').replace('#','');
 
+  // ═══ AÇIK TEMA — sitenin kendi renk paletiyle BİREBİR aynı (--primary/--success/--warning/--danger,
+  // açık gri kart zemini) kullanılır; koyu lacivert/mor tema kaldırıldı. Logo açık renkli olduğundan
+  // sadece logonun arkasına küçük koyu bir "çip" konur, geri kalan her şey açık temalıdır. /
+  // LIGHT THEME — uses the exact same color palette as the web app itself
+  // (--primary/--success/--warning/--danger, light-gray card background); the old dark navy/purple
+  // theme has been removed. Since the logo is light-colored, only a small dark "chip" sits behind it —
+  // everything else stays light-themed.
+  const BG = 'FFFFFF', TEXT = '0F172A', MUTED = '6B7280', PRIMARY = '4F46E5', SUCCESS = '10B981',
+        WARNING = 'F59E0B', DANGER = 'EF4444', CARD_BG = 'EEF0F3', BORDER = 'E5E8ED', HEAD_BG = 'F1F5F9';
+
   let pptx = new generatorClass();
   pptx.layout = 'LAYOUT_WIDE';
 
-  function addLogo(slide, dark) {
+  function addLogo(slide) {
     const logoImg = document.querySelector('.side-logo-img');
+    // Logo her zaman koyu bir çip üzerinde — sayfanın geri kalanı açık temalı olsa bile /
+    // Logo always sits on a dark chip — even though the rest of the page is light-themed
+    slide.addShape('roundRect', { x: 9.05, y: 0.08, w: 3.95, h: 1.02, fill: { color: '0F172A' }, rectRadius: 0.08 });
     if (logoImg && logoImg.src) {
-      slide.addImage({ data: logoImg.src, x: 9.15, y: 0.10, w: 3.75, h: 0.88 });
+      slide.addImage({ data: logoImg.src, x: 9.15, y: 0.16, w: 3.75, h: 0.62 });
     }
-    slide.addText('EMS CSR & Sustainability', { x: 9.15, y: 1.00, w: 3.75, h: 0.24, fontSize: 8, bold: true, color: dark ? 'FFFFFF' : '64748B', align: 'center' });
+    slide.addText('EMS CSR & Sustainability', { x: 9.15, y: 0.84, w: 3.75, h: 0.2, fontSize: 8, bold: true, color: 'CBD5E1', align: 'center' });
   }
-  function newSlide(bg, dark) { let s2 = pptx.addSlide(); s2.background = { fill: bg }; addLogo(s2, dark); return s2; }
+  function newSlide() { let s2 = pptx.addSlide(); s2.background = { fill: BG }; addLogo(s2); return s2; }
   function addFooter(slide) {
+    slide.addText('© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.', { x: 0.4, y: 7.0, w: 8.5, h: 0.3, fontSize: 8, color: MUTED });
   }
   function chunk(arr, size) { const out=[]; for (let i=0;i<arr.length;i+=size) out.push(arr.slice(i,i+size)); return out; }
+  // Bir KPI kartını, sitedeki .kpi-card ile birebir aynı görünümde çizer: açık gri zemin, solda renkli
+  // vurgu şeridi, ikon, kalın renkli sayı, altında gri etiket. /
+  // Draws a single KPI card with the exact same look as the site's .kpi-card: light-gray background,
+  // colored accent bar on the left, icon, bold colored number, muted label below.
+  function drawKpiCard(slide, x, y, w, h, icon, value, label, color) {
+    slide.addShape('rect', { x, y, w: 0.06, h, fill: { color } });
+    slide.addShape('roundRect', { x: x+0.06, y, w: w-0.06, h, fill: { color: CARD_BG }, line: { color: BORDER, width: 0.75 }, rectRadius: 0.06 });
+    slide.addText(icon, { x: x+0.2, y: y+0.1, w: 0.5, h: 0.4, fontSize: 18 });
+    slide.addText(value, { x: x+0.2, y: y+h-0.85, w: w-0.4, h: 0.55, fontSize: 26, bold: true, color });
+    slide.addText(label, { x: x+0.2, y: y+h-0.32, w: w-0.4, h: 0.28, fontSize: 8.5, bold: true, color: MUTED });
+  }
 
   // Kapak / Cover
-  let cover = newSlide('1E1B4B', true);
+  let cover = newSlide();
   cover.addShape('ellipse', { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fill: { color: hexColor } });
   cover.addText(c.init, { x: 0.8, y: 0.85, w: 1.0, h: 1.0, fontSize: 22, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle' });
-  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 8.2, h: 0.7, fontSize: 34, bold: true, color: 'FFFFFF' });
-  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.6, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: 'F472B6' });
-  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: 'A5B4FC' });
-  cover.addText("© EMS Eroğlu, Inc. — Tüm hakları saklıdır. / All rights reserved.", { x: 0.8, y: 6.9, w: 11, h: 0.4, fontSize: 9, color: '8280C4' });
+  cover.addText(c.name.toUpperCase(), { x: 2.0, y: 0.85, w: 6.8, h: 0.7, fontSize: 34, bold: true, color: TEXT });
+  cover.addShape('rect', { x: 2.02, y: 1.62, w: 0.55, h: 0.06, fill: { color: PRIMARY } });
+  cover.addText("MÜŞTERİ DENETİM PANOSU / CUSTOMER AUDIT DASHBOARD", { x: 2.0, y: 1.72, w: 9.5, h: 0.5, fontSize: 15, bold: true, color: PRIMARY });
+  cover.addText(`Oluşturulma Tarihi / Date: ${new Date().toLocaleDateString('tr-TR')}`, { x: 0.8, y: 4.55, w: 11, h: 0.4, fontSize: 12, color: MUTED });
+  addFooter(cover);
 
   // Özet / Summary
-  let sSum = newSlide('1E1B4B', true);
-  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 11, h: 0.5, fontSize: 18, bold: true, color: 'FFFFFF' });
+  let sSum = newSlide();
+  sSum.addText(`${c.name} — YÖNETİCİ ÖZETİ / EXECUTIVE SUMMARY`, { x: 0.5, y: 0.35, w: 8.4, h: 0.5, fontSize: 18, bold: true, color: TEXT });
   const kpiCards = [
-    { icon:'📄', label:`Toplam / Total: ${s.total}`, color:'818CF8' },
-    { icon:'✅', label:`Tamamlandı / Completed: ${s.comp}`, color:'2DD4BF' },
-    { icon:'⏳', label:`Devam Ediyor / In Progress: ${s.min}`, color:'FBBF24' },
-    { icon:'❌', label:`Yapılmadı / Not Done: ${s.crit}`, color:'F472B6' }
+    { icon:'📄', value:String(s.total), label:'TOPLAM / TOTAL', color: PRIMARY },
+    { icon:'✅', value:String(s.comp), label:'TAMAMLANDI / COMPLETED', color: SUCCESS },
+    { icon:'⏳', value:String(s.min), label:'DEVAM EDİYOR / IN PROGRESS', color: WARNING },
+    { icon:'❌', value:String(s.crit), label:'YAPILMADI / NOT DONE', color: DANGER }
   ];
   kpiCards.forEach((k,i) => {
     const x = 0.5 + i*3.0;
-    sSum.addShape('roundRect', { x:x, y:1.1, w:2.8, h:1.15, fill:{color:'312E6F'}, line:{color:k.color,width:1}, rectRadius:0.1 });
-    sSum.addText(k.icon, { x:x+0.15, y:1.28, w:0.55, h:0.55, fontSize:22, align:'center', valign:'middle' });
-    sSum.addText(k.label, { x:x+0.8, y:1.1, w:1.9, h:1.15, fontSize:12, bold:true, color:k.color, valign:'middle' });
+    drawKpiCard(sSum, x, 1.1, 2.8, 1.15, k.icon, k.value, k.label, k.color);
   });
   sSum.addChart('doughnut', [{ name:'Durum', labels:['Tamamlandı / Completed','Devam Ediyor / In Progress','Yapılmadı / Not Done'], values:[s.comp, s.min, s.crit] }], {
-    x: 0.6, y: 2.6, w: 5.4, h: 4.1, chartColors: ['2DD4BF','FBBF24','F472B6'],
-    showLegend: true, legendPos: 'b', legendFontSize: 10, showValue: true, dataLabelColor: 'FFFFFF', dataLabelFontSize: 11
+    x: 0.6, y: 2.6, w: 5.4, h: 4.1, chartColors: [SUCCESS, WARNING, DANGER],
+    showLegend: true, legendPos: 'b', legendFontSize: 10, legendColor: TEXT, showValue: true, dataLabelColor: 'FFFFFF', dataLabelFontSize: 11
   });
   let catRows = [[
-    { text:"Modül / Module", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
-    { text:"Toplam / Total", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
-    { text:"% Tamamlandı / Completed", options:{bold:true, fill:"27272a", color:"FFFFFF"} }
+    { text:"Modül / Module", options:{bold:true, fill:HEAD_BG, color:TEXT} },
+    { text:"Toplam / Total", options:{bold:true, fill:HEAD_BG, color:TEXT} },
+    { text:"% Tamamlandı / Completed", options:{bold:true, fill:HEAD_BG, color:TEXT} }
   ]];
   ['sustain','csr','hse','env','cd'].forEach(k => {
     const d = s.cat[k];
     const pct = d.t ? Math.round((d.comp/d.t)*100) : 0;
-    catRows.push([getCustomerCatName(k).replace(/&amp;/g,'&'), String(d.t), `%${pct}`]);
+    catRows.push([
+      { text: getCustomerCatName(k).replace(/&amp;/g,'&'), options:{color:TEXT} },
+      { text: String(d.t), options:{color:TEXT} },
+      { text: `%${pct}`, options:{color: pct >= 80 ? SUCCESS : (pct >= 50 ? WARNING : DANGER), bold:true} }
+    ]);
   });
-  sSum.addTable(catRows, { x: 6.3, y: 2.6, w: 6.5, colW:[3.9,1.3,1.3], fontSize: 10.5, border:{pt:1,color:"E2E8F0"}, align:'center', valign:'middle' });
+  sSum.addTable(catRows, { x: 6.3, y: 2.6, w: 6.5, colW:[3.9,1.3,1.3], fontSize: 10.5, border:{pt:1,color:BORDER}, align:'center', valign:'middle', color: TEXT });
   addFooter(sSum);
 
   // Kriter detay tabloları / criteria detail tables
   const rows = auditQuestions.map(q => ({ q, status: statuses[q.id] || 'critical' }));
   const statusLabel = { compliant: '✅ Tamamlandı', minor: '⏳ Devam Ediyor', critical: '❌ Yapılmadı' };
-  const statusColor = { compliant: '2DD4BF', minor: 'FBBF24', critical: 'F472B6' };
+  const statusColor = { compliant: SUCCESS, minor: WARNING, critical: DANGER };
   const chunks = chunk(rows, 12);
   chunks.forEach((ch, idx) => {
-    let sl = newSlide('1E1B4B', true);
-    sl.addText(`${c.name.toUpperCase()} — KRİTER DETAYI / CRITERIA DETAIL (${idx+1}/${chunks.length})`, { x:0.4, y:0.25, w:11.0, h:0.4, fontSize:14, bold:true, color:hexColor });
+    let sl = newSlide();
+    sl.addText(`${c.name.toUpperCase()} — KRİTER DETAYI / CRITERIA DETAIL (${idx+1}/${chunks.length})`, { x:0.4, y:0.25, w:8.4, h:0.4, fontSize:14, bold:true, color:hexColor });
     let tRows = [[
-      { text:"No", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
-      { text:"Kriter / Criteria", options:{bold:true, fill:"27272a", color:"FFFFFF"} },
-      { text:"Durum / Status", options:{bold:true, fill:"27272a", color:"FFFFFF"} }
+      { text:"No", options:{bold:true, fill:HEAD_BG, color:TEXT} },
+      { text:"Kriter / Criteria", options:{bold:true, fill:HEAD_BG, color:TEXT} },
+      { text:"Durum / Status", options:{bold:true, fill:HEAD_BG, color:TEXT} }
     ]];
     ch.forEach((item, i) => {
       const itemText = localizedItemText(item.q);
       tRows.push([
-        String(idx*12 + i + 1),
-        itemText.length > 120 ? itemText.slice(0,117)+'...' : itemText,
+        { text: String(idx*12 + i + 1), options:{color:TEXT} },
+        { text: itemText.length > 120 ? itemText.slice(0,117)+'...' : itemText, options:{color:TEXT} },
         { text: statusLabel[item.status], options: { color: statusColor[item.status], bold: true } }
       ]);
     });
-    sl.addTable(tRows, { x:0.4, y:0.75, w:12.5, colW:[0.6,10.4,1.5], fontSize:9, border:{pt:1,color:"E2E8F0"}, valign:'middle' });
+    sl.addTable(tRows, { x:0.4, y:0.75, w:12.5, colW:[0.6,10.4,1.5], fontSize:9, border:{pt:1,color:BORDER}, valign:'middle', color: TEXT });
     addFooter(sl);
   });
 
